@@ -260,7 +260,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Kids spend a lot of time on screens, and keeping them safe matters. This app uses real-time AI to filter explicit content and help you stay in control of what they see.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/product#discover')}>
                   Discover more
                 </Button>
               </Box>
@@ -271,7 +271,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Lock apps when you need to, block inappropriate content automatically, track your child’s location, and review their activity in a way that fits your family’s routine.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/product#features')}>
                   View all features
                 </Button>
               </Box>
@@ -282,7 +282,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Set up takes only a few minutes. Create an account, download the app on child device, turn it on, and it starts monitoring and protecting right away.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/product#get-started')}>
                   Learn how
                 </Button>
               </Box>
@@ -293,7 +293,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Available for Android 9.0+ devices. The app uses real-time screen analysis to monitor and filter harmful content as it appears. You can install it on your child’s phone or tablet
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/product#downloads')}>
                   Go to downloads
                 </Button>
               </Box>
@@ -366,7 +366,7 @@ const HomePage = () => {
               </Typography>
 
               <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.8)', mb: 4, fontSize: '1.05rem' }}>
-                Give your child the freedom to explore while keeping them safe. Our app watches the screen in real time and filters inappropriate content. It’s simple to use, always on, and built to give parents peace of mind.
+                Give your child the freedom to explore while keeping them safe. Our app Work in real time and filters inappropriate content. It is more about guidance and monitoring, and built to give parents peace of mind.
               </Typography>
 
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>

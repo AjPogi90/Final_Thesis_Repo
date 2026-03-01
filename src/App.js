@@ -15,6 +15,7 @@ import Settings from './pages/Settings';
 import Help from './pages/Help';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
+import ProductPage from './pages/ProductPage';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import SessionTimeout from './components/SessionTimeout';
@@ -57,6 +58,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/product" element={<ProductPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
