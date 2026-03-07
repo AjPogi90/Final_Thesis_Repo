@@ -20,6 +20,44 @@ npm start
 ```bash
 npm run build
 ```
+## how to push and pull
+After editing your code:
+
+git add .
+git commit -m "Added dashboard analytics feature"
+git push
+
+Every commit is a saved version of your project.
+
+Think of it like checkpoints in a game.
+
+After editing your code:
+
+git add .
+git commit -m "Added dashboard analytics feature"
+git push
+
+Every commit is a saved version of your project.
+
+Think of it like checkpoints in a game.
+
+If something breaks and you want to undo a bad push:
+
+git revert COMMIT_ID
+git push
+
+Example:
+
+git revert a8f3d91c2e
+git push
+
+What this does:
+
+Keeps your history
+
+Creates a new commit that cancels the bad one
+
+Safe for thesis projects
 
 ## Features
 

@@ -16,9 +16,23 @@ import Help from './pages/Help';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
+import LearnPage from './pages/LearnPage';
+import SupportPage from './pages/SupportPage';
+import PendingVerification from './pages/PendingVerification';
+import AdminSetup from './pages/AdminSetup';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import SessionTimeout from './components/SessionTimeout';
+
+// Admin pages
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminVerification from './pages/admin/AdminVerification';
+import AdminActivity from './pages/admin/AdminActivity';
+import AdminReports from './pages/admin/AdminReports';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminManagement from './pages/admin/AdminManagement';
 
 function AppLayout({ children }) {
   return (
@@ -59,8 +73,12 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/product" element={<ProductPage />} />
+            <Route path="/learn" element={<LearnPage />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/pending-verification" element={<PendingVerification />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
 
             {/* Protected Routes with Sidebar Layout */}
             <Route
@@ -143,6 +161,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Panel – 7 sections with dedicated admin layout */}
+            <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminLayout><AdminUsers /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/verification" element={<ProtectedRoute requireAdmin><AdminLayout><AdminVerification /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/activity" element={<ProtectedRoute requireAdmin><AdminLayout><AdminActivity /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/reports" element={<ProtectedRoute requireAdmin><AdminLayout><AdminReports /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
+            <Route path="/admin/admins" element={<ProtectedRoute requireAdmin><AdminLayout><AdminManagement /></AdminLayout></ProtectedRoute>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

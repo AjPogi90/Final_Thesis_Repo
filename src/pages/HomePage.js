@@ -314,7 +314,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Get the latest updates, new features, and simple guides that help you make the most of your AegistNet app.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/learn#product-tips')}>
                   Read product tips
                 </Button>
               </Box>
@@ -325,7 +325,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Learn from reliable information and research about kids’ online habits, digital safety, and how AI can help protect them.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/learn#parenting-tips')}>
                   Read parenting tips
                 </Button>
               </Box>
@@ -336,7 +336,7 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   Quick summaries, ratings, and recommendations about the apps, games, and online content parents should keep an eye on.
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/learn#safety-guides')}>
                   Read our guides and reviews
                 </Button>
               </Box>
@@ -347,8 +347,62 @@ const HomePage = () => {
                 <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
                   “AegistNet gives me the peace of mind I’ve been looking for. I know my kids are safe when they’re online.”
                 </Typography>
-                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }}>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/learn#family-stories')}>
                   Read more family stories
+                </Button>
+              </Box>
+            </Box>
+          </Container>
+        </Box>
+      )}
+
+      {/* Inline Support Mega Menu (pushes content down) */}
+      {supportOpen && (
+        <Box sx={{ width: '100%', bgcolor: '#fff', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', borderTop: '1px solid #eee' }}>
+          <Container maxWidth="lg">
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+              <Box sx={{ p: 2.5, borderRight: '1px solid #f0f0f0' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', color: '#000' }}>
+                  <span style={{ fontSize: '1.2rem' }}></span> Contact us
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
+                  Reach out through email, live chat, or phone. Our dedicated support team is ready to help with any issue or question.
+                </Typography>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/support#contact-us')}>
+                  Get in touch
+                </Button>
+              </Box>
+              <Box sx={{ p: 2.5, borderRight: '1px solid #f0f0f0' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', color: '#000' }}>
+                  <span style={{ fontSize: '1.2rem' }}></span> FAQ
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
+                  Find quick answers to common questions about installation, features, data privacy, and managing your child's device.
+                </Typography>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/support#faq')}>
+                  Browse FAQ
+                </Button>
+              </Box>
+              <Box sx={{ p: 2.5, borderRight: '1px solid #f0f0f0' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', color: '#000' }}>
+                  <span style={{ fontSize: '1.2rem' }}></span> Troubleshooting
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
+                  Step-by-step fixes for common issues like content filtering, location updates, syncing problems, and battery optimization.
+                </Typography>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/support#troubleshooting')}>
+                  Fix common issues
+                </Button>
+              </Box>
+              <Box sx={{ p: 2.5 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', color: '#000' }}>
+                  <span style={{ fontSize: '1.2rem' }}></span> Community
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>
+                  Join parent forums, submit feature requests, sign up for beta testing, and connect with local parent groups in your area.
+                </Typography>
+                <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate('/support#community')}>
+                  Join the community
                 </Button>
               </Box>
             </Box>

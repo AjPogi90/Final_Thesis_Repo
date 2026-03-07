@@ -21,6 +21,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -33,7 +34,7 @@ const DRAWER_WIDTH = 240;
 const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { colors } = useTheme();
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
@@ -48,6 +49,7 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
   const bottomMenuItems = [
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
     { text: 'Help', icon: <HelpOutlineIcon />, path: '/help' },
+    ...(isAdmin ? [{ text: 'Admin Panel', icon: <AdminPanelSettingsIcon />, path: '/admin' }] : []),
   ];
 
   const handleNavigation = (path) => {
