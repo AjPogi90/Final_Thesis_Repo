@@ -28,7 +28,7 @@ const Register = () => {
   // Stepper
   const [activeStep, setActiveStep] = useState(0);
 
-  // Step 1 – ID Verification
+  // Step 1 – ID Verification (local only — uploaded after account creation)
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [idFile, setIdFile] = useState(null);
 
@@ -80,14 +80,26 @@ const Register = () => {
     if (password !== confirm) return setError('Passwords do not match');
     if (password.length < 6) return setError('Password must be at least 6 characters');
     setLoading(true);
-    const result = await signup(email, password, name, idFile, dateOfBirth);
+
+    // signup NO LONGER needs idFile — ID upload happens on PendingVerification page
+    const result = await signup(email, password, name, dateOfBirth);
     setLoading(false);
+
     if (result.success) {
       setRegistered(true);
       setVerificationSent(Boolean(result.verificationSent));
-      setInfoMessage(result.verificationSent ? 'Verification email sent. Please check your inbox.' : 'Account created. Verification email could not be sent automatically.');
+      setInfoMessage(
+        result.verificationSent
+          ? 'Account created! Check your inbox to verify your email.'
+          : 'Account created! Please verify your email before signing in.'
+      );
     } else {
-      setError(result.error?.message || 'Registration failed');
+      const code = result.error?.code;
+      if (code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists. Please sign in or use a different email.');
+      } else {
+        setError(result.error?.message || 'Registration failed. Please try again.');
+      }
     }
   };
 
@@ -97,7 +109,7 @@ const Register = () => {
     setInfoMessage('');
     try {
       const current = auth.currentUser;
-      if (!current) throw new Error('No authenticated user found to send verification. Please login and resend.');
+      if (!current) throw new Error('No authenticated user found. Please login and resend.');
       await sendEmailVerification(current);
       setVerificationSent(true);
       setInfoMessage('Verification email resent. Please check your inbox.');
@@ -254,6 +266,9 @@ const Register = () => {
           // ──── Post-registration ────
           <Box>
             {infoMessage && <Alert severity="success" sx={{ mb: 2 }}>{infoMessage}</Alert>}
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mb: 3, lineHeight: 1.7 }}>
+              Next, you'll be asked to upload your government-issued ID so an admin can verify your account.
+            </Typography>
             <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }}>
               <Button variant="contained" onClick={handleResend} disabled={resendLoading} sx={{ backgroundColor: '#EE791A', '&:hover': { backgroundColor: '#c05905' } }}>
                 {resendLoading ? 'Resending...' : (verificationSent ? 'Resend verification email' : 'Send verification email')}

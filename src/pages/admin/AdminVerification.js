@@ -148,11 +148,25 @@ const AdminVerification = () => {
                             ))}
                         </Box>
                         <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(255,255,255,0.75)', mb: 1.5 }}>📄 Uploaded Government ID</Typography>
-                        {previewUser.idVerification?.idFileUrl ? (
-                            <Box sx={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden', textAlign: 'center', p: 1, bgcolor: 'rgba(0,0,0,0.3)' }}>
-                                <Box component="img" src={previewUser.idVerification.idFileUrl} alt="Government ID" sx={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', borderRadius: 1 }} />
-                            </Box>
-                        ) : <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.02)', borderRadius: 2 }}><Typography sx={{ color: 'rgba(255,255,255,0.3)' }}>No ID image available</Typography></Paper>}
+                        {(() => {
+                            const imgSrc = previewUser.idVerification?.idBase64 || previewUser.idVerification?.idFileUrl;
+                            if (imgSrc) {
+                                return (
+                                    <Box sx={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden', textAlign: 'center', p: 1, bgcolor: 'rgba(0,0,0,0.3)' }}>
+                                        <Box component="img" src={imgSrc} alt="Government ID" sx={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', borderRadius: 1 }} />
+                                    </Box>
+                                );
+                            }
+                            if (previewUser.idVerification?.idUploadPending) {
+                                return (
+                                    <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(238,121,26,0.06)', border: '1px solid rgba(238,121,26,0.2)', borderRadius: 2 }}>
+                                        <Typography sx={{ color: '#EE791A', fontWeight: 600 }}>⏳ ID not yet uploaded</Typography>
+                                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>The user has been asked to upload their ID from the Pending Verification page.</Typography>
+                                    </Paper>
+                                );
+                            }
+                            return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.02)', borderRadius: 2 }}><Typography sx={{ color: 'rgba(255,255,255,0.3)' }}>No ID image available</Typography></Paper>;
+                        })()}
                     </DialogContent>
                     {previewUser.verificationStatus === 'pending_verification' && (
                         <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
