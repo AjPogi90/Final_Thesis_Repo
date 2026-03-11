@@ -38,15 +38,26 @@ const AdminActivity = () => {
     const [tab, setTab] = useState(0);
 
     useEffect(() => {
-        const unsub = onValue(ref(database, 'activityLogs'), (snap) => {
-            const data = snap.val();
-            if (data) {
-                const list = Object.entries(data).map(([id, log]) => ({ id, ...log }));
-                list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                setLogs(list);
-            } else setLogs([]);
-            setLoading(false);
-        });
+        const unsub = onValue(
+            ref(database, 'activityLogs'),
+            (snap) => {
+                const data = snap.val();
+                if (data) {
+                    const list = Object.entries(data).map(([id, log]) => ({ id, ...log }));
+                    list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    setLogs(list);
+                } else {
+                    setLogs([]);
+                }
+                setLoading(false);
+            },
+            (error) => {
+                // Permission denied or node missing — stop spinner, show empty state
+                console.warn('activityLogs read error:', error.message);
+                setLogs([]);
+                setLoading(false);
+            }
+        );
         return () => unsub();
     }, []);
 
