@@ -50,7 +50,8 @@ const AdminSettings = () => {
             await set(ref(database, 'systemSettings'), settings);
             setAlert({ severity: 'success', message: 'Settings saved successfully.' });
         } catch (e) {
-            setAlert({ severity: 'error', message: 'Failed to save settings.' });
+            console.error('Save settings error:', e.code, e.message);
+            setAlert({ severity: 'error', message: `Failed to save settings: ${e.message}` });
         }
         setSaving(false);
         setTimeout(() => setAlert(null), 4000);

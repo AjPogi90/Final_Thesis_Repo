@@ -5,8 +5,11 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from 'firebase/auth';
-import { ref, set, onValue, update } from 'firebase/database';
+import { ref, set, onValue, update, remove } from 'firebase/database';
 
 /**
  * Compresses an image file using the browser Canvas API and returns a
@@ -155,6 +158,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Delete the currently logged-in user's account.
+   * Requires the user's current password to re-authenticate before deletion.
+   */
+  const deleteAccount = async (password) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return { success: false, error: 'Not logged in' };
+    try {
+      // Re-authenticate first (required by Firebase before sensitive operations)
+      const credential = EmailAuthProvider.credential(currentUser.email, password);
+      await reauthenticateWithCredential(currentUser, credential);
+      // Remove database records
+      await remove(ref(database, `users/parents/${currentUser.uid}`));
+      // Delete the Firebase Auth account
+      await deleteUser(currentUser);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  };
+
   // Admin action: approve or reject a user's ID verification
   const reviewUser = async (targetUid, decision) => {
     if (!user) return { success: false, error: 'Not logged in' };
@@ -172,7 +196,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, signup, uploadVerificationId, reviewUser }}
+      value={{ user, loading, verificationStatus, isAdmin, signup, uploadVerificationId, reviewUser, deleteAccount }}
     >
       {children}
     </AuthContext.Provider>
