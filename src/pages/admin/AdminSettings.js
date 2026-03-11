@@ -27,11 +27,20 @@ const AdminSettings = () => {
     const [alert, setAlert] = useState(null);
 
     useEffect(() => {
-        const unsub = onValue(ref(database, 'systemSettings'), (snap) => {
-            const data = snap.val();
-            setSettings(data ? { ...defaultSettings, ...data } : defaultSettings);
-            setLoading(false);
-        });
+        const unsub = onValue(
+            ref(database, 'systemSettings'),
+            (snap) => {
+                const data = snap.val();
+                setSettings(data ? { ...defaultSettings, ...data } : defaultSettings);
+                setLoading(false);
+            },
+            (error) => {
+                // Permission denied or node missing — fall back to defaults
+                console.warn('systemSettings read error:', error.message);
+                setSettings(defaultSettings);
+                setLoading(false);
+            }
+        );
         return () => unsub();
     }, []);
 
