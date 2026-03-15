@@ -151,6 +151,9 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                         Upload Government-Issued ID *
                     </Typography>
                 </Box>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mb: 0.5, fontWeight: 500 }}>
+                    Please upload one side of the ID that clearly shows your Age or Birth Date.
+                </Typography>
                 <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)', display: 'block', mb: 1.5 }}>
                     Accepted: National ID, Driver's License, Passport, PhilSys ID · Max 5 MB · JPG, PNG, WebP, or PDF
                 </Typography>
