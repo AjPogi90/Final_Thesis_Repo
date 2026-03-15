@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -68,9 +69,11 @@ export const AuthProvider = ({ children }) => {
           if (data) {
             setVerificationStatus(data.idVerification?.status || 'pending_verification');
             setIsAdmin(data.isAdmin === true);
+            setIsDisabled(data.disabled === true);
           } else {
             setVerificationStatus(null);
             setIsAdmin(false);
+            setIsDisabled(false);
           }
           setLoading(false);
         });
@@ -78,6 +81,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setVerificationStatus(null);
         setIsAdmin(false);
+        setIsDisabled(false);
         setLoading(false);
       }
     });
@@ -196,7 +200,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, signup, uploadVerificationId, reviewUser, deleteAccount }}
+      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, reviewUser, deleteAccount }}
     >
       {children}
     </AuthContext.Provider>

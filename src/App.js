@@ -19,6 +19,7 @@ import ProductPage from './pages/ProductPage';
 import LearnPage from './pages/LearnPage';
 import SupportPage from './pages/SupportPage';
 import PendingVerification from './pages/PendingVerification';
+import DisabledAccount from './pages/DisabledAccount';
 import AdminSetup from './pages/AdminSetup';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
@@ -78,6 +79,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/pending-verification" element={<PendingVerification />} />
+            <Route path="/account-disabled" element={<DisabledAccount />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
 
             {/* Protected Routes with Sidebar Layout */}

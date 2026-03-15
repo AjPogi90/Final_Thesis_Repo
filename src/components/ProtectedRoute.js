@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Box, CircularProgress } from '@mui/material';
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
-  const { user, loading, verificationStatus, isAdmin } = useAuth();
+  const { user, loading, verificationStatus, isAdmin, isDisabled } = useAuth();
 
   if (loading) {
     return (
@@ -22,6 +22,12 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // If the account has been disabled by an admin, block access immediately.
+  // Admins cannot be disabled (they manage the system).
+  if (!isAdmin && isDisabled) {
+    return <Navigate to="/account-disabled" replace />;
   }
 
   // Admin routes: only admins can access
