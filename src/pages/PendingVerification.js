@@ -1,62 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import {
-    Box, Typography, Button, Paper, Alert, CircularProgress, LinearProgress,
+    Box, Typography, Button, Paper, Alert,
 } from '@mui/material';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../contexts/AuthContext';
-import { auth, database } from '../config/firebase';
-import { ref, onValue } from 'firebase/database';
+import { auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 const PendingVerification = () => {
-    const { verificationStatus, user, uploadVerificationId } = useAuth();
+    const { verificationStatus, user } = useAuth();
     const navigate = useNavigate();
-    const fileInputRef = useRef(null);
-
-    const [idFile, setIdFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
-    const [uploadError, setUploadError] = useState('');
-    const [uploadSuccess, setUploadSuccess] = useState(false);
-
-    // Read idUploadPending directly from DB so it refreshes live
-    const [idUploadPending, setIdUploadPending] = useState(true);
-    React.useEffect(() => {
-        if (!user) return;
-        const dbRef = ref(database, `users/parents/${user.uid}/idVerification/idUploadPending`);
-        const unsub = onValue(dbRef, (snap) => setIdUploadPending(snap.val() === true));
-        return () => unsub();
-    }, [user]);
 
     const handleLogout = async () => {
         await signOut(auth);
         navigate('/login');
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setIdFile(file);
-            setUploadError('');
-        }
-    };
-
-    const handleUpload = async () => {
-        if (!idFile) return;
-        setUploading(true);
-        setUploadError('');
-        const result = await uploadVerificationId(idFile);
-        setUploading(false);
-        if (result.success) {
-            setUploadSuccess(true);
-            setIdFile(null);
-        } else {
-            setUploadError('Upload failed: ' + (result.error?.message || 'Unknown error. Please try again.'));
-        }
     };
 
     const isRejected = verificationStatus === 'rejected';
@@ -137,74 +98,14 @@ const PendingVerification = () => {
                     </Typography>
                 </Paper>
 
-                {/* ── ID Upload Section (shown when ID hasn't been uploaded yet) ── */}
-                {!isRejected && idUploadPending && !uploadSuccess && (
-                    <Paper sx={{
-                        mt: 3, p: 3, bgcolor: 'rgba(238,121,26,0.06)',
-                        border: '1px solid rgba(238,121,26,0.2)', borderRadius: 2, textAlign: 'left',
-                    }}>
-                        <Typography variant="subtitle2" sx={{ color: '#EE791A', fontWeight: 700, mb: 1 }}>
-                            📎 Upload Your Government ID
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mb: 2, lineHeight: 1.6 }}>
-                            Your ID hasn't been uploaded yet. Please upload a clear photo of your government-issued ID so our admin team can verify your account.
-                        </Typography>
-
-                        {uploadError && <Alert severity="error" sx={{ mb: 2 }}>{uploadError}</Alert>}
-
-                        <input
-                            type="file"
-                            accept="image/*,application/pdf"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            style={{ display: 'none' }}
-                        />
-
-                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<UploadFileIcon />}
-                                onClick={() => fileInputRef.current.click()}
-                                disabled={uploading}
-                                sx={{
-                                    color: '#EE791A', borderColor: '#EE791A',
-                                    '&:hover': { bgcolor: 'rgba(238,121,26,0.08)', borderColor: '#EE791A' },
-                                }}
-                            >
-                                {idFile ? idFile.name : 'Choose File'}
-                            </Button>
-
-                            <Button
-                                variant="contained"
-                                onClick={handleUpload}
-                                disabled={!idFile || uploading}
-                                sx={{
-                                    bgcolor: '#EE791A', '&:hover': { bgcolor: '#c05905' },
-                                    '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' },
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {uploading ? (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <CircularProgress size={18} sx={{ color: '#fff' }} />
-                                        <span>Uploading...</span>
-                                    </Box>
-                                ) : 'Submit ID'}
-                            </Button>
-                        </Box>
-
-                        {uploading && <LinearProgress sx={{ mt: 2, bgcolor: 'rgba(238,121,26,0.15)', '& .MuiLinearProgress-bar': { bgcolor: '#EE791A' } }} />}
-                    </Paper>
-                )}
-
-                {/* Upload Success */}
-                {(!idUploadPending || uploadSuccess) && !isRejected && (
+                {/* ID submission confirmation (shown when not rejected) */}
+                {!isRejected && (
                     <Alert
                         icon={<CheckCircleOutlineIcon />}
                         severity="success"
-                        sx={{ mt: 3, bgcolor: 'rgba(76,175,80,0.1)', color: '#81c784', border: '1px solid rgba(76,175,80,0.2)' }}
+                        sx={{ mt: 3, bgcolor: 'rgba(76,175,80,0.1)', color: '#81c784', border: '1px solid rgba(76,175,80,0.2)', textAlign: 'left' }}
                     >
-                        Your ID has been submitted. An admin will review it shortly.
+                        Your government ID has been submitted. An admin will review it shortly.
                     </Alert>
                 )}
 

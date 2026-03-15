@@ -22,7 +22,7 @@ import IDVerificationStep from '../components/IDVerificationStep';
 const steps = ['Verify Identity', 'Create Account'];
 
 const Register = () => {
-  const { signup } = useAuth();
+  const { signup, uploadVerificationId } = useAuth();
   const navigate = useNavigate();
 
   // Stepper
@@ -81,11 +81,15 @@ const Register = () => {
     if (password.length < 6) return setError('Password must be at least 6 characters');
     setLoading(true);
 
-    // signup NO LONGER needs idFile — ID upload happens on PendingVerification page
+    // Step 1: Create the Firebase Auth account and save profile
     const result = await signup(email, password, name, dateOfBirth);
-    setLoading(false);
 
     if (result.success) {
+      // Step 2: Immediately upload the ID collected in Step 1
+      if (idFile) {
+        await uploadVerificationId(idFile);
+      }
+      setLoading(false);
       setRegistered(true);
       setVerificationSent(Boolean(result.verificationSent));
       setInfoMessage(
@@ -94,6 +98,7 @@ const Register = () => {
           : 'Account created! Please verify your email before signing in.'
       );
     } else {
+      setLoading(false);
       const code = result.error?.code;
       if (code === 'auth/email-already-in-use') {
         setError('An account with this email already exists. Please sign in or use a different email.');
@@ -247,7 +252,7 @@ const Register = () => {
                     {loading ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <CircularProgress size={20} sx={{ color: '#fff' }} />
-                        <span>Creating account...</span>
+                        <span>Creating account & uploading ID...</span>
                       </Box>
                     ) : 'Create account'}
                   </Button>

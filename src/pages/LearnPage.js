@@ -69,8 +69,8 @@ const LearnPage = () => {
     const productTips = [
         {
             icon: <ScheduleIcon sx={{ fontSize: 38 }} />,
-            title: 'Set Smart Schedules',
-            desc: 'Configure app time limits and bedtime schedules so your child\'s screen time stays healthy and balanced, without constant nagging.',
+            title: 'Use App Lock Effectively',
+            desc: 'Block specific apps instantly or set a recurring lock to prevent access during study hours, meals, or bedtime — all from your parent dashboard.',
             color: '#FF6B35',
             gradient: 'linear-gradient(135deg, #FF6B35, #FF8F5E)',
         },
@@ -125,15 +125,15 @@ const LearnPage = () => {
         },
         {
             icon: <GamesIcon sx={{ fontSize: 38 }} />,
-            title: 'Gaming & Chat Risks',
-            desc: 'Online games often include unmoderated chats where predators operate. Learn how to secure gaming platforms and monitor in-game communications.',
+            title: 'Monitor Calls & Messages',
+            desc: 'Stay aware of who your child is communicating with. AegistNet\'s call and text monitoring helps you spot harmful contacts before risks escalate.',
             color: '#FFB347',
             rating: 'High Priority',
         },
         {
             icon: <MenuBookIcon sx={{ fontSize: 38 }} />,
-            title: 'Cyberbullying Prevention',
-            desc: 'Recognize the warning signs of cyberbullying early. Understand how to document incidents and take effective action to protect your child.',
+            title: 'Track Location Wisely',
+            desc: 'Use live GPS tracking to know your child is safe without being intrusive. Review location history and set trusted zones so you\'re always informed.',
             color: '#EE791A',
             rating: 'Important',
         },
