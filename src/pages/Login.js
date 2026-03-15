@@ -24,6 +24,25 @@ const Login = () => {
   const location = useLocation();
   const forwardedMessage = location.state?.message || '';
 
+  const getFriendlyError = (code) => {
+    switch (code) {
+      case 'auth/invalid-credential':
+      case 'auth/wrong-password':
+      case 'auth/user-not-found':
+        return 'Incorrect email or password. Please try again.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/user-disabled':
+        return 'This account has been disabled. Please contact support.';
+      case 'auth/too-many-requests':
+        return 'Too many failed attempts. Please wait a moment and try again.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your connection and try again.';
+      default:
+        return 'Something went wrong. Please try again.';
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -33,7 +52,7 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message);
+      setError(getFriendlyError(err.code));
     } finally {
       setLoading(false);
     }
@@ -51,7 +70,7 @@ const Login = () => {
       setResetEmail('');
       setTimeout(() => setResetMode(false), 2000);
     } catch (err) {
-      setError(err.message);
+      setError(getFriendlyError(err.code));
     } finally {
       setLoading(false);
     }

@@ -272,7 +272,7 @@ const Register = () => {
           <Box>
             {infoMessage && <Alert severity="success" sx={{ mb: 2 }}>{infoMessage}</Alert>}
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mb: 3, lineHeight: 1.7 }}>
-              Next, you'll be asked to upload your government-issued ID so an admin can verify your account.
+              Your account is now pending review. An admin will verify your submitted ID and approve your account before you can sign in.
             </Typography>
             <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }}>
               <Button variant="contained" onClick={handleResend} disabled={resendLoading} sx={{ backgroundColor: '#EE791A', '&:hover': { backgroundColor: '#c05905' } }}>
