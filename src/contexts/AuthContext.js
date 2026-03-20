@@ -158,6 +158,7 @@ export const AuthProvider = ({ children }) => {
         idFileName: idFile.name,
         idUploadPending: false,
         submittedAt: Date.now(),
+        status: 'pending_verification', // reset status so admin re-reviews the new submission
       });
 
       return { success: true };

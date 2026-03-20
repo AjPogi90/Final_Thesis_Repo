@@ -19,6 +19,7 @@ const statusColors = {
     pending_verification: { bg: 'rgba(238,121,26,0.12)', color: '#EE791A', label: 'PENDING' },
     approved: { bg: 'rgba(76,175,80,0.12)', color: '#4caf50', label: 'APPROVED' },
     rejected: { bg: 'rgba(244,67,54,0.12)', color: '#f44336', label: 'REJECTED' },
+    resubmit_id: { bg: 'rgba(33,150,243,0.12)', color: '#2196f3', label: 'RESUBMIT ID' },
 };
 
 const AdminVerification = () => {
@@ -54,20 +55,21 @@ const AdminVerification = () => {
         const result = await reviewUser(uid, decision);
         setActionLoading(null);
         if (result.success) {
-            setAlert({ severity: 'success', message: `User ${decision === 'approved' ? 'approved' : 'rejected'} successfully.` });
+            const labels = { approved: 'approved', rejected: 'rejected', resubmit_id: 'marked for resubmission', pending_verification: 'reset to pending' };
+            setAlert({ severity: 'success', message: `User ${labels[decision] || decision} successfully.` });
             setPreviewUser(null);
         } else setAlert({ severity: 'error', message: 'Failed to update user status.' });
         setTimeout(() => setAlert(null), 4000);
     };
 
     const filtered = users.filter(u => {
-        if (tabValue === 0) return u.verificationStatus === 'pending_verification';
+        if (tabValue === 0) return u.verificationStatus === 'pending_verification' || u.verificationStatus === 'resubmit_id';
         if (tabValue === 1) return u.verificationStatus === 'approved';
         if (tabValue === 2) return u.verificationStatus === 'rejected';
         return true;
     });
 
-    const pending = users.filter(u => u.verificationStatus === 'pending_verification').length;
+    const pending = users.filter(u => u.verificationStatus === 'pending_verification' || u.verificationStatus === 'resubmit_id').length;
     const approved = users.filter(u => u.verificationStatus === 'approved').length;
     const rejected = users.filter(u => u.verificationStatus === 'rejected').length;
 
@@ -116,9 +118,12 @@ const AdminVerification = () => {
                                     <Chip label={si.label} size="small" sx={{ bgcolor: si.bg, color: si.color, fontWeight: 700, fontSize: '0.75rem', borderRadius: 1 }} />
                                     <Box sx={{ display: 'flex', gap: 1 }}>
                                         <Button size="small" variant="outlined" startIcon={<VisibilityIcon />} onClick={() => setPreviewUser(u)} sx={{ color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.12)', textTransform: 'none' }}>Review</Button>
-                                        {u.verificationStatus === 'pending_verification' && (<>
+                                        {(u.verificationStatus === 'pending_verification' || u.verificationStatus === 'resubmit_id') && (<>
                                             <Button size="small" variant="contained" startIcon={actionLoading === u.uid ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <CheckCircleIcon />} onClick={() => handleReview(u.uid, 'approved')} disabled={actionLoading === u.uid} sx={{ bgcolor: '#4caf50', textTransform: 'none', '&:hover': { bgcolor: '#388e3c' } }}>Approve</Button>
                                             <Button size="small" variant="contained" startIcon={actionLoading === u.uid ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <CancelIcon />} onClick={() => handleReview(u.uid, 'rejected')} disabled={actionLoading === u.uid} sx={{ bgcolor: '#f44336', textTransform: 'none', '&:hover': { bgcolor: '#c62828' } }}>Reject</Button>
+                                            {u.verificationStatus === 'pending_verification' && (
+                                                <Button size="small" variant="outlined" startIcon={actionLoading === u.uid ? <CircularProgress size={16} /> : <ReplayIcon />} onClick={() => handleReview(u.uid, 'resubmit_id')} disabled={actionLoading === u.uid} sx={{ color: '#2196f3', borderColor: '#2196f3', textTransform: 'none', '&:hover': { bgcolor: 'rgba(33,150,243,0.08)' } }}>Resubmit ID</Button>
+                                            )}
                                         </>)}
                                         {u.verificationStatus === 'rejected' && (
                                             <Button size="small" variant="contained" startIcon={<ReplayIcon />} onClick={() => handleReview(u.uid, 'pending_verification')} sx={{ bgcolor: '#EE791A', textTransform: 'none', '&:hover': { bgcolor: '#c05905' } }}>Re-review</Button>
@@ -168,8 +173,10 @@ const AdminVerification = () => {
                             return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.02)', borderRadius: 2 }}><Typography sx={{ color: 'rgba(255,255,255,0.3)' }}>No ID image available</Typography></Paper>;
                         })()}
                     </DialogContent>
-                    {previewUser.verificationStatus === 'pending_verification' && (
-                        <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                    {(previewUser.verificationStatus === 'pending_verification' || previewUser.verificationStatus === 'resubmit_id') && (
+                        <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255,255,255,0.06)', gap: 1, flexWrap: 'wrap' }}>
+                            <Button variant="outlined" startIcon={<ReplayIcon />} onClick={() => handleReview(previewUser.uid, 'resubmit_id')} disabled={actionLoading === previewUser.uid || previewUser.verificationStatus === 'resubmit_id'} sx={{ color: '#2196f3', borderColor: '#2196f3', textTransform: 'none', '&:hover': { bgcolor: 'rgba(33,150,243,0.08)' }, '&.Mui-disabled': { opacity: 0.4 } }}>Request Resubmit</Button>
+                            <Box sx={{ flex: 1 }} />
                             <Button variant="contained" startIcon={<CancelIcon />} onClick={() => handleReview(previewUser.uid, 'rejected')} disabled={actionLoading === previewUser.uid} sx={{ bgcolor: '#f44336', '&:hover': { bgcolor: '#c62828' }, textTransform: 'none' }}>Reject</Button>
                             <Button variant="contained" startIcon={<CheckCircleIcon />} onClick={() => handleReview(previewUser.uid, 'approved')} disabled={actionLoading === previewUser.uid} sx={{ bgcolor: '#4caf50', '&:hover': { bgcolor: '#388e3c' }, textTransform: 'none', px: 3 }}>Approve</Button>
                         </DialogActions>
