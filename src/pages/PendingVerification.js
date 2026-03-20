@@ -259,7 +259,7 @@ const PendingVerification = () => {
                 {/* Caption for rejected */}
                 {isRejected && (
                     <Typography variant="caption" sx={{ display: 'block', mt: 2, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>
-                        Please contact support or register again with a valid government-issued ID.
+                        Please contact AegistNet support at aegistnet@gmail.com for assistance.
                     </Typography>
                 )}
 
