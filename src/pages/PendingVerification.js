@@ -31,6 +31,16 @@ const PendingVerification = () => {
     const [uploadError, setUploadError] = useState('');
     const fileInputRef = useRef(null);
 
+    // Reset form every time admin requests a fresh resubmission
+    React.useEffect(() => {
+        if (verificationStatus === 'resubmit_id') {
+            setUploadSuccess(false);
+            setIdFile(null);
+            setFileError('');
+            setUploadError('');
+        }
+    }, [verificationStatus]);
+
     const handleLogout = async () => {
         await signOut(auth);
         navigate('/login');

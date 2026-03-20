@@ -70,7 +70,7 @@ const DisabledAccount = () => {
                         </Box>
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, display: 'block', mt: 1.5 }}>
-                        If you believe this is a mistake, please contact the system administrator for assistance.
+                        If you believe this is a mistake, please contact the system administrator for assistance at aegistnet@gmail.com
                     </Typography>
                 </Paper>
 
