@@ -426,14 +426,18 @@ const HomePage = () => {
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Button
                   variant="contained"
-                  // inline style to ensure it overrides any theme primary/blue defaults
                   style={{ backgroundColor: '#EE791A', color: '#fff' }}
                   sx={{ px: 4, py: 1.5, borderRadius: 2, textTransform: 'none', fontWeight: 700 }}
+                  onClick={() => navigate('/register')}
                 >
                   TRY NOW
                 </Button>
 
-                <Button variant="text" sx={{ color: '#EE791A', textTransform: 'none', fontWeight: 700 }}>
+                <Button
+                  variant="text"
+                  sx={{ color: '#EE791A', textTransform: 'none', fontWeight: 700 }}
+                  onClick={() => navigate('/product')}
+                >
                   <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 38, height: 38, borderRadius: '50%', border: '2px solid #EE791A', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                       ▶

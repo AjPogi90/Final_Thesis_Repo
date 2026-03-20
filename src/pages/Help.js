@@ -225,36 +225,21 @@ const Help = () => {
                 </Box>
 
                 {/* Contact Support */}
-                <Paper sx={{ p: 4, borderRadius: 2, bgcolor: colors.cardBg, border: `1px solid ${colors.cardBorder}`, textAlign: 'center' }}>
-                    <EmailIcon sx={{ fontSize: 48, color: colors.primary, mb: 2 }} />
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: colors.text, mb: 1 }}>
-                        Need More Help?
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: colors.textSecondary, mb: 3 }}>
-                        Our support team is here to assist you with any questions or issues.
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        startIcon={<EmailIcon />}
-                        href="mailto:support@aegistnet.com"
-                        sx={{
-                            bgcolor: colors.primary,
-                            color: '#fff',
-                            px: 4,
-                            py: 1.5,
-                            textTransform: 'none',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            '&:hover': {
-                                bgcolor: '#c05905ff',
-                            },
-                        }}
-                    >
-                        Contact Support
-                    </Button>
-                    <Typography variant="body2" sx={{ color: colors.textSecondary, mt: 2 }}>
-                        Email: support@aegistnet.com | Response time: Within 24 hours
-                    </Typography>
+                <Paper sx={{ p: 3, borderRadius: 2, bgcolor: colors.cardBg, border: `1px solid ${colors.cardBorder}` }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <EmailIcon sx={{ fontSize: 36, color: colors.primary }} />
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: colors.text, lineHeight: 1.2 }}>
+                                Contact Support
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                We'll respond within 24 hours at{' '}
+                                <Box component="a" href="mailto:aegistnet@gmail.com" sx={{ color: colors.primary, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+                                    aegistnet@gmail.com
+                                </Box>
+                            </Typography>
+                        </Box>
+                    </Box>
                 </Paper>
 
                 {/* Privacy Notice */}

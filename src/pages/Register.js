@@ -10,7 +10,11 @@ import {
   Step,
   StepLabel,
   CircularProgress,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { sendEmailVerification } from 'firebase/auth';
@@ -37,6 +41,8 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Shared state
   const [error, setError] = useState('');
@@ -115,7 +121,10 @@ const Register = () => {
     try {
       const current = auth.currentUser;
       if (!current) throw new Error('No authenticated user found. Please login and resend.');
-      await sendEmailVerification(current);
+      await sendEmailVerification(current, {
+        url: window.location.origin + '/login',
+        handleCodeInApp: false,
+      });
       setVerificationSent(true);
       setInfoMessage('Verification email resent. Please check your inbox.');
     } catch (err) {
@@ -216,11 +225,23 @@ const Register = () => {
 
                 <TextField fullWidth label="Full name" value={name} onChange={(e) => setName(e.target.value)} sx={fieldSx} variant="filled" InputProps={inputProps} InputLabelProps={labelProps} />
                 <TextField fullWidth label="Email *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} sx={fieldSx} required variant="filled" InputProps={inputProps} InputLabelProps={labelProps} />
-                <TextField fullWidth label="Password *" type="password" value={password} onChange={(e) => setPassword(e.target.value)} sx={fieldSx} required variant="filled" InputProps={inputProps} InputLabelProps={labelProps}
+                <TextField fullWidth label="Password *" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} sx={fieldSx} required variant="filled" InputProps={{ ...inputProps, endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )}} InputLabelProps={labelProps}
                   helperText="At least 6 characters"
                   FormHelperTextProps={{ sx: { color: 'rgba(255,255,255,0.3)' } }}
                 />
-                <TextField fullWidth label="Confirm password *" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} sx={{ mb: 3 }} required variant="filled" InputProps={inputProps} InputLabelProps={labelProps} />
+                <TextField fullWidth label="Confirm password *" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={(e) => setConfirm(e.target.value)} sx={{ mb: 3 }} required variant="filled" InputProps={{ ...inputProps, endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      {showConfirm ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )}} InputLabelProps={labelProps} />
 
                 {/* Navigation buttons */}
                 <Box sx={{ display: 'flex', gap: 2 }}>

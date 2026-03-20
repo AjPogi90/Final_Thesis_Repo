@@ -70,7 +70,7 @@ const SupportPage = () => {
             icon: <EmailIcon sx={{ fontSize: 38 }} />,
             title: 'Email Support',
             desc: 'Send us a detailed message and our team will respond within 24 hours. Best for non-urgent questions and account inquiries.',
-            action: 'support@aegistnet.com',
+            action: 'aegistnet@gmail.com',
             color: '#FF6B35',
             gradient: 'linear-gradient(135deg, #FF6B35, #FF8F5E)',
         },

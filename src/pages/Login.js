@@ -7,7 +7,11 @@ import {
   Link,
   CircularProgress,
   Alert,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,6 +19,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetMode, setResetMode] = useState(false);
@@ -95,7 +100,13 @@ const Login = () => {
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 1, textAlign: 'center' }}>Welcome back! Please sign in to continue</Typography>
 
             <TextField fullWidth label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} margin="normal" required disabled={loading} variant="filled" sx={{ '& .MuiFilledInput-root': { bgcolor: '#0f0f0f', borderRadius: 1 }, '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' } }} InputProps={{ sx: { color: '#fff' } }} />
-            <TextField fullWidth label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} margin="normal" required disabled={loading} variant="filled" sx={{ '& .MuiFilledInput-root': { bgcolor: '#0f0f0f', borderRadius: 1 }, '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' } }} InputProps={{ sx: { color: '#fff' } }} />
+            <TextField fullWidth label="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} margin="normal" required disabled={loading} variant="filled" sx={{ '& .MuiFilledInput-root': { bgcolor: '#0f0f0f', borderRadius: 1 }, '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' } }} InputProps={{ sx: { color: '#fff' }, endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ) }} />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, borderRadius: 1 }} disabled={loading} style={{ backgroundColor: '#EE791A', color: '#fff' }}>{loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Sign in'}</Button>
           </form>
         ) : (

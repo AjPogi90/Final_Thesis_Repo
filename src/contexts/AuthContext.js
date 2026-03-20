@@ -8,6 +8,7 @@ import {
   deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  updatePassword,
 } from 'firebase/auth';
 import { ref, set, onValue, update, remove } from 'firebase/database';
 
@@ -124,7 +125,10 @@ export const AuthProvider = ({ children }) => {
 
       let verificationSent = false;
       try {
-        await sendEmailVerification(createdUser);
+        await sendEmailVerification(createdUser, {
+          url: window.location.origin + '/login',
+          handleCodeInApp: false,
+        });
         verificationSent = true;
       } catch (e) {
         console.warn('sendEmailVerification failed:', e);
@@ -183,6 +187,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Change the currently logged-in user's password.
+   * Requires the current password to re-authenticate before the change.
+   */
+  const changePassword = async (currentPassword, newPassword) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return { success: false, error: { code: 'auth/no-user', message: 'Not logged in' } };
+    try {
+      const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPassword);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  };
+
   // Admin action: approve or reject a user's ID verification
   const reviewUser = async (targetUid, decision) => {
     if (!user) return { success: false, error: 'Not logged in' };
@@ -200,7 +221,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, reviewUser, deleteAccount }}
+      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, reviewUser, deleteAccount, changePassword }}
     >
       {children}
     </AuthContext.Provider>

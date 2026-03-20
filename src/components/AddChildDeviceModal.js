@@ -21,9 +21,11 @@ import AndroidIcon from '@mui/icons-material/Android';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const AddChildDeviceModal = ({ open, onClose }) => {
     const { colors } = useTheme();
+    const { user } = useAuth();
     const steps = [
         {
             label: 'Download AegistNet Child App',
@@ -158,7 +160,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                                 Your parent email:
                                             </Typography>
                                             <Chip
-                                                label="ajlolong15@gmail.com"
+                                                label={user?.email || 'your-email@example.com'}
                                                 size="small"
                                                 sx={{
                                                     fontWeight: 600,
