@@ -13,9 +13,14 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChildData, updateChildName, updateChildGender } from '../hooks/useFirebase';
+import { useChildData, updateChildName, updateChildGender, deleteChild } from '../hooks/useFirebase';
 import { useTheme } from '../contexts/ThemeContext';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -29,8 +34,22 @@ const ChildDetails = () => {
   const [tempName, setTempName] = useState('');
   const [editingGender, setEditingGender] = useState(false);
   const [tempGender, setTempGender] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data: child, loading, error } = useChildData(childId);
+
+  const handleDeleteChild = async () => {
+    setLoadingAction(true);
+    const result = await deleteChild(childId);
+    setLoadingAction(false);
+    if (result.success) {
+      navigate('/children');
+    } else {
+      setSuccessMessage(`Failed to remove child: ${result.error?.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   const handleEditName = () => {
     setEditingName(true);
@@ -323,6 +342,38 @@ const ChildDetails = () => {
             </Stack>
           </CardContent>
         </Card>
+
+        <Box display="flex" justifyContent="flex-end" mt={3} mb={4}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={loadingAction}
+            sx={{
+              borderColor: 'error.main',
+              '&:hover': {
+                bgcolor: 'error.main',
+                color: '#fff',
+              }
+            }}
+          >
+            Remove Child Device
+          </Button>
+        </Box>
+
+        <Dialog open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
+          <DialogTitle sx={{ bgcolor: colors.cardBg, color: colors.text }}>Remove Child Device?</DialogTitle>
+          <DialogContent sx={{ bgcolor: colors.cardBg }}>
+            <DialogContentText sx={{ color: colors.textSecondary }}>
+              Are you sure you want to remove this child device? This action cannot be undone and will permanently delete the device's history and settings from your dashboard.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ bgcolor: colors.cardBg }}>
+            <Button onClick={() => setShowDeleteConfirm(false)} sx={{ color: colors.textSecondary }}>Cancel</Button>
+            <Button onClick={handleDeleteChild} color="error" variant="contained" disabled={loadingAction}>Remove</Button>
+          </DialogActions>
+        </Dialog>
+
       </Container>
     </Box>
   );
