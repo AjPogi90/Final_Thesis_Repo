@@ -22,6 +22,7 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { QRCodeSVG } from 'qrcode.react';
 
 const AddChildDeviceModal = ({ open, onClose }) => {
     const { colors } = useTheme();
@@ -133,12 +134,18 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                                 border: `1px solid ${colors.divider}`,
                                             }}
                                         >
-                                            <QrCode2Icon sx={{ fontSize: 100, color: colors.primary, mb: 1 }} />
+                                            <Box sx={{ bgcolor: 'white', p: 1, display: 'inline-block', borderRadius: 1, mb: 2 }}>
+                                                {user && (
+                                                    <QRCodeSVG
+                                                        value={JSON.stringify({ parentEmail: user.email, parentUid: user.uid })}
+                                                        size={180}
+                                                        level={"H"}
+                                                        includeMargin={true}
+                                                    />
+                                                )}
+                                            </Box>
                                             <Typography variant="caption" sx={{ color: colors.textSecondary }} display="block">
-                                                Scan this QR code with your child's device
-                                            </Typography>
-                                            <Typography variant="caption" sx={{ color: colors.textSecondary }} display="block">
-                                                (QR code generation will be implemented)
+                                                Scan this QR code with your child's device to instantly connect and log in
                                             </Typography>
                                         </Box>
                                     </Box>
