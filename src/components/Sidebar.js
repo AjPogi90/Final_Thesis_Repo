@@ -120,7 +120,7 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
                 bgcolor: colors.primary,
                 color: '#fff',
                 '&:hover': {
-                  bgcolor: '#c05905ff',
+                  bgcolor: '#1D4ED8',
                 },
                 '& .MuiListItemIcon-root': {
                   color: '#fff',

@@ -86,7 +86,7 @@ const AdminLayout = ({ children }) => {
                             '&:hover': { bgcolor: colors.hover },
                             '&.Mui-selected': {
                                 bgcolor: colors.primary, color: '#fff',
-                                '&:hover': { bgcolor: '#c05905ff' },
+                                '&:hover': { bgcolor: '#1D4ED8' },
                                 '& .MuiListItemIcon-root': { color: '#fff' },
                             },
                         }}
@@ -112,7 +112,7 @@ const AdminLayout = ({ children }) => {
                         {isDark ? 'Dark Mode' : 'Light Mode'}
                     </Typography>
                 </Box>
-                <Switch checked={isDark} onChange={toggleTheme} size="small" sx={{ '& .Mui-checked': { color: '#EE791A' }, '& .Mui-checked + .MuiSwitch-track': { bgcolor: '#EE791A' } }} />
+                <Switch checked={isDark} onChange={toggleTheme} size="small" sx={{ '& .Mui-checked': { color: '#2563EB' }, '& .Mui-checked + .MuiSwitch-track': { bgcolor: '#2563EB' } }} />
             </Box>
 
             <Divider sx={{ borderColor: colors.divider }} />
