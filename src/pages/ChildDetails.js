@@ -10,9 +10,17 @@ import {
   Alert,
   TextField,
   Stack,
+  FormControl,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChildData, updateChildName } from '../hooks/useFirebase';
+import { useChildData, updateChildName, updateChildGender, deleteChild } from '../hooks/useFirebase';
 import { useTheme } from '../contexts/ThemeContext';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -24,8 +32,24 @@ const ChildDetails = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [editingName, setEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
+  const [editingGender, setEditingGender] = useState(false);
+  const [tempGender, setTempGender] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data: child, loading, error } = useChildData(childId);
+
+  const handleDeleteChild = async () => {
+    setLoadingAction(true);
+    const result = await deleteChild(childId);
+    setLoadingAction(false);
+    if (result.success) {
+      navigate('/children');
+    } else {
+      setSuccessMessage(`Failed to remove child: ${result.error?.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   const handleEditName = () => {
     setEditingName(true);
@@ -54,6 +78,30 @@ const ChildDetails = () => {
   const handleCancelEdit = () => {
     setEditingName(false);
     setTempName('');
+  };
+
+  const handleEditGender = () => {
+    setEditingGender(true);
+    setTempGender(child.gender || 'boy');
+  };
+
+  const handleSaveGender = async () => {
+    setLoadingAction(true);
+    const result = await updateChildGender(childId, tempGender);
+    setLoadingAction(false);
+    if (result.success) {
+      setEditingGender(false);
+      setSuccessMessage('Child gender updated');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } else {
+      setSuccessMessage(`Failed to update gender: ${result.error?.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    }
+  };
+
+  const handleCancelEditGender = () => {
+    setEditingGender(false);
+    setTempGender('');
   };
 
   if (loading) {
@@ -214,6 +262,77 @@ const ChildDetails = () => {
 
               <Box sx={{ p: 2, bgcolor: colors.inputBg, borderRadius: 1, border: `1px solid ${colors.divider}` }}>
                 <Typography variant="body2" sx={{ mb: 0.5, color: colors.textSecondary }}>
+                  Gender / NSFM Protection Filter Target
+                </Typography>
+                {editingGender ? (
+                  <Stack direction="row" gap={1} alignItems="center">
+                    <FormControl size="small" variant="filled" sx={{ flexGrow: 1, '& .MuiFilledInput-root': { bgcolor: colors.background, borderRadius: 1, '&:before, &:after': { display: 'none', }, }, '& .MuiSelect-select': { color: colors.text }, }}>
+                      <Select
+                        value={tempGender}
+                        onChange={(e) => setTempGender(e.target.value)}
+                        disabled={loadingAction}
+                        displayEmpty
+                      >
+                        <MenuItem value="boy">Boy (Filters Bikinis)</MenuItem>
+                        <MenuItem value="girl">Girl (Filters Men in Underwear)</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={handleSaveGender}
+                      disabled={loadingAction}
+                      sx={{
+                        bgcolor: colors.primary,
+                        color: '#fff',
+                        '&:hover': {
+                          bgcolor: '#c05905ff',
+                        }
+                      }}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={handleCancelEditGender}
+                      disabled={loadingAction}
+                      sx={{
+                        borderColor: colors.divider,
+                        color: colors.text,
+                        '&:hover': {
+                          borderColor: colors.primary,
+                          bgcolor: colors.hover,
+                        }
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </Stack>
+                ) : (
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: colors.text }}>
+                      {child.gender ? child.gender.charAt(0).toUpperCase() + child.gender.slice(1) : 'Boy (Default)'}
+                    </Typography>
+                    <Button
+                      size="small"
+                      onClick={handleEditGender}
+                      disabled={loadingAction}
+                      sx={{
+                        color: colors.primary,
+                        '&:hover': {
+                          bgcolor: colors.hover,
+                        }
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Stack>
+                )}
+              </Box>
+
+              <Box sx={{ p: 2, bgcolor: colors.inputBg, borderRadius: 1, border: `1px solid ${colors.divider}` }}>
+                <Typography variant="body2" sx={{ mb: 0.5, color: colors.textSecondary }}>
                   Linked Parent Account
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600, wordBreak: 'break-all', color: colors.text }}>
@@ -223,6 +342,38 @@ const ChildDetails = () => {
             </Stack>
           </CardContent>
         </Card>
+
+        <Box display="flex" justifyContent="flex-end" mt={3} mb={4}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={loadingAction}
+            sx={{
+              borderColor: 'error.main',
+              '&:hover': {
+                bgcolor: 'error.main',
+                color: '#fff',
+              }
+            }}
+          >
+            Remove Child Device
+          </Button>
+        </Box>
+
+        <Dialog open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
+          <DialogTitle sx={{ bgcolor: colors.cardBg, color: colors.text }}>Remove Child Device?</DialogTitle>
+          <DialogContent sx={{ bgcolor: colors.cardBg }}>
+            <DialogContentText sx={{ color: colors.textSecondary }}>
+              Are you sure you want to remove this child device? This action cannot be undone and will permanently delete the device's history and settings from your dashboard.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ bgcolor: colors.cardBg }}>
+            <Button onClick={() => setShowDeleteConfirm(false)} sx={{ color: colors.textSecondary }}>Cancel</Button>
+            <Button onClick={handleDeleteChild} color="error" variant="contained" disabled={loadingAction}>Remove</Button>
+          </DialogActions>
+        </Dialog>
+
       </Container>
     </Box>
   );

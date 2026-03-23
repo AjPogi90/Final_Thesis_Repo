@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { database } from '../config/firebase';
-import { ref, onValue, update, set, get } from 'firebase/database';
+import { ref, onValue, update, set, get, remove } from 'firebase/database';
 
 export const useChildData = (childId) => {
   const [data, setData] = useState(null);
@@ -145,6 +145,18 @@ export const updateChildName = async (childId, newName) => {
   }
 };
 
+// Update child's gender
+export const updateChildGender = async (childId, newGender) => {
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await update(childRef, { gender: newGender });
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating child gender:', error);
+    return { success: false, error };
+  }
+};
+
 export const useParentProfile = (parentUid) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -188,6 +200,17 @@ export const updateContentFilters = async (childId, filters) => {
     return { success: true };
   } catch (error) {
     console.error('Error updating content filters:', error);
+    return { success: false, error };
+  }
+};
+
+export const deleteChild = async (childId) => {
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await remove(childRef);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting child:', error);
     return { success: false, error };
   }
 };
