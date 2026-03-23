@@ -14,6 +14,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { ADMIN_EMAIL } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
@@ -54,8 +55,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      if (result.user.email === ADMIN_EMAIL) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(getFriendlyError(err.code));
     } finally {

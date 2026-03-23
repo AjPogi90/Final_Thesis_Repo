@@ -53,6 +53,11 @@ const compressImageToBase64 = (file) =>
 
 export const AuthContext = createContext();
 
+// ── Single hardcoded admin account ──────────────────────────────────────────
+// Only this email address is allowed to access the Admin Panel.
+// No user can be promoted to admin via the UI.
+export const ADMIN_EMAIL = 'admin@aegistnet.com';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,16 +69,26 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        // Admin is determined by email only — cannot be set via database
+        const adminByEmail = currentUser.email === ADMIN_EMAIL;
+        setIsAdmin(adminByEmail);
+
+        if (adminByEmail) {
+          // Admin account — no verification status needed
+          setVerificationStatus('approved');
+          setIsDisabled(false);
+          setLoading(false);
+          return;
+        }
+
         const parentRef = ref(database, `users/parents/${currentUser.uid}`);
         const unsub = onValue(parentRef, (snapshot) => {
           const data = snapshot.val();
           if (data) {
             setVerificationStatus(data.idVerification?.status || 'pending_verification');
-            setIsAdmin(data.isAdmin === true);
             setIsDisabled(data.disabled === true);
           } else {
             setVerificationStatus(null);
-            setIsAdmin(false);
             setIsDisabled(false);
           }
           setLoading(false);

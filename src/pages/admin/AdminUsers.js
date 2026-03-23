@@ -15,8 +15,10 @@ import ChildCareIcon from '@mui/icons-material/ChildCare';
 import CloseIcon from '@mui/icons-material/Close';
 import { ref, onValue, update, remove } from 'firebase/database';
 import { database } from '../../config/firebase';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminUsers = () => {
+    const { colors, isDark } = useTheme();
     const [tab, setTab] = useState(0);
     const [parents, setParents] = useState([]);
     const [children, setChildren] = useState([]);
@@ -76,6 +78,13 @@ const AdminUsers = () => {
 
     if (loading) return <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh"><CircularProgress sx={{ color: '#EE791A' }} /></Box>;
 
+    const cardBg = colors.cardBg;
+    const cardBorder = colors.cardBorder;
+    const txtMain = colors.text;
+    const txtSub = colors.textSecondary;
+    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const divider = colors.divider;
+
     const statusChip = (status) => {
         const config = {
             approved: { label: 'APPROVED', color: '#4caf50', bg: 'rgba(76,175,80,0.12)' },
@@ -86,46 +95,51 @@ const AdminUsers = () => {
         return <Chip label={c.label} size="small" sx={{ bgcolor: c.bg, color: c.color, fontWeight: 700, fontSize: '0.7rem', height: 22 }} />;
     };
 
+    const tabSx = {
+        mb: 3,
+        '& .MuiTab-root': { color: txtSub, textTransform: 'none', fontWeight: 600 },
+        '& .Mui-selected': { color: '#EE791A' },
+        '& .MuiTabs-indicator': { backgroundColor: '#EE791A' },
+    };
+
+    const thSx = { color: txtDim, borderColor: divider, fontWeight: 600, fontSize: '0.78rem' };
+    const tdSx = { color: txtSub, borderColor: divider, py: 1.5 };
+
+    const dialogPaper = { sx: { bgcolor: colors.cardBg, color: txtMain, border: `1px solid ${cardBorder}`, borderRadius: 3 } };
+
     return (
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
             <Box sx={{ mb: 3 }}>
-                <Typography variant="h4" sx={{ fontWeight: 800, color: '#fff', mb: 0.5 }}>User Management</Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)' }}>Manage parent and child accounts</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 800, color: txtMain, mb: 0.5 }}>User Management</Typography>
+                <Typography variant="body2" sx={{ color: txtSub }}>Manage parent and child accounts</Typography>
             </Box>
 
             {alert && <Alert severity={alert.severity} sx={{ mb: 2 }}>{alert.message}</Alert>}
 
-            {/* Search */}
             <TextField
                 placeholder="Search by name or email..."
                 value={search} onChange={(e) => setSearch(e.target.value)}
                 fullWidth size="small" variant="filled"
                 sx={{
                     mb: 2, maxWidth: 400,
-                    '& .MuiFilledInput-root': { bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 1, '&:before,&:after': { display: 'none' } },
-                    '& input': { color: '#fff' },
+                    '& .MuiFilledInput-root': { bgcolor: colors.hover, borderRadius: 1, '&:before,&:after': { display: 'none' } },
+                    '& input': { color: txtMain },
+                    '& .MuiInputLabel-root': { color: txtSub },
                 }}
-                InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'rgba(255,255,255,0.3)' }} /></InputAdornment> }}
+                InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: txtDim }} /></InputAdornment> }}
             />
 
-            {/* Tabs */}
-            <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={{
-                mb: 3,
-                '& .MuiTab-root': { color: 'rgba(255,255,255,0.5)', textTransform: 'none', fontWeight: 600 },
-                '& .Mui-selected': { color: '#EE791A' },
-                '& .MuiTabs-indicator': { backgroundColor: '#EE791A' },
-            }}>
+            <Tabs value={tab} onChange={(e, v) => setTab(v)} sx={tabSx}>
                 <Tab icon={<PersonIcon />} iconPosition="start" label={`Parents (${filteredParents.length})`} />
                 <Tab icon={<ChildCareIcon />} iconPosition="start" label={`Children (${filteredChildren.length})`} />
             </Tabs>
 
-            {/* Parents Table */}
             {tab === 0 && (
-                <Paper sx={{ bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                <Paper sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, overflow: 'hidden' }}>
                     <TableContainer>
                         <Table size="small">
                             <TableHead>
-                                <TableRow sx={{ '& th': { color: 'rgba(255,255,255,0.4)', borderColor: 'rgba(255,255,255,0.06)', fontWeight: 600, fontSize: '0.78rem' } }}>
+                                <TableRow sx={{ '& th': thSx }}>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Email</TableCell>
                                     <TableCell>DOB</TableCell>
@@ -136,43 +150,39 @@ const AdminUsers = () => {
                             </TableHead>
                             <TableBody>
                                 {filteredParents.map((p) => (
-                                    <TableRow key={p.uid} sx={{
-                                        '& td': { color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.04)', py: 1.5 },
-                                        opacity: p.disabled ? 0.4 : 1,
-                                    }}>
+                                    <TableRow key={p.uid} sx={{ '& td': tdSx, opacity: p.disabled ? 0.5 : 1 }}>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#EE791A', fontSize: '0.8rem' }}>{(p.name || '?')[0].toUpperCase()}</Avatar>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{p.name || 'No name'}</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 500, color: txtMain }}>{p.name || 'No name'}</Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.82rem' }}>{p.email}</Typography></TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>{p.idVerification?.dateOfBirth || '—'}</Typography></TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '—'}</Typography></TableCell>
-                                        <TableCell>{p.disabled ? <Chip label="DISABLED" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)', fontWeight: 700, fontSize: '0.7rem', height: 22 }} /> : statusChip(p.idVerification?.status)}</TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtSub, fontSize: '0.82rem' }}>{p.email}</Typography></TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtDim, fontSize: '0.8rem' }}>{p.idVerification?.dateOfBirth || '—'}</Typography></TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtDim, fontSize: '0.8rem' }}>{p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '—'}</Typography></TableCell>
+                                        <TableCell>{p.disabled ? <Chip label="DISABLED" size="small" sx={{ bgcolor: colors.hover, color: txtDim, fontWeight: 700, fontSize: '0.7rem', height: 22 }} /> : statusChip(p.idVerification?.status)}</TableCell>
                                         <TableCell align="right">
                                             <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                                                <Tooltip title="View details"><IconButton size="small" onClick={() => setViewUser(p)} sx={{ color: 'rgba(255,255,255,0.4)' }}><VisibilityIcon fontSize="small" /></IconButton></Tooltip>
+                                                <Tooltip title="View details"><IconButton size="small" onClick={() => setViewUser(p)} sx={{ color: txtDim }}><VisibilityIcon fontSize="small" /></IconButton></Tooltip>
                                                 <Tooltip title={p.disabled ? 'Enable' : 'Disable'}><IconButton size="small" onClick={() => setConfirmAction({ type: 'disable', user: p })} sx={{ color: p.disabled ? '#4caf50' : '#EE791A' }}>{p.disabled ? <CheckCircleIcon fontSize="small" /> : <BlockIcon fontSize="small" />}</IconButton></Tooltip>
                                                 <Tooltip title="Delete"><IconButton size="small" onClick={() => setConfirmAction({ type: 'delete', user: p })} sx={{ color: '#ef4444' }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                                             </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                                {filteredParents.length === 0 && <TableRow><TableCell colSpan={6} sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', py: 4 }}>No parent accounts found</TableCell></TableRow>}
+                                {filteredParents.length === 0 && <TableRow><TableCell colSpan={6} sx={{ textAlign: 'center', color: txtDim, py: 4 }}>No parent accounts found</TableCell></TableRow>}
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Paper>
             )}
 
-            {/* Children Table */}
             {tab === 1 && (
-                <Paper sx={{ bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                <Paper sx={{ bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, overflow: 'hidden' }}>
                     <TableContainer>
                         <Table size="small">
                             <TableHead>
-                                <TableRow sx={{ '& th': { color: 'rgba(255,255,255,0.4)', borderColor: 'rgba(255,255,255,0.06)', fontWeight: 600, fontSize: '0.78rem' } }}>
+                                <TableRow sx={{ '& th': thSx }}>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Parent Email</TableCell>
                                     <TableCell>Device</TableCell>
@@ -181,19 +191,19 @@ const AdminUsers = () => {
                             </TableHead>
                             <TableBody>
                                 {filteredChildren.map((c, i) => (
-                                    <TableRow key={c.id || i} sx={{ '& td': { color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.04)', py: 1.5 } }}>
+                                    <TableRow key={c.id || i} sx={{ '& td': tdSx }}>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#10b981', fontSize: '0.8rem' }}>{(c.name || '?')[0].toUpperCase()}</Avatar>
-                                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{c.name || 'Unknown'}</Typography>
+                                                <Typography variant="body2" sx={{ fontWeight: 500, color: txtMain }}>{c.name || 'Unknown'}</Typography>
                                             </Box>
                                         </TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.82rem' }}>{c.email || c.parentEmail || '—'}</Typography></TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>{c.deviceModel || c.device || '—'}</Typography></TableCell>
-                                        <TableCell><Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem' }}>{c.lastUpdated ? new Date(c.lastUpdated).toLocaleString() : '—'}</Typography></TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtSub, fontSize: '0.82rem' }}>{c.email || c.parentEmail || '—'}</Typography></TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtDim, fontSize: '0.8rem' }}>{c.deviceModel || c.device || '—'}</Typography></TableCell>
+                                        <TableCell><Typography variant="body2" sx={{ color: txtDim, fontSize: '0.8rem' }}>{c.lastUpdated ? new Date(c.lastUpdated).toLocaleString() : '—'}</Typography></TableCell>
                                     </TableRow>
                                 ))}
-                                {filteredChildren.length === 0 && <TableRow><TableCell colSpan={4} sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', py: 4 }}>No child devices found</TableCell></TableRow>}
+                                {filteredChildren.length === 0 && <TableRow><TableCell colSpan={4} sx={{ textAlign: 'center', color: txtDim, py: 4 }}>No child devices found</TableCell></TableRow>}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -201,13 +211,13 @@ const AdminUsers = () => {
             )}
 
             {/* View User Dialog */}
-            <Dialog open={Boolean(viewUser)} onClose={() => setViewUser(null)} maxWidth="sm" fullWidth PaperProps={{ sx: { bgcolor: '#0b0b0b', color: '#fff', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3 } }}>
+            <Dialog open={Boolean(viewUser)} onClose={() => setViewUser(null)} maxWidth="sm" fullWidth PaperProps={dialogPaper}>
                 {viewUser && (<>
                     <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="h6" sx={{ fontWeight: 700 }}>User Details</Typography>
-                        <IconButton onClick={() => setViewUser(null)} sx={{ color: 'rgba(255,255,255,0.5)' }}><CloseIcon /></IconButton>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: txtMain }}>User Details</Typography>
+                        <IconButton onClick={() => setViewUser(null)} sx={{ color: txtDim }}><CloseIcon /></IconButton>
                     </DialogTitle>
-                    <DialogContent dividers sx={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                    <DialogContent dividers sx={{ borderColor: divider }}>
                         {[
                             { label: 'Name', value: viewUser.name || 'N/A' },
                             { label: 'Email', value: viewUser.email },
@@ -216,15 +226,15 @@ const AdminUsers = () => {
                             { label: 'Registered', value: viewUser.createdAt ? new Date(viewUser.createdAt).toLocaleString() : 'N/A' },
                             { label: 'Verification Status', value: viewUser.idVerification?.status || 'N/A' },
                         ].map(item => (
-                            <Box key={item.label} sx={{ display: 'flex', justifyContent: 'space-between', py: 1.2, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }}>{item.label}</Typography>
-                                <Typography variant="body2" sx={{ fontWeight: 500, color: '#fff' }}>{item.value}</Typography>
+                            <Box key={item.label} sx={{ display: 'flex', justifyContent: 'space-between', py: 1.2, borderBottom: `1px solid ${divider}` }}>
+                                <Typography variant="body2" sx={{ color: txtDim }}>{item.label}</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 500, color: txtMain }}>{item.value}</Typography>
                             </Box>
                         ))}
                         {viewUser.idVerification?.idFileUrl && (
                             <Box sx={{ mt: 2 }}>
-                                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', mb: 1 }}>Government ID:</Typography>
-                                <Box component="img" src={viewUser.idVerification.idFileUrl} alt="ID" sx={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain', borderRadius: 1, border: '1px solid rgba(255,255,255,0.08)' }} />
+                                <Typography variant="body2" sx={{ color: txtDim, mb: 1 }}>Government ID:</Typography>
+                                <Box component="img" src={viewUser.idVerification.idFileUrl} alt="ID" sx={{ maxWidth: '100%', maxHeight: 300, objectFit: 'contain', borderRadius: 1, border: `1px solid ${cardBorder}` }} />
                             </Box>
                         )}
                     </DialogContent>
@@ -232,18 +242,18 @@ const AdminUsers = () => {
             </Dialog>
 
             {/* Confirm Action Dialog */}
-            <Dialog open={Boolean(confirmAction)} onClose={() => setConfirmAction(null)} PaperProps={{ sx: { bgcolor: '#0b0b0b', color: '#fff', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 3 } }}>
+            <Dialog open={Boolean(confirmAction)} onClose={() => setConfirmAction(null)} PaperProps={dialogPaper}>
                 {confirmAction && (<>
-                    <DialogTitle sx={{ fontWeight: 700 }}>{confirmAction.type === 'delete' ? 'Delete User' : (confirmAction.user.disabled ? 'Enable User' : 'Disable User')}</DialogTitle>
+                    <DialogTitle sx={{ fontWeight: 700, color: txtMain }}>{confirmAction.type === 'delete' ? 'Delete User' : (confirmAction.user.disabled ? 'Enable User' : 'Disable User')}</DialogTitle>
                     <DialogContent>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+                        <Typography variant="body2" sx={{ color: txtSub }}>
                             {confirmAction.type === 'delete'
                                 ? `Are you sure you want to delete ${confirmAction.user.email}? This cannot be undone.`
                                 : `Are you sure you want to ${confirmAction.user.disabled ? 'enable' : 'disable'} ${confirmAction.user.email}?`}
                         </Typography>
                     </DialogContent>
                     <DialogActions sx={{ p: 2 }}>
-                        <Button onClick={() => setConfirmAction(null)} sx={{ color: 'rgba(255,255,255,0.5)' }}>Cancel</Button>
+                        <Button onClick={() => setConfirmAction(null)} sx={{ color: txtSub }}>Cancel</Button>
                         <Button
                             variant="contained"
                             disabled={actionLoading}

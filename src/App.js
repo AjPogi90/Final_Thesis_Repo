@@ -20,7 +20,6 @@ import LearnPage from './pages/LearnPage';
 import SupportPage from './pages/SupportPage';
 import PendingVerification from './pages/PendingVerification';
 import DisabledAccount from './pages/DisabledAccount';
-import AdminSetup from './pages/AdminSetup';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import SessionTimeout from './components/SessionTimeout';
@@ -32,7 +31,6 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminVerification from './pages/admin/AdminVerification';
 import AdminActivity from './pages/admin/AdminActivity';
 import AdminReports from './pages/admin/AdminReports';
-import AdminSettings from './pages/admin/AdminSettings';
 import AdminManagement from './pages/admin/AdminManagement';
 
 function AppLayout({ children }) {
@@ -80,7 +78,6 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/pending-verification" element={<PendingVerification />} />
             <Route path="/account-disabled" element={<DisabledAccount />} />
-            <Route path="/admin-setup" element={<AdminSetup />} />
 
             {/* Protected Routes with Sidebar Layout */}
             <Route
@@ -170,7 +167,6 @@ function App() {
             <Route path="/admin/verification" element={<ProtectedRoute requireAdmin><AdminLayout><AdminVerification /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/activity" element={<ProtectedRoute requireAdmin><AdminLayout><AdminActivity /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute requireAdmin><AdminLayout><AdminReports /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminLayout><AdminSettings /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/admins" element={<ProtectedRoute requireAdmin><AdminLayout><AdminManagement /></AdminLayout></ProtectedRoute>} />
 
             {/* Fallback */}

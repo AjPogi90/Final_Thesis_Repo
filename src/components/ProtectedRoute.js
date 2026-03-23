@@ -24,8 +24,12 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // Admin should ONLY access admin routes — never the parental control panel
+  if (isAdmin && !requireAdmin) {
+    return <Navigate to="/admin" replace />;
+  }
+
   // If the account has been disabled by an admin, block access immediately.
-  // Admins cannot be disabled (they manage the system).
   if (!isAdmin && isDisabled) {
     return <Navigate to="/account-disabled" replace />;
   }
@@ -36,7 +40,6 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   // If user's ID is not yet approved, redirect to pending page
-  // Admins bypass this check so they can access the admin panel
   if (!isAdmin && verificationStatus && verificationStatus !== 'approved') {
     return <Navigate to="/pending-verification" replace />;
   }
@@ -45,3 +48,4 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 };
 
 export default ProtectedRoute;
+
