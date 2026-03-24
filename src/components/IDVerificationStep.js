@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback } from 'react';
 import {
     Box,
     Typography,
-    Button,
     Alert,
     IconButton,
 } from '@mui/material';
@@ -51,7 +50,6 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
 
     const age = dateOfBirth ? calculateAge(dateOfBirth) : null;
     const isAdult = age !== null && age >= 18;
-    const isTooYoung = age !== null && age < 18;
 
     // ---- File validation ----
     const validateFile = useCallback((file) => {

@@ -15,7 +15,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import SchoolIcon from '@mui/icons-material/School';
-import SecurityIcon from '@mui/icons-material/Security';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -31,7 +30,6 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
-import ShieldIcon from '@mui/icons-material/Shield';
 
 /* ─── Intersection‑Observer hook for scroll animations ─── */
 const useOnScreen = (options) => {

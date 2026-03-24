@@ -12,6 +12,15 @@ import { useTheme } from '../contexts/ThemeContext';
 const MobileNav = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const { colors } = useTheme();
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);

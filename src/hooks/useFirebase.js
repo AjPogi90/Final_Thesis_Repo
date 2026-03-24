@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { database } from '../config/firebase';
-import { ref, onValue, update, set, get, remove } from 'firebase/database';
+import { ref, onValue, update, get, remove } from 'firebase/database';
 
 export const useChildData = (childId) => {
   const [data, setData] = useState(null);
@@ -91,7 +91,7 @@ export const updateBlockedApp = async (childId, appIndex, blocked) => {
   }
 };
 
-const getAppData = async (childId, appIndex) => {
+export const getAppData = async (childId, appIndex) => {
   try {
     const appRef = ref(database, `users/childs/${childId}/apps/${appIndex}`);
     const snapshot = await get(appRef);

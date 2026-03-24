@@ -21,7 +21,6 @@ import ChatIcon from '@mui/icons-material/Chat';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import BuildIcon from '@mui/icons-material/Build';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
@@ -31,7 +30,6 @@ import ForumIcon from '@mui/icons-material/Forum';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 /* ─── Intersection‑Observer hook for scroll animations ─── */
 const useOnScreen = (options) => {
