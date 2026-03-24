@@ -315,7 +315,7 @@ const HomePage = () => {
                   </Typography>
                 </Box>
 
-                <Typography variant="h2" className="shimmer-title" sx={{ fontWeight: 900, mb: 3, fontSize: { xs: '2rem', md: '3.2rem' }, lineHeight: 1.1, fontFamily: '"Nunito", sans-serif' }}>
+                <Typography variant="h2" sx={{ color: '#2563EB', fontWeight: 900, mb: 3, fontSize: { xs: '2rem', md: '3.2rem' }, lineHeight: 1.1, fontFamily: '"Nunito", sans-serif' }}>
                   AegistNet: AI Parental Control for a Safer Digital World
                 </Typography>
 
