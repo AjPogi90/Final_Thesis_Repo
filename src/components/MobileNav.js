@@ -3,7 +3,7 @@ import {
     IconButton,
     AppBar,
     Toolbar,
-    Typography,
+    Box,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Sidebar from './Sidebar';
@@ -24,10 +24,11 @@ const MobileNav = () => {
                 position="fixed"
                 sx={{
                     display: { xs: 'block', md: 'none' },
-                    bgcolor: colors.cardBg,
-                    color: colors.text,
-                    boxShadow: 1,
-                    borderBottom: `1px solid ${colors.divider}`,
+                    background: 'rgba(255, 255, 255, 1)',
+                    boxShadow: isScrolled ? '0 4px 20px rgba(0,0,0,0.05)' : 'none',
+                    backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    borderBottom: isScrolled ? '1px solid rgba(0,0,0,0.05)' : 'none'
                 }}
             >
                 <Toolbar>
@@ -47,17 +48,7 @@ const MobileNav = () => {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            fontWeight: 700,
-                            color: colors.primary, // Solid color for WCAG compliance
-                        }}
-                    >
-                        AegistNet
-                    </Typography>
+                    <Box component="img" src="/LoginLogoLIght.png" alt="AegistNet" sx={{ height: 32, objectFit: 'contain' }} />
                 </Toolbar>
             </AppBar>
 

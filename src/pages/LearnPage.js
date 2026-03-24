@@ -126,7 +126,7 @@ const LearnPage = () => {
         {
             icon: <GamesIcon sx={{ fontSize: 38 }} />,
             title: 'Monitor Calls & Messages',
-            desc: 'Stay aware of who your child is communicating with. AegistNet\'s call and text monitoring helps you spot harmful contacts before risks escalate.',
+            desc: 'Stay aware of who your child is communicating with. AegisNet\'s call and text monitoring helps you spot harmful contacts before risks escalate.',
             color: '#FFB347',
             rating: 'High Priority',
         },
@@ -151,7 +151,7 @@ const LearnPage = () => {
             name: 'Maria Santos',
             role: 'Mother of 2',
             avatar: 'M',
-            quote: '"AegistNet gives me the peace of mind I\'ve been looking for. I know my kids are safe when they\'re online. The real-time alerts are a game changer."',
+            quote: '"AegisNet gives me the peace of mind I\'ve been looking for. I know my kids are safe when they\'re online. The real-time alerts are a game changer."',
             color: '#FF6B35',
         },
         {
@@ -165,7 +165,7 @@ const LearnPage = () => {
             name: 'Ana Reyes',
             role: 'Single Mom',
             avatar: 'A',
-            quote: '"As a single parent, I can\'t always be watching over their shoulder. AegistNet does it for me — quietly, effectively, and without making my kids feel spied on."',
+            quote: '"As a single parent, I can\'t always be watching over their shoulder. AegisNet does it for me — quietly, effectively, and without making my kids feel spied on."',
             color: '#EE791A',
         },
     ];
@@ -177,14 +177,14 @@ const LearnPage = () => {
     const [storiesRef, storiesVisible] = useOnScreen({ threshold: 0.15 });
 
     return (
-        <Box sx={{ minHeight: '100vh', bgcolor: '#000', overflowX: 'hidden' }}>
+        <Box sx={{ minHeight: '100vh', bgcolor: '#ffffff', overflowX: 'hidden' }}>
             {/* ── Sticky Nav ── */}
             <AppBar
                 position="sticky"
                 sx={{
-                    bgcolor: 'rgba(0,0,0,0.85)',
+                    bgcolor: 'rgba(255,255,255,0.95)',
                     backdropFilter: 'blur(16px)',
-                    boxShadow: '0 1px 0 rgba(255,255,255,0.06)',
+                    boxShadow: '0 1px 0 rgba(0,0,0,0.06)',
                 }}
             >
                 <Toolbar>
@@ -192,19 +192,19 @@ const LearnPage = () => {
                         startIcon={<ArrowBackIcon />}
                         onClick={() => navigate('/')}
                         sx={{
-                            color: '#fff',
+                            color: '#1e3a8a',
                             textTransform: 'none',
                             fontWeight: 600,
                             mr: 2,
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.06)' },
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.06)' },
                         }}
                     >
                         Back
                     </Button>
                     <Box
                         component="img"
-                        src="/HeaderLogo.png"
-                        alt="AegistNet"
+                        src="/LoginLogoLIght.png"
+                        alt="AegisNet"
                         sx={{ height: { xs: 26, sm: 32 }, cursor: 'pointer' }}
                         onClick={() => navigate('/')}
                     />
@@ -225,9 +225,9 @@ const LearnPage = () => {
                                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                                 }}
                                 sx={{
-                                    color: 'rgba(255,255,255,0.6)',
+                                    color: 'rgba(0,0,0,0.6)',
                                     textTransform: 'none',
-                                    fontWeight: 500,
+                                    fontWeight: 600,
                                     fontSize: '0.85rem',
                                     '&:hover': { color: '#EE791A', bgcolor: 'transparent' },
                                 }}
@@ -243,9 +243,9 @@ const LearnPage = () => {
                             onClick={() => navigate('/login')}
                             sx={{
                                 textTransform: 'none',
-                                color: '#fff',
-                                borderColor: 'rgba(255,255,255,0.18)',
-                                '&:hover': { borderColor: 'rgba(255,255,255,0.35)' },
+                                color: '#1e3a8a',
+                                borderColor: 'rgba(30,58,138,0.35)',
+                                '&:hover': { borderColor: '#EE791A' },
                             }}
                         >
                             Log in
@@ -278,7 +278,7 @@ const LearnPage = () => {
                     position: 'relative',
                     overflow: 'hidden',
                     py: { xs: 10, md: 16 },
-                    background: 'linear-gradient(170deg, #000 0%, #1a0a00 50%, #0d0d0d 100%)',
+                    background: 'linear-gradient(170deg, #ffffff 0%, #fff7ed 50%, #ffffff 100%)',
                     opacity: heroVisible ? 1 : 0,
                     transform: heroVisible ? 'translateY(0)' : 'translateY(30px)',
                     transition: 'opacity 0.8s ease, transform 0.8s ease',
@@ -322,7 +322,7 @@ const LearnPage = () => {
                     <Typography
                         variant="h2"
                         sx={{
-                            fontWeight: 900, color: '#fff', mb: 3,
+                            fontWeight: 900, color: '#000', mb: 3,
                             fontSize: { xs: '2rem', sm: '2.8rem', md: '3.5rem' },
                             lineHeight: 1.08,
                         }}
@@ -331,7 +331,7 @@ const LearnPage = () => {
                         <Box
                             component="span"
                             sx={{
-                                background: 'linear-gradient(135deg, #EE791A, #FFB347)',
+                                background: 'linear-gradient(135deg, #EE791A, #D4651E)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                             }}
@@ -343,12 +343,12 @@ const LearnPage = () => {
                     <Typography
                         variant="h6"
                         sx={{
-                            color: 'rgba(255,255,255,0.72)', mb: 3,
+                            color: 'rgba(0,0,0,0.72)', mb: 3,
                             fontSize: { xs: '1rem', md: '1.15rem' }, lineHeight: 1.75,
                             maxWidth: 680, mx: 'auto',
                         }}
                     >
-                        Get the most out of AegistNet with expert product tips, research-backed
+                        Get the most out of AegisNet with expert product tips, research-backed
                         parenting advice, comprehensive safety guides, and inspiring stories from
                         families just like yours.
                     </Typography>
@@ -356,12 +356,12 @@ const LearnPage = () => {
                     <Typography
                         variant="body1"
                         sx={{
-                            color: 'rgba(255,255,255,0.48)', mb: 5,
+                            color: 'rgba(0,0,0,0.6)', mb: 5,
                             fontSize: '0.97rem', lineHeight: 1.8,
                             maxWidth: 660, mx: 'auto',
                         }}
                     >
-                        Whether you're setting up AegistNet for the first time or looking for
+                        Whether you're setting up AegisNet for the first time or looking for
                         advanced parenting strategies in the digital age, our resource center
                         has everything you need.
                     </Typography>
@@ -416,8 +416,8 @@ const LearnPage = () => {
                         ].map((s, i) => (
                             <Box key={i} sx={{ textAlign: 'center' }}>
                                 <Box sx={{ color: '#EE791A', mb: 0.5 }}>{s.icon}</Box>
-                                <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: '1.25rem' }}>{s.value}</Typography>
-                                <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', letterSpacing: 0.5 }}>{s.label}</Typography>
+                                <Typography sx={{ color: '#000', fontWeight: 800, fontSize: '1.25rem' }}>{s.value}</Typography>
+                                <Typography sx={{ color: 'rgba(0,0,0,0.6)', fontSize: '0.78rem', letterSpacing: 0.5 }}>{s.label}</Typography>
                             </Box>
                         ))}
                     </Box>
@@ -429,14 +429,14 @@ const LearnPage = () => {
                         <Typography
                             variant="h4"
                             sx={{
-                                fontWeight: 800, color: '#fff', mb: 2,
+                                fontWeight: 800, color: '#000', mb: 2,
                                 fontSize: { xs: '1.5rem', md: '2rem' },
                             }}
                         >
                             Get More From{' '}
-                            <Box component="span" sx={{ color: '#EE791A' }}>AegistNet</Box>
+                            <Box component="span" sx={{ color: '#EE791A' }}>AegisNet</Box>
                         </Typography>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: '1rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
+                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', fontSize: '1rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
                             Simple tips to help you unlock the full power of every feature.
                         </Typography>
                     </Box>
@@ -446,14 +446,15 @@ const LearnPage = () => {
                             <Grid item xs={12} sm={6} md={3} key={i}>
                                 <Card
                                     sx={{
-                                        bgcolor: 'rgba(255,255,255,0.025)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        bgcolor: '#ffffff',
+                                        border: '1px solid rgba(0,0,0,0.08)',
                                         borderRadius: 4,
                                         height: '100%',
                                         transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
                                         cursor: 'default',
                                         position: 'relative',
                                         overflow: 'hidden',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
                                         '&::before': {
                                             content: '""',
                                             position: 'absolute', top: 0, left: 0, right: 0, height: 3,
@@ -463,8 +464,8 @@ const LearnPage = () => {
                                         '&:hover': {
                                             transform: 'translateY(-10px)',
                                             border: `1px solid ${f.color}40`,
-                                            bgcolor: 'rgba(255,255,255,0.04)',
-                                            boxShadow: `0 24px 64px ${f.color}18`,
+                                            bgcolor: '#ffffff',
+                                            boxShadow: `0 24px 64px ${f.color}25`,
                                             '&::before': { opacity: 1 },
                                         },
                                     }}
@@ -483,10 +484,10 @@ const LearnPage = () => {
                                         >
                                             {f.icon}
                                         </Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#fff', mb: 1.2, fontSize: '1.05rem' }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#000', mb: 1.2, fontSize: '1.05rem' }}>
                                             {f.title}
                                         </Typography>
-                                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '0.9rem', flexGrow: 1 }}>
+                                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', lineHeight: 1.7, fontSize: '0.9rem', flexGrow: 1 }}>
                                             {f.desc}
                                         </Typography>
                                     </CardContent>
@@ -508,7 +509,7 @@ const LearnPage = () => {
                 ref={tipsRef}
                 sx={{
                     py: { xs: 10, md: 14 },
-                    position: 'relative', overflow: 'hidden', background: '#000',
+                    position: 'relative', overflow: 'hidden', background: '#fafafa',
                     opacity: tipsVisible ? 1 : 0,
                     transform: tipsVisible ? 'translateY(0)' : 'translateY(30px)',
                     transition: 'opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s',
@@ -539,7 +540,7 @@ const LearnPage = () => {
                         <Typography
                             variant="h3"
                             sx={{
-                                fontWeight: 900, color: '#fff', mb: 2,
+                                fontWeight: 900, color: '#000', mb: 2,
                                 fontSize: { xs: '1.8rem', md: '2.6rem' },
                             }}
                         >
@@ -554,7 +555,7 @@ const LearnPage = () => {
                                 Digital Age
                             </Box>
                         </Typography>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
+                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
                             Research-backed advice to help you guide your children through the
                             complexities of growing up online.
                         </Typography>
@@ -566,16 +567,17 @@ const LearnPage = () => {
                                 <Box
                                     sx={{
                                         textAlign: 'center', p: 4, borderRadius: 4,
-                                        bgcolor: 'rgba(255,255,255,0.02)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        bgcolor: '#ffffff',
+                                        border: '1px solid rgba(0,0,0,0.05)',
+                                        boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
                                         height: '100%',
                                         transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
                                         position: 'relative', overflow: 'hidden',
                                         '&:hover': {
-                                            bgcolor: 'rgba(255,255,255,0.04)',
-                                            border: '1px solid rgba(238,121,26,0.22)',
+                                            bgcolor: '#ffffff',
+                                            border: '1px solid rgba(238,121,26,0.3)',
                                             transform: 'translateY(-6px)',
-                                            boxShadow: '0 16px 48px rgba(238,121,26,0.08)',
+                                            boxShadow: '0 16px 48px rgba(238,121,26,0.12)',
                                         },
                                     }}
                                 >
@@ -593,11 +595,11 @@ const LearnPage = () => {
 
                                     <Box sx={{ color: '#EE791A', mb: 2, opacity: 0.8 }}>{tip.icon}</Box>
 
-                                    <Typography variant="h6" sx={{ fontWeight: 800, color: '#fff', mb: 1.5, fontSize: '1.05rem' }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 800, color: '#000', mb: 1.5, fontSize: '1.05rem' }}>
                                         {tip.title}
                                     </Typography>
 
-                                    <Typography sx={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, fontSize: '0.93rem' }}>
+                                    <Typography sx={{ color: 'rgba(0,0,0,0.6)', lineHeight: 1.75, fontSize: '0.93rem' }}>
                                         {tip.desc}
                                     </Typography>
 
@@ -619,8 +621,9 @@ const LearnPage = () => {
                         sx={{
                             mt: 6, p: { xs: 4, md: 5 },
                             borderRadius: 4,
-                            background: 'linear-gradient(135deg, rgba(238,121,26,0.07) 0%, rgba(0,0,0,0.3) 100%)',
-                            border: '1px solid rgba(238,121,26,0.12)',
+                            background: 'linear-gradient(135deg, #fffcf9 0%, #fff0e5 100%)',
+                            border: '1px solid rgba(238,121,26,0.2)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
                             textAlign: 'center',
                             position: 'relative', overflow: 'hidden',
                         }}
@@ -633,7 +636,7 @@ const LearnPage = () => {
                                 filter: 'blur(40px)', pointerEvents: 'none',
                             }}
                         />
-                        <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.08rem', lineHeight: 1.85, maxWidth: 650, mx: 'auto', position: 'relative', zIndex: 1 }}>
+                        <Typography sx={{ color: 'rgba(0,0,0,0.7)', fontSize: '1.08rem', lineHeight: 1.85, maxWidth: 650, mx: 'auto', position: 'relative', zIndex: 1 }}>
                             Digital parenting isn't about spying — it's about{' '}
                             <Box component="span" sx={{ color: '#EE791A', fontWeight: 700 }}>
                                 building trust
@@ -655,7 +658,7 @@ const LearnPage = () => {
                 ref={guidesRef}
                 sx={{
                     py: { xs: 10, md: 14 },
-                    background: 'linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #0a0a0a 100%)',
+                    background: '#ffffff',
                     opacity: guidesVisible ? 1 : 0,
                     transform: guidesVisible ? 'translateY(0)' : 'translateY(30px)',
                     transition: 'opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s',
@@ -666,7 +669,7 @@ const LearnPage = () => {
                         <Typography
                             variant="h3"
                             sx={{
-                                fontWeight: 900, color: '#fff', mb: 2,
+                                fontWeight: 900, color: '#000', mb: 2,
                                 fontSize: { xs: '1.8rem', md: '2.6rem' },
                             }}
                         >
@@ -681,7 +684,7 @@ const LearnPage = () => {
                                 Guides
                             </Box>
                         </Typography>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
+                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
                             Quick summaries, ratings, and recommendations about the apps, games,
                             and online content parents should keep an eye on.
                         </Typography>
@@ -692,14 +695,15 @@ const LearnPage = () => {
                             <Grid item xs={12} sm={6} md={3} key={i}>
                                 <Card
                                     sx={{
-                                        bgcolor: 'rgba(255,255,255,0.025)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        bgcolor: '#ffffff',
+                                        border: '1px solid rgba(0,0,0,0.08)',
                                         borderRadius: 4,
                                         height: '100%',
                                         transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
                                         cursor: 'default',
                                         position: 'relative',
                                         overflow: 'hidden',
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
                                         '&::before': {
                                             content: '""',
                                             position: 'absolute', top: 0, left: 0, right: 0, height: 3,
@@ -709,8 +713,8 @@ const LearnPage = () => {
                                         '&:hover': {
                                             transform: 'translateY(-10px)',
                                             border: `1px solid ${g.color}40`,
-                                            bgcolor: 'rgba(255,255,255,0.04)',
-                                            boxShadow: `0 24px 64px ${g.color}18`,
+                                            bgcolor: '#ffffff',
+                                            boxShadow: `0 24px 64px ${g.color}25`,
                                             '&::before': { opacity: 1 },
                                         },
                                     }}
@@ -743,10 +747,10 @@ const LearnPage = () => {
                                             </Typography>
                                         </Box>
 
-                                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#fff', mb: 1.2, fontSize: '1.05rem' }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 800, color: '#000', mb: 1.2, fontSize: '1.05rem' }}>
                                             {g.title}
                                         </Typography>
-                                        <Typography sx={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '0.9rem', flexGrow: 1 }}>
+                                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', lineHeight: 1.7, fontSize: '0.9rem', flexGrow: 1 }}>
                                             {g.desc}
                                         </Typography>
                                     </CardContent>
@@ -760,8 +764,9 @@ const LearnPage = () => {
                         sx={{
                             mt: 8, p: { xs: 4, md: 5 },
                             borderRadius: 4,
-                            background: 'linear-gradient(135deg, rgba(238,121,26,0.07) 0%, rgba(0,0,0,0.3) 100%)',
-                            border: '1px solid rgba(238,121,26,0.12)',
+                            background: 'linear-gradient(135deg, #fffcf9 0%, #fff0e5 100%)',
+                            border: '1px solid rgba(238,121,26,0.2)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.04)',
                             textAlign: 'center',
                             position: 'relative', overflow: 'hidden',
                         }}
@@ -774,7 +779,7 @@ const LearnPage = () => {
                                 filter: 'blur(40px)', pointerEvents: 'none',
                             }}
                         />
-                        <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.08rem', lineHeight: 1.85, maxWidth: 650, mx: 'auto', position: 'relative', zIndex: 1 }}>
+                        <Typography sx={{ color: 'rgba(0,0,0,0.7)', fontSize: '1.08rem', lineHeight: 1.85, maxWidth: 650, mx: 'auto', position: 'relative', zIndex: 1 }}>
                             Knowledge is your first line of defense. Stay informed, stay{' '}
                             <Box component="span" sx={{ color: '#EE791A', fontWeight: 700 }}>
                                 proactive
@@ -796,7 +801,7 @@ const LearnPage = () => {
                 ref={storiesRef}
                 sx={{
                     py: { xs: 10, md: 14 },
-                    background: 'linear-gradient(180deg, #0a0a0a 0%, #000 100%)',
+                    background: '#fafafa',
                     opacity: storiesVisible ? 1 : 0,
                     transform: storiesVisible ? 'translateY(0)' : 'translateY(30px)',
                     transition: 'opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s',
@@ -807,7 +812,7 @@ const LearnPage = () => {
                         <Typography
                             variant="h3"
                             sx={{
-                                fontWeight: 900, color: '#fff', mb: 2,
+                                fontWeight: 900, color: '#000', mb: 2,
                                 fontSize: { xs: '1.8rem', md: '2.6rem' },
                             }}
                         >
@@ -822,8 +827,8 @@ const LearnPage = () => {
                                 Stories
                             </Box>
                         </Typography>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
-                            Hear from real parents who trust AegistNet to protect their families
+                        <Typography sx={{ color: 'rgba(0,0,0,0.6)', fontSize: '1.05rem', maxWidth: 550, mx: 'auto', lineHeight: 1.7 }}>
+                            Hear from real parents who trust AegisNet to protect their families
                             in the digital world.
                         </Typography>
                     </Box>
@@ -834,24 +839,25 @@ const LearnPage = () => {
                                 <Box
                                     sx={{
                                         p: 4, borderRadius: 4,
-                                        bgcolor: 'rgba(255,255,255,0.02)',
-                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        bgcolor: '#ffffff',
+                                        border: '1px solid rgba(0,0,0,0.05)',
+                                        boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
                                         height: '100%',
                                         transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
                                         position: 'relative', overflow: 'hidden',
                                         display: 'flex', flexDirection: 'column',
                                         '&:hover': {
-                                            bgcolor: 'rgba(255,255,255,0.04)',
-                                            border: `1px solid ${story.color}30`,
+                                            bgcolor: '#ffffff',
+                                            border: `1px solid ${story.color}40`,
                                             transform: 'translateY(-6px)',
-                                            boxShadow: `0 16px 48px ${story.color}12`,
+                                            boxShadow: `0 16px 48px ${story.color}15`,
                                         },
                                     }}
                                 >
                                     {/* Quote icon */}
-                                    <FormatQuoteIcon sx={{ color: story.color, fontSize: 40, opacity: 0.4, mb: 2 }} />
+                                    <FormatQuoteIcon sx={{ color: story.color, fontSize: 40, opacity: 0.2, mb: 2 }} />
 
-                                    <Typography sx={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.85, fontSize: '0.98rem', flexGrow: 1, fontStyle: 'italic', mb: 3 }}>
+                                    <Typography sx={{ color: 'rgba(0,0,0,0.7)', lineHeight: 1.85, fontSize: '0.98rem', flexGrow: 1, fontStyle: 'italic', mb: 3 }}>
                                         {story.quote}
                                     </Typography>
 
@@ -862,15 +868,16 @@ const LearnPage = () => {
                                                 width: 48, height: 48,
                                                 background: `linear-gradient(135deg, ${story.color}, ${story.color}80)`,
                                                 fontWeight: 800, fontSize: '1.1rem',
+                                                color: '#fff',
                                             }}
                                         >
                                             {story.avatar}
                                         </Avatar>
                                         <Box>
-                                            <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>
+                                            <Typography sx={{ color: '#000', fontWeight: 700, fontSize: '0.95rem' }}>
                                                 {story.name}
                                             </Typography>
-                                            <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem' }}>
+                                            <Typography sx={{ color: 'rgba(0,0,0,0.5)', fontSize: '0.82rem' }}>
                                                 {story.role}
                                             </Typography>
                                         </Box>
@@ -884,10 +891,10 @@ const LearnPage = () => {
                     <Box sx={{ textAlign: 'center', mt: 8 }}>
                         <Typography
                             variant="h5"
-                            sx={{ fontWeight: 800, color: '#fff', fontSize: { xs: '1.15rem', md: '1.45rem' }, mb: 4 }}
+                            sx={{ fontWeight: 800, color: '#000', fontSize: { xs: '1.15rem', md: '1.45rem' }, mb: 4 }}
                         >
                             Join thousands of families who{' '}
-                            <Box component="span" sx={{ color: '#EE791A' }}>trust AegistNet.</Box>
+                            <Box component="span" sx={{ color: '#EE791A' }}>trust AegisNet.</Box>
                         </Typography>
                         <Button
                             variant="contained"
@@ -909,11 +916,11 @@ const LearnPage = () => {
             </Box>
 
             {/* ── Footer ── */}
-            <Box sx={{ py: 5, borderTop: '1px solid rgba(255,255,255,0.06)', bgcolor: '#000' }}>
+            <Box sx={{ py: 5, borderTop: '1px solid rgba(0,0,0,0.06)', bgcolor: '#f1f5f9' }}>
                 <Container maxWidth="lg">
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-                        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.83rem' }}>
-                            © 2025 AegistNet. All rights reserved.
+                        <Typography sx={{ color: 'rgba(0,0,0,0.4)', fontSize: '0.83rem' }}>
+                            © 2025 AegisNet. All rights reserved.
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 3 }}>
                             {[
@@ -927,8 +934,8 @@ const LearnPage = () => {
                                     size="small"
                                     onClick={() => navigate(l.to)}
                                     sx={{
-                                        color: 'rgba(255,255,255,0.45)', textTransform: 'none', fontSize: '0.83rem',
-                                        '&:hover': { color: '#EE791A' },
+                                        color: 'rgba(0,0,0,0.5)', textTransform: 'none', fontSize: '0.83rem',
+                                        '&:hover': { color: '#EE791A', bgcolor: 'transparent' },
                                         transition: 'color 0.2s',
                                     }}
                                 >

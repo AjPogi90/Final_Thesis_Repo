@@ -60,11 +60,9 @@ const AdminLayout = ({ children }) => {
     const drawerContent = (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: colors.cardBg }}>
             {/* Admin Header */}
-            <Box sx={{ p: 3, textAlign: 'center' }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: colors.primary }}>
-                    AegistNet
-                </Typography>
-                <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+            <Box sx={{ p: 3, pt: 4, pb: 2, textAlign: 'center' }}>
+                <Box component="img" src="/LoginLogoLIght.png" alt="AegistNet Admin" sx={{ height: 40, objectFit: 'contain', mb: 0.5 }} />
+                <Typography variant="caption" sx={{ color: colors.textSecondary, display: 'block' }}>
                     Admin Panel
                 </Typography>
             </Box>

@@ -136,19 +136,19 @@ const Register = () => {
 
   // ── Shared field styling ──
   const fieldSx = { mb: 2 };
-  const inputProps = { sx: { bgcolor: '#0f0f0f', color: '#fff', borderRadius: 1 } };
-  const labelProps = { sx: { color: 'rgba(255,255,255,0.7)' } };
+  const inputProps = { sx: { bgcolor: '#f5f5f5', color: '#000', borderRadius: 1 } };
+  const labelProps = { sx: { color: 'rgba(0,0,0,0.6)' } };
 
   return (
-    <Box sx={{ width: '100%', minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
-      <Box sx={{ p: { xs: 3, sm: 4 }, width: 560, maxWidth: '94%', borderRadius: 2, boxShadow: '0 12px 40px rgba(0,0,0,0.6)', bgcolor: '#0b0b0b', border: '1px solid rgba(255,255,255,0.04)', color: '#fff' }}>
+    <Box sx={{ width: '100%', minHeight: '100vh', background: '#f5f6fa', display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
+      <Box sx={{ p: { xs: 3, sm: 4 }, width: 560, maxWidth: '94%', borderRadius: 2, boxShadow: '0 12px 40px rgba(0,0,0,0.1)', bgcolor: '#ffffff', border: '1px solid rgba(0,0,0,0.05)', color: '#000' }}>
 
         {/* Logo */}
-        <Box sx={{ textAlign: 'center', mb: 2 }}>
-          <Box component="img" src="/HeaderLogoImage.png" alt="logo" onError={(e) => { e.target.onerror = null; e.target.src = '/HeaderLogo.png'; }} sx={{ width: 140, mx: 'auto', display: 'block' }} />
+        <Box sx={{ textAlign: 'center', mb: 2, cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <Box component="img" src="/LoginLogoLIght.png" alt="logo" sx={{ width: 140, mx: 'auto', display: 'block', objectFit: 'contain' }} />
         </Box>
 
-        <Typography variant="h5" align="center" mb={1} sx={{ fontWeight: '800', color: '#fff' }}>
+        <Typography variant="h5" align="center" mb={1} sx={{ fontWeight: '800', color: '#000' }}>
           Create AegistNet Account
         </Typography>
 
@@ -159,13 +159,13 @@ const Register = () => {
             alternativeLabel
             sx={{
               mb: 3, mt: 2,
-              '& .MuiStepLabel-label': { color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem', fontWeight: 500 },
+              '& .MuiStepLabel-label': { color: 'rgba(0,0,0,0.4)', fontSize: '0.82rem', fontWeight: 500 },
               '& .MuiStepLabel-label.Mui-active': { color: '#EE791A', fontWeight: 700 },
               '& .MuiStepLabel-label.Mui-completed': { color: '#4caf50' },
-              '& .MuiStepIcon-root': { color: 'rgba(255,255,255,0.12)' },
+              '& .MuiStepIcon-root': { color: 'rgba(0,0,0,0.12)' },
               '& .MuiStepIcon-root.Mui-active': { color: '#EE791A' },
               '& .MuiStepIcon-root.Mui-completed': { color: '#4caf50' },
-              '& .MuiStepConnector-line': { borderColor: 'rgba(255,255,255,0.08)' },
+              '& .MuiStepConnector-line': { borderColor: 'rgba(0,0,0,0.08)' },
             }}
           >
             {steps.map((label) => (
@@ -200,7 +200,7 @@ const Register = () => {
                     mt: 3, py: 1.4,
                     backgroundColor: '#EE791A',
                     '&:hover': { backgroundColor: '#c05905' },
-                    '&.Mui-disabled': { bgcolor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.25)' },
+                    '&.Mui-disabled': { bgcolor: 'rgba(0,0,0,0.06)', color: 'rgba(0,0,0,0.25)' },
                     fontWeight: 600, fontSize: '0.95rem',
                   }}
                 >
@@ -208,7 +208,7 @@ const Register = () => {
                 </Button>
 
                 <Box mt={2} textAlign="center">
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)' }}>
                     Already have an account?{' '}
                     <Link component="button" variant="body2" onClick={() => navigate('/login')} sx={{ color: '#EE791A' }}>Sign in</Link>
                   </Typography>
@@ -219,29 +219,33 @@ const Register = () => {
             {/* ──── STEP 2: Account Details ──── */}
             {activeStep === 1 && (
               <Box component="form" onSubmit={handleSubmit}>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, textAlign: 'center' }}>
+                <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.5)', mb: 2, textAlign: 'center' }}>
                   Identity verified! Now set up your parent account.
                 </Typography>
 
                 <TextField fullWidth label="Full name" value={name} onChange={(e) => setName(e.target.value)} sx={fieldSx} variant="filled" InputProps={inputProps} InputLabelProps={labelProps} />
                 <TextField fullWidth label="Email *" type="email" value={email} onChange={(e) => setEmail(e.target.value)} sx={fieldSx} required variant="filled" InputProps={inputProps} InputLabelProps={labelProps} />
-                <TextField fullWidth label="Password *" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} sx={fieldSx} required variant="filled" InputProps={{ ...inputProps, endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )}} InputLabelProps={labelProps}
+                <TextField fullWidth label="Password *" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} sx={fieldSx} required variant="filled" InputProps={{
+                  ...inputProps, endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(0,0,0,0.45)' }}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }} InputLabelProps={labelProps}
                   helperText="At least 6 characters"
-                  FormHelperTextProps={{ sx: { color: 'rgba(255,255,255,0.3)' } }}
+                  FormHelperTextProps={{ sx: { color: 'rgba(0,0,0,0.4)' } }}
                 />
-                <TextField fullWidth label="Confirm password *" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={(e) => setConfirm(e.target.value)} sx={{ mb: 3 }} required variant="filled" InputProps={{ ...inputProps, endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                      {showConfirm ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )}} InputLabelProps={labelProps} />
+                <TextField fullWidth label="Confirm password *" type={showConfirm ? 'text' : 'password'} value={confirm} onChange={(e) => setConfirm(e.target.value)} sx={{ mb: 3 }} required variant="filled" InputProps={{
+                  ...inputProps, endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowConfirm(!showConfirm)} edge="end" sx={{ color: 'rgba(0,0,0,0.45)' }}>
+                        {showConfirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }} InputLabelProps={labelProps} />
 
                 {/* Navigation buttons */}
                 <Box sx={{ display: 'flex', gap: 2 }}>
@@ -251,9 +255,9 @@ const Register = () => {
                     startIcon={<ArrowBackIcon />}
                     sx={{
                       flex: '0 0 auto', py: 1.3,
-                      color: 'rgba(255,255,255,0.7)',
-                      borderColor: 'rgba(255,255,255,0.12)',
-                      '&:hover': { borderColor: 'rgba(255,255,255,0.3)', bgcolor: 'rgba(255,255,255,0.03)' },
+                      color: 'rgba(0,0,0,0.6)',
+                      borderColor: 'rgba(0,0,0,0.12)',
+                      '&:hover': { borderColor: 'rgba(0,0,0,0.3)', bgcolor: 'rgba(0,0,0,0.03)' },
                     }}
                   >
                     Back
@@ -280,7 +284,7 @@ const Register = () => {
                 </Box>
 
                 <Box mt={2} textAlign="center">
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)' }}>
                     Already have an account?{' '}
                     <Link component="button" variant="body2" onClick={() => navigate('/login')} sx={{ color: '#EE791A' }}>Sign in</Link>
                   </Typography>
@@ -292,14 +296,14 @@ const Register = () => {
           // ──── Post-registration ────
           <Box>
             {infoMessage && <Alert severity="success" sx={{ mb: 2 }}>{infoMessage}</Alert>}
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mb: 3, lineHeight: 1.7 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.65)', mb: 3, lineHeight: 1.7 }}>
               Your account is now pending review. An admin will verify your submitted ID and approve your account before you can sign in.
             </Typography>
             <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }}>
               <Button variant="contained" onClick={handleResend} disabled={resendLoading} sx={{ backgroundColor: '#EE791A', '&:hover': { backgroundColor: '#c05905' } }}>
                 {resendLoading ? 'Resending...' : (verificationSent ? 'Resend verification email' : 'Send verification email')}
               </Button>
-              <Button variant="outlined" onClick={() => navigate('/login')} sx={{ color: '#fff', borderColor: 'rgba(255,255,255,0.12)' }}>
+              <Button variant="outlined" onClick={() => navigate('/login')} sx={{ color: '#000', borderColor: 'rgba(0,0,0,0.15)', '&:hover': { borderColor: 'rgba(0,0,0,0.3)', bgcolor: 'rgba(0,0,0,0.02)' } }}>
                 Go to Login
               </Button>
             </Box>

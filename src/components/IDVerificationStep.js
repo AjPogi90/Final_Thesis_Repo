@@ -34,10 +34,10 @@ function calculateAge(dateString) {
 const inputSx = {
     width: '100%',
     padding: '14px 16px',
-    backgroundColor: '#0f0f0f',
-    border: '1px solid rgba(255,255,255,0.15)',
+    backgroundColor: '#fff',
+    border: '1px solid rgba(0,0,0,0.15)',
     borderRadius: '6px',
-    color: '#fff',
+    color: '#000',
     fontSize: '16px',
     outline: 'none',
     fontFamily: 'inherit',
@@ -97,10 +97,10 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                 }}>
                     <VerifiedUserIcon sx={{ fontSize: 30, color: '#fff' }} />
                 </Box>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#fff', mb: 0.5 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#000', mb: 0.5 }}>
                     Parent Identity Verification
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)', lineHeight: 1.5 }}>
                     To protect children, we require all parents to verify they are at least <strong style={{ color: '#EE791A' }}>18 years old</strong> before creating an account.
                 </Typography>
             </Box>
@@ -109,7 +109,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
             <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <CalendarMonthIcon sx={{ fontSize: 18, color: '#EE791A' }} />
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}>
                         Date of Birth *
                     </Typography>
                 </Box>
@@ -147,14 +147,14 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
             <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <BadgeIcon sx={{ fontSize: 18, color: '#EE791A' }} />
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'rgba(0,0,0,0.85)' }}>
                         Upload Government-Issued ID *
                     </Typography>
                 </Box>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mb: 0.5, fontWeight: 500 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.6)', display: 'block', mb: 0.5, fontWeight: 500 }}>
                     Please upload one side of the ID that clearly shows your Age or Birth Date.
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)', display: 'block', mb: 1.5 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.5)', display: 'block', mb: 1.5 }}>
                     Accepted: National ID, Driver's License, Passport, PhilSys ID · Max 5 MB · JPG, PNG, WebP, or PDF
                 </Typography>
 
@@ -165,18 +165,18 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                         onDrop={onDrop}
                         onClick={() => fileInputRef.current?.click()}
                         sx={{
-                            border: `2px dashed ${dragActive ? '#EE791A' : 'rgba(255,255,255,0.12)'}`,
+                            border: `2px dashed ${dragActive ? '#EE791A' : 'rgba(0,0,0,0.15)'}`,
                             borderRadius: 2,
                             p: 4,
                             textAlign: 'center',
                             cursor: 'pointer',
                             transition: 'all 0.25s',
-                            bgcolor: dragActive ? 'rgba(238,121,26,0.06)' : 'transparent',
+                            bgcolor: dragActive ? 'rgba(238,121,26,0.06)' : '#fafafa',
                             '&:hover': { borderColor: '#EE791A', bgcolor: 'rgba(238,121,26,0.04)' },
                         }}
                     >
-                        <CloudUploadIcon sx={{ fontSize: 44, color: dragActive ? '#EE791A' : 'rgba(255,255,255,0.25)', mb: 1 }} />
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 0.5 }}>
+                        <CloudUploadIcon sx={{ fontSize: 44, color: dragActive ? '#EE791A' : 'rgba(0,0,0,0.25)', mb: 1 }} />
+                        <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)', mb: 0.5 }}>
                             {dragActive ? 'Drop your file here' : 'Drag & drop your ID here, or click to browse'}
                         </Typography>
                         <input
@@ -199,15 +199,15 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
                                 <CheckCircleIcon sx={{ fontSize: 22, color: '#4caf50', flexShrink: 0 }} />
                                 <Box sx={{ overflow: 'hidden' }}>
-                                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#000', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                         {idFile.name}
                                     </Typography>
-                                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>
+                                    <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.6)' }}>
                                         {(idFile.size / 1024).toFixed(1)} KB
                                     </Typography>
                                 </Box>
                             </Box>
-                            <IconButton onClick={removeFile} size="small" sx={{ color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#f44336' } }}>
+                            <IconButton onClick={removeFile} size="small" sx={{ color: 'rgba(0,0,0,0.5)', '&:hover': { color: '#f44336' } }}>
                                 <DeleteIcon fontSize="small" />
                             </IconButton>
                         </Box>
@@ -242,7 +242,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                 bgcolor: 'rgba(238,121,26,0.06)',
                 border: '1px solid rgba(238,121,26,0.15)',
             }}>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.65)', lineHeight: 1.6 }}>
                     🔒 Your government ID will be stored securely and used solely for age verification purposes. It will not be shared with third parties.
                 </Typography>
             </Box>

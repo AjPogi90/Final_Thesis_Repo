@@ -7,9 +7,13 @@ import {
   Typography,
   Button,
   Grid,
+  IconButton,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuIcon from '@mui/icons-material/Menu';
 import SecurityIcon from '@mui/icons-material/Security';
 import LockIcon from '@mui/icons-material/Lock';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -88,46 +92,46 @@ const CSS = `
 
 /* ── Clouds ── */
 const clouds = [
-  { top: '8%',  dur: '28s', delay: '0s',  size: 140, opacity: 0.92 },
-  { top: '18%', dur: '40s', delay: '8s',  size: 100, opacity: 0.80 },
-  { top: '5%',  dur: '34s', delay: '15s', size: 180, opacity: 0.85 },
+  { top: '8%', dur: '28s', delay: '0s', size: 140, opacity: 0.92 },
+  { top: '18%', dur: '40s', delay: '8s', size: 100, opacity: 0.80 },
+  { top: '5%', dur: '34s', delay: '15s', size: 180, opacity: 0.85 },
   { top: '28%', dur: '50s', delay: '22s', size: 120, opacity: 0.75 },
   { top: '12%', dur: '44s', delay: '35s', size: 160, opacity: 0.88 },
 ];
 
 /* ── CSS Geometric floating shapes (no emoji) ── */
 const floatingShapes = [
-  { size: 48,  top: '12%',  left: '4%',   color: '#FFD93D', delay: '0s',   dur: '6s',  type: 'circle'  },
-  { size: 36,  top: '22%',  left: '91%',  color: '#FF6B6B', delay: '1s',   dur: '8s',  type: 'star'    },
-  { size: 44,  top: '68%',  left: '7%',   color: '#6BCB77', delay: '2s',   dur: '7s',  type: 'diamond' },
-  { size: 30,  top: '75%',  left: '87%',  color: '#4D96FF', delay: '0.5s', dur: '9s',  type: 'circle'  },
-  { size: 40,  top: '45%',  left: '93%',  color: '#CC5DE8', delay: '1.5s', dur: '5s',  type: 'star'    },
-  { size: 26,  top: '55%',  left: '2%',   color: '#F783AC', delay: '3s',   dur: '10s', type: 'diamond' },
+  { size: 48, top: '12%', left: '4%', color: '#FFD93D', delay: '0s', dur: '6s', type: 'circle' },
+  { size: 36, top: '22%', left: '91%', color: '#FF6B6B', delay: '1s', dur: '8s', type: 'star' },
+  { size: 44, top: '68%', left: '7%', color: '#6BCB77', delay: '2s', dur: '7s', type: 'diamond' },
+  { size: 30, top: '75%', left: '87%', color: '#4D96FF', delay: '0.5s', dur: '9s', type: 'circle' },
+  { size: 40, top: '45%', left: '93%', color: '#CC5DE8', delay: '1.5s', dur: '5s', type: 'star' },
+  { size: 26, top: '55%', left: '2%', color: '#F783AC', delay: '3s', dur: '10s', type: 'diamond' },
 ];
 
 const clipPaths = {
-  star:    'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+  star: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
   diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
 };
 
 /* ── Rising bubbles ── */
 const bubbles = Array.from({ length: 16 }, (_, i) => ({
-  left:  `${(i * 6.5 + 2) % 98}%`,
+  left: `${(i * 6.5 + 2) % 98}%`,
   delay: `${(i * 0.65) % 7}s`,
-  dur:   `${5 + (i % 5)}s`,
-  size:  10 + (i % 4) * 8,
+  dur: `${5 + (i % 5)}s`,
+  size: 10 + (i % 4) * 8,
   color: ['rgba(99,230,190,0.5)', 'rgba(116,192,252,0.5)', 'rgba(247,131,172,0.5)',
-          'rgba(204,93,232,0.4)', 'rgba(255,217,61,0.45)'][i % 5],
+    'rgba(204,93,232,0.4)', 'rgba(255,217,61,0.45)'][i % 5],
 }));
 
 /* ── Hero orbit icons ── */
 const orbitIcons = [
-  { Icon: LockIcon,          color: '#2563EB', angle: 0   },
-  { Icon: VisibilityIcon,    color: '#7c3aed', angle: 60  },
+  { Icon: LockIcon, color: '#2563EB', angle: 0 },
+  { Icon: VisibilityIcon, color: '#7c3aed', angle: 60 },
   { Icon: PhoneDisabledIcon, color: '#db2777', angle: 120 },
-  { Icon: LanguageIcon,      color: '#059669', angle: 180 },
-  { Icon: FamilyRestroomIcon,color: '#D97706', angle: 240 },
-  { Icon: StarIcon,          color: '#0284C7', angle: 300 },
+  { Icon: LanguageIcon, color: '#059669', angle: 180 },
+  { Icon: FamilyRestroomIcon, color: '#D97706', angle: 240 },
+  { Icon: StarIcon, color: '#0284C7', angle: 300 },
 ];
 
 /* Cloud shape component */
@@ -144,6 +148,7 @@ const HomePage = () => {
   const [productOpen, setProductOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [mobileMenuEl, setMobileMenuEl] = useState(null);
 
   const handleMenuToggle = () => setProductOpen(v => { const n = !v; if (n) { setLearnOpen(false); setSupportOpen(false); } return n; });
   const handleLearnToggle = () => setLearnOpen(v => { const n = !v; if (n) { setProductOpen(false); setSupportOpen(false); } return n; });
@@ -207,22 +212,25 @@ const HomePage = () => {
         </Box>
 
         {/* ═══ NAVBAR ═══ */}
-        <AppBar position="static" elevation={0} sx={{ bgcolor: 'rgba(255,255,255,0.28)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(255,255,255,0.4)', color: '#1e3a8a', boxShadow: '0 2px 20px rgba(0,80,200,0.08)', position: 'relative', zIndex: 10 }}>
+        <AppBar position="static" elevation={0} sx={{
+          background: 'rgba(255,255,255,1)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255,255,255,0.4)',
+          color: '#1e3a8a',
+          boxShadow: '0 2px 20px rgba(0,80,200,0.08)',
+          position: 'relative',
+          zIndex: 10
+        }}>
           <Toolbar>
             {/* CSS + MUI icon logo — no emoji */}
             <Box onClick={() => navigate('/')} role="button" sx={{ mr: 2, display: 'flex', alignItems: 'center', gap: 1.2, cursor: 'pointer' }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: '10px', background: 'linear-gradient(135deg, #2563EB, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 3px 10px rgba(37,99,235,0.4)' }}>
-                <SecurityIcon sx={{ color: '#fff', fontSize: 22 }} />
-              </Box>
-              <Typography sx={{ fontWeight: 900, fontSize: '1.15rem', fontFamily: '"Nunito", sans-serif', background: 'linear-gradient(90deg, #1e3a8a, #2563EB, #7c3aed)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.3px' }}>
-                AegistNet
-              </Typography>
+              <Box component="img" src="/LoginLogoLIght.png" alt="AegistNet" sx={{ height: 42, objectFit: 'contain' }} />
             </Box>
 
             {[
               { label: 'Product', open: productOpen, toggle: handleMenuToggle },
-              { label: 'Learn',   open: learnOpen,   toggle: handleLearnToggle },
-              { label: 'Support', open: supportOpen,  toggle: handleSupportToggle },
+              { label: 'Learn', open: learnOpen, toggle: handleLearnToggle },
+              { label: 'Support', open: supportOpen, toggle: handleSupportToggle },
             ].map(item => (
               <Button key={item.label} onClick={item.toggle} sx={{ textTransform: 'none', color: '#1e3a8a', fontWeight: 700, fontSize: '0.95rem', px: 0, '&:hover': { bgcolor: 'transparent', color: '#2563EB' }, borderBottom: item.open ? '3px solid #2563EB' : 'none', pb: item.open ? '6px' : 0, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.5 }}>
                 {item.label}
@@ -230,10 +238,20 @@ const HomePage = () => {
               </Button>
             ))}
 
-            <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+            <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
               <Button variant="outlined" onClick={() => navigate('/login')} sx={{ textTransform: 'none', color: '#1e3a8a', borderColor: 'rgba(30,58,138,0.35)', '&:hover': { borderColor: '#2563EB', bgcolor: 'rgba(37,99,235,0.06)' }, fontWeight: 600 }}>Log in</Button>
               <Button variant="contained" onClick={() => navigate('/register')} sx={{ textTransform: 'none', fontWeight: 700, background: 'linear-gradient(90deg, #2563EB, #7c3aed)', boxShadow: '0 4px 16px rgba(37,99,235,0.4)', borderRadius: 2, px: 3, '&:hover': { background: 'linear-gradient(90deg, #1D4ED8, #6d28d9)', transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>SIGN UP</Button>
+
+              <IconButton onClick={(e) => setMobileMenuEl(e.currentTarget)} sx={{ display: { xs: 'flex', md: 'none' }, color: '#1e3a8a' }}>
+                <MenuIcon />
+              </IconButton>
             </Box>
+
+            <Menu anchorEl={mobileMenuEl} open={Boolean(mobileMenuEl)} onClose={() => setMobileMenuEl(null)}>
+              <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/product'); }}>Product</MenuItem>
+              <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/learn'); }}>Learn</MenuItem>
+              <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/support'); }}>Support</MenuItem>
+            </Menu>
           </Toolbar>
         </AppBar>
 
@@ -337,7 +355,7 @@ const HomePage = () => {
                 <Box sx={{ display: 'flex', gap: 2, mt: 4, flexWrap: 'wrap' }}>
                   {[
                     { Icon: LockOutlinedIcon, label: 'Safe & Secure' },
-                    { Icon: BoltIcon,         label: 'Real-time AI' },
+                    { Icon: BoltIcon, label: 'Real-time AI' },
                     { Icon: PhoneAndroidIcon, label: 'Android 9+' },
                   ].map(({ Icon, label }) => (
                     <Box key={label} sx={{ bgcolor: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.8)', borderRadius: 999, px: 2, py: 0.6, display: 'flex', alignItems: 'center', gap: 0.5, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
@@ -402,7 +420,7 @@ const HomePage = () => {
                         position: 'absolute', top: `${18 + i * 28}%`, right: `${-4 + i * 2}%`,
                         width: 12, height: 12, borderRadius: '50%',
                         bgcolor: ['#FFD93D', '#6BCB77', '#FF6B6B'][i],
-                        boxShadow: `0 0 12px ${ ['#FFD93D', '#6BCB77', '#FF6B6B'][i] }`,
+                        boxShadow: `0 0 12px ${['#FFD93D', '#6BCB77', '#FF6B6B'][i]}`,
                         zIndex: 4,
                         animation: `shapeBounce ${3 + i}s ease-in-out ${i * 0.6}s infinite`,
                       }} />
