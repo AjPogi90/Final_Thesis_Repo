@@ -6,10 +6,10 @@ import { ADMIN_EMAIL } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminManagement = () => {
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)';
+    const txtDim = 'rgba(0,0,0,0.3)';
 
     return (
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 900, mx: 'auto' }}>

@@ -60,7 +60,7 @@ const SessionTimeout = () => {
             // Auto logout
             if (remaining <= 0) {
                 signOut(auth);
-                navigate('/login');
+                navigate('/');
                 return;
             }
 
@@ -86,7 +86,7 @@ const SessionTimeout = () => {
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             console.error('Logout error:', error);
         }

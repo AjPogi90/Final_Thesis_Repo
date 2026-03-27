@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Admin should ONLY access admin routes — never the parental control panel

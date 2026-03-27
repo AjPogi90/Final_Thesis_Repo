@@ -57,7 +57,7 @@ const AdminSetup = () => {
             });
             setResult({
                 severity: 'success',
-                message: `✅ ${email} is now an admin with approved status! Go to /login to sign in, then visit /admin.`,
+                message: `✅ ${email} is now an admin with approved status! Go to / to sign in, then visit /admin.`,
             });
         } catch (err) {
             setResult({ severity: 'error', message: `Failed: ${err.message}` });

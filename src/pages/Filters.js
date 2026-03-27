@@ -18,8 +18,6 @@ import {
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import DangerousIcon from '@mui/icons-material/Dangerous';
-import SpeakerNotesOffIcon from '@mui/icons-material/SpeakerNotesOff';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList, useChildData, updateContentFilters } from '../hooks/useFirebase';
@@ -34,24 +32,7 @@ const filterDefinitions = [
         details:
             'Prevents access to websites and apps with nudity or sexually explicit content. Helps protect children from age-inappropriate material.',
     },
-    {
-        key: 'violence',
-        label: 'Violence Filter',
-        Icon: DangerousIcon,
-        colorKey: 'error',
-        description: 'Filters violent and graphic content',
-        details:
-            'Blocks access to violent imagery, graphic content, and age-inappropriate games or videos. Helps create a safer online environment.',
-    },
-    {
-        key: 'harmfulText',
-        label: 'Harmful Text Filter',
-        Icon: SpeakerNotesOffIcon,
-        colorKey: 'warning',
-        description: 'Blocks offensive language, hate speech, and cyberbullying',
-        details:
-            'Filters offensive language, slurs, cyberbullying, and harmful text content. Protects children from toxic online interactions.',
-    },
+
 ];
 
 const Filters = () => {
@@ -74,8 +55,6 @@ const Filters = () => {
 
     const filters = childData?.contentFilters || {
         nudity: false,
-        violence: false,
-        harmfulText: false,
     };
 
     const handleFilterToggle = async (filterKey, newValue) => {
@@ -248,7 +227,7 @@ const Filters = () => {
                                         </Box>
                                         <Box sx={{ textAlign: 'right' }}>
                                             <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                                                {activeFiltersCount}/3
+                                                {activeFiltersCount}/{filterDefinitions.length}
                                             </Typography>
                                             <Typography variant="body2" sx={{ opacity: 0.9 }}>
                                                 Filters Active

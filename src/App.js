@@ -3,13 +3,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Login from './pages/Login';
+
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ChildDetails from './pages/ChildDetails';
 import Children from './pages/Children';
 import Apps from './pages/Apps';
-import Location from './pages/Location';
+
 import Filters from './pages/Filters';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
@@ -74,7 +74,7 @@ function App() {
             <Route path="/product" element={<ProductPage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/support" element={<SupportPage />} />
-            <Route path="/login" element={<Login />} />
+
             <Route path="/register" element={<Register />} />
             <Route path="/pending-verification" element={<PendingVerification />} />
             <Route path="/account-disabled" element={<DisabledAccount />} />
@@ -110,16 +110,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/location"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Location />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
+
             <Route
               path="/filters"
               element={

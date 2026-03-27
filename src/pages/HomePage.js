@@ -10,266 +10,268 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Chip,
+  TextField,
+  InputAdornment,
+  CircularProgress,
+  Alert,
+  Divider,
+  Link,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MenuIcon from '@mui/icons-material/Menu';
-import SecurityIcon from '@mui/icons-material/Security';
-import LockIcon from '@mui/icons-material/Lock';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
-import LanguageIcon from '@mui/icons-material/Language';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
-import StarIcon from '@mui/icons-material/Star';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import BoltIcon from '@mui/icons-material/Bolt';
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../config/firebase';
+import { ADMIN_EMAIL } from '../contexts/AuthContext';
 
-/* ═══════════════════════════════
-   Keyframe CSS
-═══════════════════════════════ */
+import ExpandMoreIcon      from '@mui/icons-material/ExpandMore';
+import MenuIcon            from '@mui/icons-material/Menu';
+import SecurityIcon        from '@mui/icons-material/Security';
+import ArrowForwardIcon    from '@mui/icons-material/ArrowForward';
+import LockOutlinedIcon    from '@mui/icons-material/LockOutlined';
+import BoltIcon            from '@mui/icons-material/Bolt';
+import PhoneAndroidIcon    from '@mui/icons-material/PhoneAndroid';
+import Visibility          from '@mui/icons-material/Visibility';
+import VisibilityOff       from '@mui/icons-material/VisibilityOff';
+import EmailOutlinedIcon   from '@mui/icons-material/EmailOutlined';
+import LockIcon            from '@mui/icons-material/Lock';
+
+/* ─────────────────────────────────────────
+   Global styles
+───────────────────────────────────────── */
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-  @keyframes skyShift {
-    0%   { background-position: 0% 50%;   }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%;   }
+  * { box-sizing: border-box; }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0);    }
   }
-  @keyframes cloudDrift {
-    0%   { transform: translateX(-220px); opacity: 0;  }
-    5%   { opacity: 1; }
-    95%  { opacity: 1; }
-    100% { transform: translateX(110vw);  opacity: 0;  }
+  @keyframes orb1 {
+    0%, 100% { transform: translate(0px, 0px);    }
+    50%       { transform: translate(30px, -20px); }
   }
-  @keyframes floatUp {
-    0%, 100% { transform: translateY(0px);   }
-    50%       { transform: translateY(-24px); }
+  @keyframes orb2 {
+    0%, 100% { transform: translate(0px, 0px);    }
+    50%       { transform: translate(-20px, 25px); }
   }
-  @keyframes bubbleRise {
-    0%   { transform: translateY(0)     scale(1);    opacity: 0.85; }
-    100% { transform: translateY(-80vh) scale(0.35); opacity: 0; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
   }
-  @keyframes sunSpin {
-    from { transform: rotate(0deg);   }
-    to   { transform: rotate(360deg); }
+
+  .fade-slide   { animation: fadeSlideUp 0.7s ease both; }
+  .fade-slide-1 { animation: fadeSlideUp 0.7s 0.1s  ease both; }
+  .fade-slide-2 { animation: fadeSlideUp 0.7s 0.25s ease both; }
+  .fade-slide-3 { animation: fadeSlideUp 0.7s 0.4s  ease both; }
+  .login-card   { animation: cardIn      0.6s 0.2s  ease both; }
+
+  .cta-btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   }
-  @keyframes rainbowPulse {
-    0%, 100% { opacity: 0.55; }
-    50%       { opacity: 0.82; }
+  .cta-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 28px rgba(17,24,39,0.22) !important;
   }
-  @keyframes shapeBounce {
-    0%, 100% { transform: translateY(0px) rotate(0deg);  }
-    30%       { transform: translateY(-28px) rotate(-6deg); }
-    60%       { transform: translateY(-12px) rotate(4deg);  }
+
+  .outline-btn {
+    transition: all 0.2s ease !important;
   }
-  @keyframes heroFloat {
-    0%, 100% { transform: translateY(0px);   }
-    50%       { transform: translateY(-14px); }
+  .outline-btn:hover {
+    background: rgba(37,99,235,0.05) !important;
+    border-color: #2563EB !important;
+    color: #2563EB !important;
   }
-  @keyframes grassWave {
-    0%, 100% { border-radius: 50% 50% 0 0 / 30px 30px 0 0; }
-    50%       { border-radius: 50% 50% 0 0 / 44px 44px 0 0; }
+
+  /* MUI TextField overrides for clean outlined style */
+  .clean-field .MuiOutlinedInput-root {
+    border-radius: 10px;
+    background: #F9FAFB;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.93rem;
+    transition: background 0.18s;
   }
-  @keyframes titleShimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
+  .clean-field .MuiOutlinedInput-root:hover {
+    background: #F3F4F6;
   }
-  @keyframes orbitSpin {
-    from { transform: rotate(0deg);   }
-    to   { transform: rotate(360deg); }
+  .clean-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: #D1D5DB;
   }
-  .hero-shield { animation: heroFloat 5s ease-in-out infinite; }
-  .shimmer-title {
-    background: linear-gradient(90deg, #1e3a8a 0%, #2563EB 25%, #7c3aed 50%, #db2777 75%, #1e3a8a 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: titleShimmer 4s linear infinite;
+  .clean-field .MuiOutlinedInput-root.Mui-focused {
+    background: #fff;
+  }
+  .clean-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #EE791A;
+    border-width: 1.5px;
+  }
+  .clean-field .MuiOutlinedInput-notchedOutline {
+    border-color: #E5E7EB;
+  }
+  .clean-field .MuiInputLabel-root {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.87rem;
+    color: #9CA3AF;
+  }
+  .clean-field .MuiInputLabel-root.Mui-focused {
+    color: #111827;
+    font-weight: 500;
   }
 `;
 
-/* ── Clouds ── */
-const clouds = [
-  { top: '8%', dur: '28s', delay: '0s', size: 140, opacity: 0.92 },
-  { top: '18%', dur: '40s', delay: '8s', size: 100, opacity: 0.80 },
-  { top: '5%', dur: '34s', delay: '15s', size: 180, opacity: 0.85 },
-  { top: '28%', dur: '50s', delay: '22s', size: 120, opacity: 0.75 },
-  { top: '12%', dur: '44s', delay: '35s', size: 160, opacity: 0.88 },
-];
-
-/* ── CSS Geometric floating shapes (no emoji) ── */
-const floatingShapes = [
-  { size: 48, top: '12%', left: '4%', color: '#FFD93D', delay: '0s', dur: '6s', type: 'circle' },
-  { size: 36, top: '22%', left: '91%', color: '#FF6B6B', delay: '1s', dur: '8s', type: 'star' },
-  { size: 44, top: '68%', left: '7%', color: '#6BCB77', delay: '2s', dur: '7s', type: 'diamond' },
-  { size: 30, top: '75%', left: '87%', color: '#4D96FF', delay: '0.5s', dur: '9s', type: 'circle' },
-  { size: 40, top: '45%', left: '93%', color: '#CC5DE8', delay: '1.5s', dur: '5s', type: 'star' },
-  { size: 26, top: '55%', left: '2%', color: '#F783AC', delay: '3s', dur: '10s', type: 'diamond' },
-];
-
-const clipPaths = {
-  star: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
-  diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+/* ─────────────────────────────────────────
+   Auth helpers (reused from Login.js)
+───────────────────────────────────────── */
+const getFriendlyError = (code) => {
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':    return 'Incorrect email or password.';
+    case 'auth/invalid-email':     return 'Please enter a valid email address.';
+    case 'auth/user-disabled':     return 'This account has been disabled.';
+    case 'auth/too-many-requests': return 'Too many attempts. Try again later.';
+    default:                       return 'Something went wrong. Please try again.';
+  }
 };
 
-/* ── Rising bubbles ── */
-const bubbles = Array.from({ length: 16 }, (_, i) => ({
-  left: `${(i * 6.5 + 2) % 98}%`,
-  delay: `${(i * 0.65) % 7}s`,
-  dur: `${5 + (i % 5)}s`,
-  size: 10 + (i % 4) * 8,
-  color: ['rgba(99,230,190,0.5)', 'rgba(116,192,252,0.5)', 'rgba(247,131,172,0.5)',
-    'rgba(204,93,232,0.4)', 'rgba(255,217,61,0.45)'][i % 5],
-}));
-
-/* ── Hero orbit icons ── */
-const orbitIcons = [
-  { Icon: LockIcon, color: '#2563EB', angle: 0 },
-  { Icon: VisibilityIcon, color: '#7c3aed', angle: 60 },
-  { Icon: PhoneDisabledIcon, color: '#db2777', angle: 120 },
-  { Icon: LanguageIcon, color: '#059669', angle: 180 },
-  { Icon: FamilyRestroomIcon, color: '#D97706', angle: 240 },
-  { Icon: StarIcon, color: '#0284C7', angle: 300 },
-];
-
-/* Cloud shape component */
-const CloudShape = ({ size, opacity }) => (
-  <Box sx={{ position: 'relative', width: size, height: size * 0.55, opacity }}>
-    <Box sx={{ position: 'absolute', bottom: 0, left: '10%', width: '80%', height: '50%', bgcolor: 'rgba(255,255,255,0.95)', borderRadius: 999 }} />
-    <Box sx={{ position: 'absolute', bottom: '28%', left: '20%', width: '44%', height: '60%', bgcolor: 'rgba(255,255,255,0.95)', borderRadius: '50%' }} />
-    <Box sx={{ position: 'absolute', bottom: '18%', left: '45%', width: '32%', height: '55%', bgcolor: 'rgba(255,255,255,0.95)', borderRadius: '50%' }} />
-  </Box>
-);
-
+/* ─────────────────────────────────────────
+   Component
+───────────────────────────────────────── */
 const HomePage = () => {
   const navigate = useNavigate();
-  const [productOpen, setProductOpen] = useState(false);
-  const [learnOpen, setLearnOpen] = useState(false);
-  const [supportOpen, setSupportOpen] = useState(false);
+
+  /* ── Navbar state ── */
+  const [productOpen,  setProductOpen]  = useState(false);
+  const [learnOpen,    setLearnOpen]    = useState(false);
+  const [supportOpen,  setSupportOpen]  = useState(false);
   const [mobileMenuEl, setMobileMenuEl] = useState(null);
 
-  const handleMenuToggle = () => setProductOpen(v => { const n = !v; if (n) { setLearnOpen(false); setSupportOpen(false); } return n; });
-  const handleLearnToggle = () => setLearnOpen(v => { const n = !v; if (n) { setProductOpen(false); setSupportOpen(false); } return n; });
-  const handleSupportToggle = () => setSupportOpen(v => { const n = !v; if (n) { setProductOpen(false); setLearnOpen(false); } return n; });
+  const handleMenuToggle    = () => setProductOpen(v  => { const n = !v; if (n) { setLearnOpen(false); setSupportOpen(false); } return n; });
+  const handleLearnToggle   = () => setLearnOpen(v    => { const n = !v; if (n) { setProductOpen(false); setSupportOpen(false); } return n; });
+  const handleSupportToggle = () => setSupportOpen(v  => { const n = !v; if (n) { setProductOpen(false); setLearnOpen(false); } return n; });
+
+  /* ── Login card state ── */
+  const [email,        setEmail]        = useState('');
+  const [password,     setPassword]     = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error,        setError]        = useState('');
+  const [loading,      setLoading]      = useState(false);
+  const [resetMode,    setResetMode]    = useState(false);
+  const [resetEmail,   setResetEmail]   = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault(); setError(''); setLoading(true);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      navigate(result.user.email === ADMIN_EMAIL ? '/admin' : '/dashboard');
+    } catch (err) { setError(getFriendlyError(err.code)); }
+    finally { setLoading(false); }
+  };
+
+  const handlePasswordReset = async (e) => {
+    e.preventDefault(); setError(''); setResetSuccess(''); setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetSuccess('Reset link sent — check your inbox.');
+      setResetEmail('');
+      setTimeout(() => setResetMode(false), 2500);
+    } catch (err) { setError(getFriendlyError(err.code)); }
+    finally { setLoading(false); }
+  };
 
   return (
     <>
       <style>{CSS}</style>
-      <Box sx={{
-        minHeight: '100vh', position: 'relative', overflow: 'hidden',
-        background: 'linear-gradient(-30deg, #87CEEB, #B3E5FC, #FFF9C4, #FFCC80, #F48FB1, #87CEEB)',
-        backgroundSize: '400% 400%',
-        animation: 'skyShift 14s ease infinite',
-      }}>
 
-        {/* ── Sun + Rotating rays ── */}
-        <Box sx={{ position: 'absolute', top: 60, right: '8%', zIndex: 1, pointerEvents: 'none' }}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', width: 160, height: 160, transform: 'translate(-50%, -50%)', background: 'conic-gradient(rgba(255,220,50,0.35) 0deg, transparent 25deg, rgba(255,220,50,0.35) 30deg, transparent 55deg, rgba(255,220,50,0.35) 60deg, transparent 85deg, rgba(255,220,50,0.35) 90deg, transparent 115deg, rgba(255,220,50,0.35) 120deg, transparent 145deg, rgba(255,220,50,0.35) 150deg, transparent 175deg, rgba(255,220,50,0.35) 180deg, transparent 205deg, rgba(255,220,50,0.35) 210deg, transparent 235deg, rgba(255,220,50,0.35) 240deg, transparent 265deg, rgba(255,220,50,0.35) 270deg, transparent 295deg, rgba(255,220,50,0.35) 300deg, transparent 325deg, rgba(255,220,50,0.35) 330deg, transparent 355deg)', borderRadius: '50%', animation: 'sunSpin 18s linear infinite' }} />
-          <Box sx={{ width: 80, height: 80, borderRadius: '50%', background: 'radial-gradient(circle at 38% 35%, #FFF176, #FFD600)', boxShadow: '0 0 40px rgba(255,214,0,0.7), 0 0 80px rgba(255,214,0,0.35)' }} />
-        </Box>
-
-        {/* ── Rainbow arc ── */}
-        <Box sx={{ position: 'absolute', top: 80, left: '50%', transform: 'translateX(-50%)', width: 700, height: 350, zIndex: 1, pointerEvents: 'none', animation: 'rainbowPulse 5s ease-in-out infinite' }}>
-          {['#FF6B6B', '#FF922B', '#FFD93D', '#6BCB77', '#4D96FF', '#845EC2'].map((c, i) => (
-            <Box key={i} sx={{ position: 'absolute', top: i * 12, left: i * 12, right: i * 12, height: '100%', borderTop: `14px solid ${c}`, borderLeft: `14px solid ${c}`, borderRight: `14px solid ${c}`, borderRadius: '50% 50% 0 0', opacity: 0.55 }} />
-          ))}
-        </Box>
-
-        {/* ── Drifting clouds ── */}
-        {clouds.map((c, i) => (
-          <Box key={i} sx={{ position: 'absolute', top: c.top, left: 0, zIndex: 2, animation: `cloudDrift ${c.dur} linear ${c.delay} infinite`, filter: 'drop-shadow(0 8px 12px rgba(0,80,180,0.08))' }}>
-            <CloudShape size={c.size} opacity={c.opacity} />
-          </Box>
-        ))}
-
-        {/* ── CSS geometric floating shapes ── */}
-        {floatingShapes.map((s, i) => (
-          <Box key={i} sx={{
-            position: 'absolute', top: s.top, left: s.left,
-            width: s.size, height: s.size,
-            bgcolor: s.color,
-            borderRadius: s.type === 'circle' ? '50%' : 0,
-            clipPath: s.type !== 'circle' ? clipPaths[s.type] : undefined,
-            zIndex: 3,
-            animation: `shapeBounce ${s.dur} ease-in-out ${s.delay} infinite`,
-            boxShadow: `0 4px 16px ${s.color}88`,
-            opacity: 0.85,
-          }} />
-        ))}
-
-        {/* ── Rising bubbles ── */}
-        {bubbles.map((b, i) => (
-          <Box key={i} sx={{ position: 'absolute', bottom: 0, left: b.left, width: b.size, height: b.size, borderRadius: '50%', bgcolor: b.color, zIndex: 2, border: '1.5px solid rgba(255,255,255,0.6)', animation: `bubbleRise ${b.dur} ease-in ${b.delay} infinite`, boxShadow: 'inset -2px -3px 6px rgba(255,255,255,0.4)' }} />
-        ))}
-
-        {/* ── Animated green hills ── */}
-        <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 3, pointerEvents: 'none' }}>
-          <Box sx={{ position: 'absolute', bottom: 0, left: '-10%', width: '55%', height: 120, bgcolor: '#81C784', borderRadius: '50% 50% 0 0 / 60px 60px 0 0', animation: 'grassWave 6s ease-in-out 1s infinite', opacity: 0.85 }} />
-          <Box sx={{ position: 'absolute', bottom: 0, right: '-10%', width: '60%', height: 140, bgcolor: '#66BB6A', borderRadius: '50% 50% 0 0 / 70px 70px 0 0', animation: 'grassWave 7s ease-in-out 0s infinite', opacity: 0.9 }} />
-          <Box sx={{ height: 48, bgcolor: '#4CAF50', opacity: 0.95 }} />
-        </Box>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA', fontFamily: '"Inter", sans-serif', display: 'flex', flexDirection: 'column' }}>
 
         {/* ═══ NAVBAR ═══ */}
-        <AppBar position="static" elevation={0} sx={{
-          background: 'rgba(255,255,255,1)',
-          backdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(255,255,255,0.4)',
-          color: '#1e3a8a',
-          boxShadow: '0 2px 20px rgba(0,80,200,0.08)',
-          position: 'relative',
-          zIndex: 10
-        }}>
-          <Toolbar>
-            {/* CSS + MUI icon logo — no emoji */}
-            <Box onClick={() => navigate('/')} role="button" sx={{ mr: 2, display: 'flex', alignItems: 'center', gap: 1.2, cursor: 'pointer' }}>
-              <Box component="img" src="/LoginLogoLIght.png" alt="AegistNet" sx={{ height: 42, objectFit: 'contain' }} />
+        <AppBar
+          position="sticky"
+          elevation={0}
+          sx={{
+            bgcolor: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '1px solid #E5E7EB',
+            color: '#111827',
+            zIndex: 100,
+          }}
+        >
+          <Toolbar sx={{ maxWidth: 1200, mx: 'auto', width: '100%', px: { xs: 2, md: 4 } }}>
+            {/* Logo */}
+            <Box onClick={() => navigate('/')} role="button" sx={{ mr: 4, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <Box component="img" src="/LoginLogoLIght.png" alt="AegisNet" sx={{ height: 38, objectFit: 'contain' }} />
             </Box>
 
+            {/* Desktop nav links */}
             {[
               { label: 'Product', open: productOpen, toggle: handleMenuToggle },
-              { label: 'Learn', open: learnOpen, toggle: handleLearnToggle },
-              { label: 'Support', open: supportOpen, toggle: handleSupportToggle },
+              { label: 'Learn',   open: learnOpen,   toggle: handleLearnToggle },
+              { label: 'Support', open: supportOpen,  toggle: handleSupportToggle },
             ].map(item => (
-              <Button key={item.label} onClick={item.toggle} sx={{ textTransform: 'none', color: '#1e3a8a', fontWeight: 700, fontSize: '0.95rem', px: 0, '&:hover': { bgcolor: 'transparent', color: '#2563EB' }, borderBottom: item.open ? '3px solid #2563EB' : 'none', pb: item.open ? '6px' : 0, display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 0.5 }}>
+              <Button
+                key={item.label}
+                onClick={item.toggle}
+                disableRipple
+                sx={{
+                  textTransform: 'none',
+                  color: item.open ? '#2563EB' : '#374151',
+                  fontWeight: 500,
+                  fontSize: '0.92rem',
+                  px: 1.5,
+                  fontFamily: '"Inter", sans-serif',
+                  display: { xs: 'none', md: 'flex' },
+                  alignItems: 'center',
+                  gap: 0.3,
+                  '&:hover': { bgcolor: 'transparent', color: '#2563EB' },
+                }}
+              >
                 {item.label}
-                <ExpandMoreIcon fontSize="small" sx={{ transform: item.open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+                <ExpandMoreIcon sx={{ fontSize: 16, transform: item.open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
               </Button>
             ))}
 
-            <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Button variant="outlined" onClick={() => navigate('/login')} sx={{ textTransform: 'none', color: '#1e3a8a', borderColor: 'rgba(30,58,138,0.35)', '&:hover': { borderColor: '#2563EB', bgcolor: 'rgba(37,99,235,0.06)' }, fontWeight: 600 }}>Log in</Button>
-              <Button variant="contained" onClick={() => navigate('/register')} sx={{ textTransform: 'none', fontWeight: 700, background: 'linear-gradient(90deg, #2563EB, #7c3aed)', boxShadow: '0 4px 16px rgba(37,99,235,0.4)', borderRadius: 2, px: 3, '&:hover': { background: 'linear-gradient(90deg, #1D4ED8, #6d28d9)', transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>SIGN UP</Button>
-
-              <IconButton onClick={(e) => setMobileMenuEl(e.currentTarget)} sx={{ display: { xs: 'flex', md: 'none' }, color: '#1e3a8a' }}>
+            <Box sx={{ ml: 'auto', display: 'flex', gap: 1.5, alignItems: 'center' }}>
+              <IconButton
+                onClick={(e) => setMobileMenuEl(e.currentTarget)}
+                sx={{ display: { xs: 'flex', md: 'none' }, color: '#374151' }}
+              >
                 <MenuIcon />
               </IconButton>
             </Box>
 
-            <Menu anchorEl={mobileMenuEl} open={Boolean(mobileMenuEl)} onClose={() => setMobileMenuEl(null)}>
+            <Menu
+              anchorEl={mobileMenuEl}
+              open={Boolean(mobileMenuEl)}
+              onClose={() => setMobileMenuEl(null)}
+              PaperProps={{ sx: { mt: 1, borderRadius: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.12)' } }}
+            >
               <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/product'); }}>Product</MenuItem>
               <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/learn'); }}>Learn</MenuItem>
               <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/support'); }}>Support</MenuItem>
+              <MenuItem onClick={() => { setMobileMenuEl(null); navigate('/register'); }}>Register</MenuItem>
             </Menu>
           </Toolbar>
         </AppBar>
 
         {/* ── Mega menus ── */}
         {productOpen && (
-          <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', borderTop: '1px solid rgba(255,255,255,0.6)', position: 'relative', zIndex: 10 }}>
+          <Box sx={{ width: '100%', bgcolor: '#fff', borderBottom: '1px solid #E5E7EB', boxShadow: '0 8px 32px rgba(0,0,0,0.06)', position: 'sticky', top: 64, zIndex: 99 }}>
             <Container maxWidth="lg">
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Why AegistNet', desc: 'Kids spend a lot of time on screens, and keeping them safe matters. AI-powered real-time content filtering.', link: '/product#discover', cta: 'Discover more' },
-                  { title: 'Features', desc: 'Lock apps, block inappropriate content, track location, and review activity in a way that fits your family.', link: '/product#features', cta: 'View all features' },
-                  { title: 'Get started', desc: 'Set up takes only a few minutes. Create an account, install on child device, and it starts protecting right away.', link: '/product#get-started', cta: 'Learn how' },
-                  { title: 'Downloads', desc: 'Available for Android 9.0+ devices. Real-time screen analysis to monitor and filter harmful content as it appears.', link: '/product#downloads', cta: 'Go to downloads' },
+                  { title: 'Why AegisNet',  desc: 'AI-powered real-time content filtering built for modern families.', link: '/product#discover',    cta: 'Discover more' },
+                  { title: 'Features',      desc: 'App locks, content filters, location tracking and activity reviews.', link: '/product#features', cta: 'View all features' },
+                  { title: 'Get started',   desc: 'Set up takes minutes. Create an account and start protecting right away.', link: '/product#get-started', cta: 'Learn how' },
+                  { title: 'Downloads',     desc: 'Available for Android 9.0+ devices with real-time screen analysis.', link: '/product#downloads', cta: 'Go to downloads' },
                 ].map((col) => (
-                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #f0f0f0', '&:last-child': { borderRight: 'none' } }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, fontSize: '1rem', color: '#1e3a8a' }}>{col.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>{col.desc}</Typography>
-                    <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate(col.link)}>{col.cta}</Button>
+                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
+                    <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
+                    <Typography sx={{ color: '#6B7280', mb: 1.5, lineHeight: 1.6, fontSize: '0.83rem', fontFamily: '"Inter", sans-serif' }}>{col.desc}</Typography>
+                    <Button size="small" endIcon={<ArrowForwardIcon sx={{ fontSize: '14px !important' }} />}
+                      sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.83rem', color: '#2563EB', fontFamily: '"Inter", sans-serif', '&:hover': { bgcolor: 'transparent' } }}
+                      onClick={() => navigate(col.link)}
+                    >{col.cta}</Button>
                   </Box>
                 ))}
               </Box>
@@ -278,19 +280,22 @@ const HomePage = () => {
         )}
 
         {learnOpen && (
-          <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', borderTop: '1px solid rgba(255,255,255,0.6)', position: 'relative', zIndex: 10 }}>
+          <Box sx={{ width: '100%', bgcolor: '#fff', borderBottom: '1px solid #E5E7EB', boxShadow: '0 8px 32px rgba(0,0,0,0.06)', position: 'sticky', top: 64, zIndex: 99 }}>
             <Container maxWidth="lg">
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Product tips', desc: 'Get the latest updates, new features, and simple guides to make the most of AegistNet.', link: '/learn#product-tips', cta: 'Read product tips' },
-                  { title: 'Parenting tips', desc: "Learn about kids' online habits, digital safety, and how AI can help protect them.", link: '/learn#parenting-tips', cta: 'Read parenting tips' },
-                  { title: 'Safety guides', desc: 'Ratings and recommendations about apps, games, and online content parents should watch.', link: '/learn#safety-guides', cta: 'Read our guides' },
-                  { title: 'Family stories', desc: "AegistNet gives me the peace of mind I've been looking for. I know my kids are safe online.", link: '/learn#family-stories', cta: 'Read more stories' },
+                  { title: 'Product tips',   desc: 'Latest updates and simple guides to get the most out of AegisNet.', link: '/learn#product-tips',   cta: 'Read product tips' },
+                  { title: 'Parenting tips', desc: "Kids' online habits, digital safety, and how AI can help protect them.", link: '/learn#parenting-tips', cta: 'Read parenting tips' },
+                  { title: 'Safety guides',  desc: 'Reviews of apps, games, and online content parents should know.', link: '/learn#safety-guides',  cta: 'Read our guides' },
+                  { title: 'Family stories', desc: "Real parents share how AegisNet gave them peace of mind online.", link: '/learn#family-stories', cta: 'Read more stories' },
                 ].map((col) => (
-                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #f0f0f0', '&:last-child': { borderRight: 'none' } }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, fontSize: '1rem', color: '#1e3a8a' }}>{col.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>{col.desc}</Typography>
-                    <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate(col.link)}>{col.cta}</Button>
+                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
+                    <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
+                    <Typography sx={{ color: '#6B7280', mb: 1.5, lineHeight: 1.6, fontSize: '0.83rem', fontFamily: '"Inter", sans-serif' }}>{col.desc}</Typography>
+                    <Button size="small" endIcon={<ArrowForwardIcon sx={{ fontSize: '14px !important' }} />}
+                      sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.83rem', color: '#2563EB', fontFamily: '"Inter", sans-serif', '&:hover': { bgcolor: 'transparent' } }}
+                      onClick={() => navigate(col.link)}
+                    >{col.cta}</Button>
                   </Box>
                 ))}
               </Box>
@@ -299,19 +304,22 @@ const HomePage = () => {
         )}
 
         {supportOpen && (
-          <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', borderTop: '1px solid rgba(255,255,255,0.6)', position: 'relative', zIndex: 10 }}>
+          <Box sx={{ width: '100%', bgcolor: '#fff', borderBottom: '1px solid #E5E7EB', boxShadow: '0 8px 32px rgba(0,0,0,0.06)', position: 'sticky', top: 64, zIndex: 99 }}>
             <Container maxWidth="lg">
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Contact us', desc: 'Reach out through email, live chat, or phone. Our team is ready to help with any question.', link: '/support#contact-us', cta: 'Get in touch' },
-                  { title: 'FAQ', desc: 'Find quick answers to common questions about installation, features, data privacy and devices.', link: '/support#faq', cta: 'Browse FAQ' },
-                  { title: 'Troubleshooting', desc: 'Step-by-step fixes for content filtering, location updates, syncing problems and battery optimization.', link: '/support#troubleshooting', cta: 'Fix common issues' },
-                  { title: 'Community', desc: 'Join parent forums, submit requests, sign up for beta testing, and connect with local groups.', link: '/support#community', cta: 'Join the community' },
+                  { title: 'Contact us',     desc: 'Reach out via email or live chat — our team is ready to help.', link: '/support#contact-us',    cta: 'Get in touch' },
+                  { title: 'FAQ',            desc: 'Quick answers about installation, features, privacy, and devices.', link: '/support#faq',         cta: 'Browse FAQ' },
+                  { title: 'Troubleshooting',desc: 'Step-by-step fixes for filtering, syncing, and battery issues.', link: '/support#troubleshooting', cta: 'Fix common issues' },
+                  { title: 'Community',      desc: 'Forums, beta testing, and local parent groups — join us.', link: '/support#community',       cta: 'Join the community' },
                 ].map((col) => (
-                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #f0f0f0', '&:last-child': { borderRight: 'none' } }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, fontSize: '1rem', color: '#1e3a8a' }}>{col.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#555', mb: 2, lineHeight: 1.5, fontSize: '0.9rem' }}>{col.desc}</Typography>
-                    <Button color="primary" size="small" sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.9rem' }} onClick={() => navigate(col.link)}>{col.cta}</Button>
+                  <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
+                    <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
+                    <Typography sx={{ color: '#6B7280', mb: 1.5, lineHeight: 1.6, fontSize: '0.83rem', fontFamily: '"Inter", sans-serif' }}>{col.desc}</Typography>
+                    <Button size="small" endIcon={<ArrowForwardIcon sx={{ fontSize: '14px !important' }} />}
+                      sx={{ textTransform: 'none', fontWeight: 600, p: 0, fontSize: '0.83rem', color: '#2563EB', fontFamily: '"Inter", sans-serif', '&:hover': { bgcolor: 'transparent' } }}
+                      onClick={() => navigate(col.link)}
+                    >{col.cta}</Button>
                   </Box>
                 ))}
               </Box>
@@ -320,117 +328,307 @@ const HomePage = () => {
         )}
 
         {/* ═══ HERO ═══ */}
-        <Box sx={{ position: 'relative', zIndex: 5, minHeight: '78vh', display: 'flex', alignItems: 'center', pb: 12 }}>
-          <Container maxWidth="lg">
-            <Grid container spacing={4} alignItems="center">
+        <Box
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            bgcolor: '#fff',
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          {/* Background orbs – kept left side only so right form stays clean */}
+          <Box sx={{
+            position: 'absolute', top: '-140px', left: '-100px',
+            width: 560, height: 560, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(238,121,26,0.07) 0%, transparent 70%)',
+            animation: 'orb1 10s ease-in-out infinite', pointerEvents: 'none',
+          }} />
+          <Box sx={{
+            position: 'absolute', bottom: '-120px', left: '-80px',
+            width: 460, height: 460, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,179,71,0.05) 0%, transparent 70%)',
+            animation: 'orb2 13s ease-in-out infinite', pointerEvents: 'none',
+          }} />
 
-              {/* Left: Text */}
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, bgcolor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(37,99,235,0.25)', borderRadius: 999, px: 2.5, py: 0.8, mb: 3, boxShadow: '0 2px 12px rgba(37,99,235,0.12)' }}>
-                  <SecurityIcon sx={{ fontSize: 18, color: '#2563EB' }} />
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: '#2563EB', fontSize: '0.85rem', letterSpacing: 0.5 }}>
-                    AI-Powered Parental Control
-                  </Typography>
-                </Box>
+          <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+            <Grid container alignItems="center" sx={{ minHeight: 'calc(100vh - 64px - 56px)', py: { xs: 8, md: 0 } }}>
 
-                <Typography variant="h2" sx={{ color: '#2563EB', fontWeight: 900, mb: 3, fontSize: { xs: '2rem', md: '3.2rem' }, lineHeight: 1.1, fontFamily: '"Nunito", sans-serif' }}>
-                  AegistNet: AI Parental Control for a Safer Digital World
+              {/* ── Left: Hero copy ── */}
+              <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center', py: { xs: 6, md: 10 }, pr: { md: 8 } }}>
+                <Box sx={{ maxWidth: 520, width: '100%' }}>
+                <Chip
+                  className="fade-slide"
+                  icon={<SecurityIcon sx={{ fontSize: '14px !important', color: '#EE791A !important' }} />}
+                  label="AI-Powered Parental Control"
+                  size="small"
+                  sx={{
+                    mb: 3,
+                    bgcolor: '#FFF5F0',
+                    color: '#EE791A',
+                    fontWeight: 600,
+                    fontSize: '0.78rem',
+                    border: '1px solid #FFD080',
+                    fontFamily: '"Inter", sans-serif',
+                    '& .MuiChip-icon': { color: '#EE791A' },
+                  }}
+                />
+
+                <Typography
+                  className="fade-slide-1"
+                  variant="h1"
+                  sx={{
+                    fontFamily: '"Inter", sans-serif',
+                    fontWeight: 800,
+                    fontSize: { xs: '2.6rem', md: '3.6rem' },
+                    lineHeight: 1.08,
+                    letterSpacing: '-0.03em',
+                    color: '#111827',
+                    mb: 3,
+                  }}
+                >
+                  Keep your kids{' '}
+                  <Box
+                    component="span"
+                    sx={{
+                      background: 'linear-gradient(90deg, #EE791A, #FFB347)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    safe online
+                  </Box>
+                  <Box component="span" sx={{ color: '#111827' }}>.</Box>
                 </Typography>
 
-                <Typography variant="h6" sx={{ color: '#1e3a8a', mb: 4, fontSize: '1.05rem', lineHeight: 1.7, opacity: 0.85, bgcolor: 'rgba(255,255,255,0.45)', backdropFilter: 'blur(4px)', borderRadius: 2, px: 2, py: 1.5, border: '1px solid rgba(255,255,255,0.6)' }}>
-                  Give your child the freedom to explore while keeping them safe. Our app works in real time and filters inappropriate content — built to give parents peace of mind.
+                <Typography
+                  className="fade-slide-2"
+                  sx={{
+                    fontFamily: '"Inter", sans-serif',
+                    fontSize: '1.05rem',
+                    color: '#6B7280',
+                    lineHeight: 1.8,
+                    mb: 5,
+                    maxWidth: 460,
+                  }}
+                >
+                  AegisNet uses real-time AI to filter harmful content, set screen-time limits,
+                  and give parents full visibility — without micromanaging every click.
                 </Typography>
 
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Button variant="contained" onClick={() => navigate('/register')} sx={{ px: 4, py: 1.6, borderRadius: 3, textTransform: 'none', fontWeight: 800, fontSize: '1rem', background: 'linear-gradient(90deg, #2563EB, #7c3aed)', boxShadow: '0 6px 24px rgba(37,99,235,0.45)', fontFamily: '"Nunito", sans-serif', '&:hover': { background: 'linear-gradient(90deg, #1D4ED8, #6d28d9)', transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(37,99,235,0.55)' }, transition: 'all 0.25s ease' }}>
-                    TRY NOW
-                  </Button>
-                  <Button variant="contained" onClick={() => navigate('/product')} sx={{ color: '#1e3a8a', textTransform: 'none', fontWeight: 700, bgcolor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', border: '2px solid rgba(37,99,235,0.35)', borderRadius: 3, px: 3, py: 1.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.9)', borderColor: '#2563EB', transform: 'translateY(-2px)' }, transition: 'all 0.25s ease', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #2563EB, #7c3aed)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14 }}>▶</Box>
-                    See it in action
-                  </Button>
-                </Box>
-
-                {/* Trust badges — MUI icons, no emoji */}
-                <Box sx={{ display: 'flex', gap: 2, mt: 4, flexWrap: 'wrap' }}>
+                {/* Trust badges */}
+                <Box className="fade-slide-3" sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                   {[
                     { Icon: LockOutlinedIcon, label: 'Safe & Secure' },
-                    { Icon: BoltIcon, label: 'Real-time AI' },
+                    { Icon: BoltIcon,         label: 'Real-time AI' },
                     { Icon: PhoneAndroidIcon, label: 'Android 9+' },
                   ].map(({ Icon, label }) => (
-                    <Box key={label} sx={{ bgcolor: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.8)', borderRadius: 999, px: 2, py: 0.6, display: 'flex', alignItems: 'center', gap: 0.5, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                      <Icon sx={{ fontSize: 15, color: '#2563EB' }} />
-                      <Typography variant="caption" sx={{ fontWeight: 700, color: '#1e3a8a', fontSize: '0.8rem' }}>{label}</Typography>
+                    <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+                      <Icon sx={{ fontSize: 14, color: '#9CA3AF' }} />
+                      <Typography sx={{ fontSize: '0.8rem', color: '#9CA3AF', fontWeight: 500, fontFamily: '"Inter", sans-serif' }}>
+                        {label}
+                      </Typography>
                     </Box>
                   ))}
                 </Box>
-              </Grid>
-
-              {/* Right: Animated CSS shield — no emoji */}
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, alignItems: 'center' }}>
-                  <Box className="hero-shield" sx={{ position: 'relative', width: { xs: 300, md: 380 }, height: { xs: 300, md: 380 } }}>
-
-                    {/* Glow halo */}
-                    <Box sx={{ position: 'absolute', inset: '-30px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.3) 0%, rgba(124,58,237,0.15) 50%, transparent 72%)', filter: 'blur(24px)', animation: 'rainbowPulse 3s ease-in-out infinite' }} />
-
-                    {/* Orbit rings */}
-                    <Box sx={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px dashed rgba(37,99,235,0.3)', animation: 'orbitSpin 18s linear infinite' }} />
-                    <Box sx={{ position: 'absolute', inset: '16px', borderRadius: '50%', border: '1.5px dashed rgba(124,58,237,0.2)', animation: 'orbitSpin 12s linear reverse infinite' }} />
-
-                    {/* Central shield shape (CSS polygon, no emoji) */}
-                    <Box sx={{
-                      position: 'absolute', top: '50%', left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      width: 150, height: 170,
-                      background: 'linear-gradient(160deg, #2563EB 0%, #7c3aed 55%, #db2777 100%)',
-                      clipPath: 'polygon(50% 0%, 100% 20%, 100% 60%, 50% 100%, 0% 60%, 0% 20%)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 12px 40px rgba(37,99,235,0.5)',
-                      animation: 'rainbowPulse 4s ease-in-out infinite',
-                      zIndex: 2,
-                    }}>
-                      <SecurityIcon sx={{ color: '#fff', fontSize: 64, filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }} />
-                    </Box>
-
-                    {/* Orbiting MUI icon cards */}
-                    {orbitIcons.map(({ Icon, color, angle }, i) => {
-                      const rad = (angle * Math.PI) / 180;
-                      const x = 50 + 37 * Math.cos(rad);
-                      const y = 50 + 37 * Math.sin(rad);
-                      return (
-                        <Box key={i} sx={{
-                          position: 'absolute', left: `${x}%`, top: `${y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          width: 52, height: 52, borderRadius: '14px',
-                          bgcolor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(8px)',
-                          border: `2px solid ${color}44`,
-                          boxShadow: `0 6px 20px ${color}33`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3,
-                          animation: `shapeBounce ${4 + i * 0.7}s ease-in-out ${i * 0.4}s infinite`,
-                        }}>
-                          <Icon sx={{ color, fontSize: 26 }} />
-                        </Box>
-                      );
-                    })}
-
-                    {/* Accent dots */}
-                    {[0, 1, 2].map(i => (
-                      <Box key={i} sx={{
-                        position: 'absolute', top: `${18 + i * 28}%`, right: `${-4 + i * 2}%`,
-                        width: 12, height: 12, borderRadius: '50%',
-                        bgcolor: ['#FFD93D', '#6BCB77', '#FF6B6B'][i],
-                        boxShadow: `0 0 12px ${['#FFD93D', '#6BCB77', '#FF6B6B'][i]}`,
-                        zIndex: 4,
-                        animation: `shapeBounce ${3 + i}s ease-in-out ${i * 0.6}s infinite`,
-                      }} />
-                    ))}
-                  </Box>
                 </Box>
               </Grid>
+
+              {/* ── Right: Login form (frameless, blended) ── */}
+              <Grid
+                item xs={12} md={6}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: { xs: 'center', md: 'flex-end' },
+                  py: { xs: 6, md: 10 },
+                  pl: { md: '64px !important' },
+                }}
+              >
+                <Box
+                  className="login-card"
+                  sx={{ width: '100%', maxWidth: 340 }}
+                >
+                  {/* Card header */}
+                  {!resetMode ? (
+                    <Typography sx={{ fontFamily: '"Inter", sans-serif', fontSize: '0.85rem', color: '#6B7280', mb: 2 }}>
+                      Sign in to continue to AegisNet
+                    </Typography>
+                  ) : (
+                    <Typography sx={{ fontFamily: '"Inter", sans-serif', fontSize: '0.85rem', color: '#6B7280', mb: 2 }}>
+                      Enter your email to get a reset link
+                    </Typography>
+                  )}
+
+                  {/* Alerts */}
+                  {error        && <Alert severity="error"   sx={{ mb: 1.5, borderRadius: '8px', fontSize: '0.78rem', py: 0.5 }}>{error}</Alert>}
+                  {resetSuccess && <Alert severity="success" sx={{ mb: 1.5, borderRadius: '8px', fontSize: '0.78rem', py: 0.5 }}>{resetSuccess}</Alert>}
+
+                  {/* Sign‑in form */}
+                  {!resetMode ? (
+                    <Box component="form" onSubmit={handleLogin}>
+                      <TextField
+                        className="clean-field"
+                        fullWidth
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={loading}
+                        size="small"
+                        sx={{ mb: 1.5 }}
+                      />
+                      <TextField
+                        className="clean-field"
+                        fullWidth
+                        label="Password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={loading}
+                        size="small"
+                        sx={{ mb: 2 }}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small" sx={{ color: '#9CA3AF' }}>
+                                {showPassword ? <VisibilityOff sx={{ fontSize: 16 }} /> : <Visibility sx={{ fontSize: 16 }} />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+
+                      <Button
+                        className="cta-btn"
+                        type="submit"
+                        fullWidth
+                        disabled={loading}
+                        sx={{
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.87rem',
+                          fontFamily: '"Inter", sans-serif',
+                          bgcolor: '#EE791A',
+                          color: '#fff',
+                          borderRadius: '8px',
+                          py: 1.05,
+                          mb: 2,
+                          '&:hover': { bgcolor: '#CC6612' },
+                          '&:disabled': { bgcolor: '#D1D5DB', color: '#9CA3AF' },
+                        }}
+                      >
+                        {loading ? <CircularProgress size={17} sx={{ color: '#fff' }} /> : 'Sign in'}
+                      </Button>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Link
+                          component="button"
+                          type="button"
+                          onClick={() => navigate('/register')}
+                          underline="none"
+                          sx={{ fontFamily: '"Inter", sans-serif', fontSize: '0.76rem', color: '#EE791A', fontWeight: 500, '&:hover': { color: '#CC6612' } }}
+                        >
+                          Create account
+                        </Link>
+                        <Link
+                          component="button"
+                          type="button"
+                          onClick={() => { setResetMode(true); setError(''); }}
+                          underline="none"
+                          sx={{ fontFamily: '"Inter", sans-serif', fontSize: '0.76rem', color: '#9CA3AF', '&:hover': { color: '#374151' } }}
+                        >
+                          Forgot password?
+                        </Link>
+                      </Box>
+                    </Box>
+                  ) : (
+                    /* ── Reset form ── */
+                    <Box component="form" onSubmit={handlePasswordReset}>
+                      <TextField
+                        className="clean-field"
+                        fullWidth
+                        label="Email"
+                        type="email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        required
+                        disabled={loading}
+                        size="small"
+                        sx={{ mb: 2 }}
+                      />
+
+                      <Button
+                        className="cta-btn"
+                        type="submit"
+                        fullWidth
+                        disabled={loading}
+                        sx={{
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.87rem',
+                          fontFamily: '"Inter", sans-serif',
+                          bgcolor: '#EE791A',
+                          color: '#fff',
+                          borderRadius: '8px',
+                          py: 1.05,
+                          mb: 1.5,
+                          '&:hover': { bgcolor: '#CC6612' },
+                        }}
+                      >
+                        {loading ? <CircularProgress size={17} sx={{ color: '#fff' }} /> : 'Send reset link'}
+                      </Button>
+
+                      <Button
+                        fullWidth
+                        type="button"
+                        onClick={() => { setResetMode(false); setError(''); setResetSuccess(''); }}
+                        disableRipple
+                        sx={{
+                          textTransform: 'none',
+                          fontWeight: 500,
+                          fontSize: '0.78rem',
+                          fontFamily: '"Inter", sans-serif',
+                          color: '#9CA3AF',
+                          '&:hover': { bgcolor: 'transparent', color: '#374151' },
+                        }}
+                      >
+                        ← Back to sign in
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+              </Grid>
+
             </Grid>
           </Container>
         </Box>
+
+        {/* ── Minimal footer ── */}
+        <Box sx={{ borderTop: '1px solid #E5E7EB', py: 2.5, bgcolor: '#FAFAFA' }}>
+          <Container maxWidth="lg">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+              <Typography sx={{ fontSize: '0.78rem', color: '#9CA3AF', fontFamily: '"Inter", sans-serif' }}>
+                © {new Date().getFullYear()} AegisNet. All rights reserved.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                {['Privacy Policy', 'Terms', 'Contact'].map(link => (
+                  <Typography
+                    key={link}
+                    sx={{ fontSize: '0.78rem', color: '#9CA3AF', cursor: 'pointer', fontFamily: '"Inter", sans-serif', '&:hover': { color: '#374151' } }}
+                  >
+                    {link}
+                  </Typography>
+                ))}
+              </Box>
+            </Box>
+          </Container>
+        </Box>
+
       </Box>
     </>
   );

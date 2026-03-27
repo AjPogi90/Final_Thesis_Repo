@@ -111,15 +111,6 @@ export const toggleDeviceLock = async (childId, locked) => {
   }
 };
 
-export const requestLocationRefresh = async (childId) => {
-  try {
-    const locationRef = ref(database, `users/childs/${childId}`);
-    await update(locationRef, { requestLocationRefresh: true, lastLocationRefresh: Date.now() });
-    return { success: true };
-  } catch (error) {
-    return { success: false, error };
-  }
-};
 
 // Parent-controlled helper: set or clear the `appDeleted` flag on the child record.
 export const setAppDeleted = async (childId, deleted) => {

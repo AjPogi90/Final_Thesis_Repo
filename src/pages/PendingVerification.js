@@ -43,7 +43,7 @@ const PendingVerification = () => {
 
     const handleLogout = async () => {
         await signOut(auth);
-        navigate('/login');
+        navigate('/');
     };
 
     const validateFile = useCallback((file) => {

@@ -13,8 +13,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ShieldIcon from '@mui/icons-material/Shield';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -37,7 +36,7 @@ const AdminLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const { isDark, toggleTheme, colors } = useTheme();
+    const { colors } = useTheme();
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -49,7 +48,7 @@ const AdminLayout = ({ children }) => {
     const handleSignOut = async () => {
         await signOut(auth);
         setLogoutModalOpen(false);
-        navigate('/login');
+        navigate('/');
     };
 
     const handleNavigation = (path) => {
@@ -99,21 +98,7 @@ const AdminLayout = ({ children }) => {
 
             <Divider sx={{ borderColor: colors.divider }} />
 
-            {/* Theme Toggle */}
-            <Box sx={{ px: 2.5, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {isDark
-                        ? <DarkModeIcon sx={{ fontSize: 18, color: colors.textSecondary }} />
-                        : <LightModeIcon sx={{ fontSize: 18, color: '#fbbf24' }} />
-                    }
-                    <Typography variant="caption" sx={{ color: colors.textSecondary, fontSize: '0.8rem' }}>
-                        {isDark ? 'Dark Mode' : 'Light Mode'}
-                    </Typography>
-                </Box>
-                <Switch checked={isDark} onChange={toggleTheme} size="small" sx={{ '& .Mui-checked': { color: '#2563EB' }, '& .Mui-checked + .MuiSwitch-track': { bgcolor: '#2563EB' } }} />
-            </Box>
 
-            <Divider sx={{ borderColor: colors.divider }} />
 
             {/* Admin Profile */}
             <Box sx={{ p: 2 }}>

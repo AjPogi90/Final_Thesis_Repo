@@ -16,7 +16,7 @@ import { database } from '../../config/firebase';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminDashboard = () => {
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const [parents, setParents] = useState([]);
     const [children, setChildren] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
     const cardBorder = colors.cardBorder;
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const txtDim = 'rgba(0,0,0,0.35)';
     const divider = colors.divider;
 
     const statCards = [
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
             <Grid container spacing={2} sx={{ mb: 4 }}>
                 {statCards.map((stat) => (
                     <Grid item xs={6} sm={4} md={2} key={stat.label}>
-                        <Paper sx={{ p: 2.5, bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, transition: 'border-color 0.2s', '&:hover': { borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.2)' } }}>
+                        <Paper sx={{ p: 2.5, bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, transition: 'border-color 0.2s', '&:hover': { borderColor: 'rgba(0,0,0,0.2)' } }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                                 <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: stat.color }}>
                                     {stat.icon}

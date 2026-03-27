@@ -20,7 +20,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PeopleIcon from '@mui/icons-material/People';
 import AppsIcon from '@mui/icons-material/Apps';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SecurityIcon from '@mui/icons-material/Security';
 import EmailIcon from '@mui/icons-material/Email';
@@ -46,11 +46,7 @@ const Help = () => {
             title: 'App Control',
             description: 'Block or allow specific apps on your children\'s devices. Manage app permissions and monitor app usage patterns.',
         },
-        {
-            icon: <LocationOnIcon sx={{ fontSize: 40, color: colors.primary }} />,
-            title: 'Location Tracking',
-            description: 'View real-time location of your children\'s devices. Get peace of mind knowing where your kids are.',
-        },
+
         {
             icon: <FilterListIcon sx={{ fontSize: 40, color: colors.primary }} />,
             title: 'Content Filters',
@@ -67,10 +63,7 @@ const Help = () => {
             question: 'Can I block specific apps on my child\'s phone?',
             answer: 'Yes! Go to the Apps page, select your child from the dropdown menu, and you\'ll see all installed apps on their device. Click the toggle switch next to any app to block or unblock it. Changes are applied immediately to the device.',
         },
-        {
-            question: 'How accurate is the location tracking?',
-            answer: 'Location accuracy depends on the device\'s GPS signal and internet connection. In optimal conditions, location is accurate within 10-50 meters. The location updates every 5 minutes by default, but you can manually refresh for real-time updates.',
-        },
+
         {
             question: 'What are content filters and how do I set them?',
             answer: 'Content filters block access to inappropriate websites and content. Go to the Filters page, select a child, and toggle on the filters you want to enable (Adult Content, Gambling, Violence, Social Media, etc.). You can also apply the same filter settings to all your children at once.',
@@ -85,7 +78,7 @@ const Help = () => {
         },
         {
             question: 'Is my child\'s data private and secure?',
-            answer: 'Absolutely. All data is encrypted both in transit and at rest. We follow industry-standard security practices and never share your family\'s data with third parties. Location data is only visible to you and is automatically deleted after 30 days.',
+            answer: 'Absolutely. All data is encrypted both in transit and at rest. We follow industry-standard security practices and never share your family\'s data with third parties.',
         },
         {
             question: 'What should I do if the app is not syncing?',
@@ -99,7 +92,7 @@ const Help = () => {
         'Register Child Account and Enter parent email',
         'Login Child Account ',
         'Set up app controls and content filters',
-        'Review location settings and permissions',
+
         'Explore the dashboard to see activity overview',
     ];
 

@@ -10,7 +10,7 @@ import { database } from '../../config/firebase';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminReports = () => {
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const [parents, setParents] = useState([]);
     const [children, setChildren] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const AdminReports = () => {
     const cardBorder = colors.cardBorder;
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const txtDim = 'rgba(0,0,0,0.35)';
     const divider = colors.divider;
 
     const nonAdmin = parents.filter(p => !p.isAdmin);

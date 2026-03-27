@@ -23,14 +23,13 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
+
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LockResetIcon from '@mui/icons-material/LockReset';
 
 const Settings = () => {
-    const { theme, toggleTheme, colors } = useTheme();
+    const { colors } = useTheme();
     const { deleteAccount, changePassword } = useAuth();
     const navigate = useNavigate();
 
@@ -131,7 +130,7 @@ const Settings = () => {
         setDeleteError('');
         const result = await deleteAccount(password);
         if (result.success) {
-            navigate('/login');
+            navigate('/');
         } else {
             const code = result.error?.code || '';
             if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
@@ -158,61 +157,7 @@ const Settings = () => {
                     </Typography>
                 </Box>
 
-                {/* Appearance Section */}
-                <Paper
-                    sx={{
-                        p: 3,
-                        mb: 3,
-                        borderRadius: 2,
-                        bgcolor: colors.cardBg,
-                        border: `1px solid ${colors.cardBorder}`,
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>
-                        Appearance
-                    </Typography>
-                    <Divider sx={{ mb: 2, borderColor: colors.divider }} />
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            {theme === 'light' ? (
-                                <LightModeIcon sx={{ fontSize: 32, color: colors.primary }} />
-                            ) : (
-                                <DarkModeIcon sx={{ fontSize: 32, color: colors.primary }} />
-                            )}
-                            <Box>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: colors.text }}>
-                                    Theme
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                                    {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
-                                </Typography>
-                            </Box>
-                        </Box>
-
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={theme === 'dark'}
-                                    onChange={toggleTheme}
-                                    sx={{
-                                        '& .MuiSwitch-switchBase.Mui-checked': {
-                                            color: colors.primary,
-                                        },
-                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                            bgcolor: colors.primary,
-                                        },
-                                    }}
-                                />
-                            }
-                            label={
-                                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                                    {theme === 'light' ? 'Switch to Dark' : 'Switch to Light'}
-                                </Typography>
-                            }
-                        />
-                    </Box>
-                </Paper>
 
                 {/* Security Section */}
                 <Paper

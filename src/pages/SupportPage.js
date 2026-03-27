@@ -22,7 +22,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import BugReportIcon from '@mui/icons-material/BugReport';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
+
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -117,7 +117,7 @@ const SupportPage = () => {
         },
         {
             q: 'What happens if my child\'s device loses internet connection?',
-            a: 'Core protection features like app locks and scheduled restrictions continue to work offline. Activity logs and location data will sync automatically once the connection is restored.',
+            a: 'Core protection features like app locks and scheduled restrictions continue to work offline. Activity logs will sync automatically once the connection is restored.',
         },
         {
             q: 'Is my family\'s data secure?',
@@ -131,11 +131,7 @@ const SupportPage = () => {
             title: 'App Not Filtering Content',
             desc: 'Ensure accessibility permissions are enabled in Settings > Accessibility > AegisNet. Restart the app and verify the protection status shows "Active" on your dashboard.',
         },
-        {
-            icon: <WifiOffIcon sx={{ fontSize: 42 }} />,
-            title: 'Location Not Updating',
-            desc: 'Check that location permissions are set to "Allow all the time" in device settings. Ensure GPS is turned on and battery optimization is disabled for AegisNet.',
-        },
+
         {
             icon: <SyncProblemIcon sx={{ fontSize: 42 }} />,
             title: 'Dashboard Not Syncing',
@@ -144,7 +140,7 @@ const SupportPage = () => {
         {
             icon: <BatteryAlertIcon sx={{ fontSize: 42 }} />,
             title: 'High Battery Usage',
-            desc: 'Go to AegisNet settings and reduce the location update frequency. Disable screen analysis for apps that don\'t need monitoring to optimize battery performance.',
+            desc: 'Disable screen analysis for apps that don\'t need monitoring to optimize battery performance.',
         },
     ];
 
@@ -244,7 +240,7 @@ const SupportPage = () => {
                     <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
                         <Button
                             variant="outlined"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/')}
                             sx={{
                                 textTransform: 'none',
                                 color: '#1e3a8a',
@@ -878,7 +874,7 @@ const SupportPage = () => {
                                 { label: 'Home', to: '/' },
                                 { label: 'Product', to: '/product' },
                                 { label: 'Learn', to: '/learn' },
-                                { label: 'Log in', to: '/login' },
+                                { label: 'Log in', to: '/' },
                                 { label: 'Sign up', to: '/register' },
                             ].map((l) => (
                                 <Button

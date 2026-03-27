@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import AppsIcon from '@mui/icons-material/Apps';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -78,7 +77,7 @@ const Dashboard = () => {
 
         {/* Quick Stats */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4}>
             <Paper
               sx={{
                 p: 3,
@@ -101,19 +100,10 @@ const Dashboard = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', gap: 1, fontSize: '0.875rem' }}>
-                <Typography variant="caption">
-                  🟢 {onlineCount} Online
-                </Typography>
-                <Typography variant="caption">•</Typography>
-                <Typography variant="caption">
-                  ⚪ {offlineCount} Offline
-                </Typography>
-              </Box>
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4}>
             <Paper
               sx={{
                 p: 3,
@@ -142,36 +132,7 @@ const Dashboard = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <Paper
-              sx={{
-                p: 3,
-                borderRadius: 2,
-                bgcolor: colors.cardBg,
-                border: `1px solid ${colors.cardBorder}`,
-                color: colors.text,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-4px)' },
-              }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <LocationOnIcon sx={{ fontSize: 40, opacity: 0.9, color: colors.primary }} />
-                <Box sx={{ textAlign: 'right' }}>
-                  <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                    {onlineCount}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Tracked
-                  </Typography>
-                </Box>
-              </Box>
-              <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                Active location tracking
-              </Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4}>
             <Paper
               sx={{
                 p: 3,
@@ -207,7 +168,7 @@ const Dashboard = () => {
             Quick Actions
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={4} md={4}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -228,7 +189,7 @@ const Dashboard = () => {
                 Manage Children
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={4} md={4}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -249,28 +210,7 @@ const Dashboard = () => {
                 Block Apps
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                variant="outlined"
-                fullWidth
-                startIcon={<LocationOnIcon />}
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate('/location')}
-                sx={{
-                  py: 1.5,
-                  justifyContent: 'space-between',
-                  borderColor: colors.divider,
-                  color: colors.text,
-                  '&:hover': {
-                    borderColor: colors.primary,
-                    bgcolor: colors.hover,
-                  }
-                }}
-              >
-                View Locations
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={4} md={4}>
               <Button
                 variant="outlined"
                 fullWidth

@@ -14,8 +14,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ShieldIcon from '@mui/icons-material/Shield';
 import LockIcon from '@mui/icons-material/Lock';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PhoneCallbackIcon from '@mui/icons-material/PhoneCallback';
+
+import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InstallMobileIcon from '@mui/icons-material/InstallMobile';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
@@ -74,19 +75,20 @@ const ProductPage = () => {
             color: '#FFB347',
             gradient: 'linear-gradient(135deg, #FFB347, #FFD080)',
         },
+
         {
-            icon: <LocationOnIcon sx={{ fontSize: 38 }} />,
-            title: 'Live Location Tracking',
-            desc: 'See where your child is with accurate, real-time GPS updates and location history.',
-            color: '#EE791A',
-            gradient: 'linear-gradient(135deg, #EE791A, #FF9F4A)',
-        },
-        {
-            icon: <PhoneCallbackIcon sx={{ fontSize: 38 }} />,
-            title: 'Call & Text Monitoring',
-            desc: 'Stay informed about who they communicate with to prevent risky or harmful interactions.',
+            icon: <PhonelinkLockIcon sx={{ fontSize: 38 }} />,
+            title: 'Instant Device Lock',
+            desc: 'Instantly lock your child\'s device with a single tap to manage screen time or during bedtime routines.',
             color: '#D4651E',
             gradient: 'linear-gradient(135deg, #D4651E, #E88A4A)',
+        },
+        {
+            icon: <DashboardIcon sx={{ fontSize: 38 }} />,
+            title: 'Unified Dashboard',
+            desc: 'Manage all your children\'s devices from a single, easy-to-use control center, accessible anywhere.',
+            color: '#EE791A',
+            gradient: 'linear-gradient(135deg, #EE791A, #FFB347)',
         },
     ];
 
@@ -187,7 +189,7 @@ const ProductPage = () => {
                     <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
                         <Button
                             variant="outlined"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/')}
                             sx={{
                                 textTransform: 'none',
                                 color: '#1e3a8a',
@@ -776,7 +778,7 @@ const ProductPage = () => {
                         <Box sx={{ display: 'flex', gap: 3 }}>
                             {[
                                 { label: 'Home', to: '/' },
-                                { label: 'Log in', to: '/login' },
+                                { label: 'Log in', to: '/' },
                                 { label: 'Sign up', to: '/register' },
                             ].map((l) => (
                                 <Button

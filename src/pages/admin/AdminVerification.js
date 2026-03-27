@@ -25,7 +25,7 @@ const statusColors = {
 
 const AdminVerification = () => {
     const { reviewUser } = useAuth();
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
@@ -81,7 +81,7 @@ const AdminVerification = () => {
     const cardBorder = colors.cardBorder;
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const txtDim = 'rgba(0,0,0,0.35)';
     const divider = colors.divider;
 
     return (
@@ -117,7 +117,7 @@ const AdminVerification = () => {
                     {filtered.map(u => {
                         const si = statusColors[u.verificationStatus] || statusColors.pending_verification;
                         return (
-                            <Paper key={u.uid} sx={{ p: 2.5, bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, '&:hover': { borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.2)' } }}>
+                            <Paper key={u.uid} sx={{ p: 2.5, bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, '&:hover': { borderColor: 'rgba(0,0,0,0.2)' } }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, minWidth: 200 }}>
                                         <Avatar sx={{ bgcolor: '#EE791A', width: 44, height: 44, fontWeight: 700 }}>{(u.name || u.email || '?')[0].toUpperCase()}</Avatar>

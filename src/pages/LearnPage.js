@@ -24,7 +24,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import GamesIcon from '@mui/icons-material/Games';
+import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock';
 import LanguageIcon from '@mui/icons-material/Language';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
@@ -122,16 +122,16 @@ const LearnPage = () => {
             rating: 'Essential',
         },
         {
-            icon: <GamesIcon sx={{ fontSize: 38 }} />,
-            title: 'Monitor Calls & Messages',
-            desc: 'Stay aware of who your child is communicating with. AegisNet\'s call and text monitoring helps you spot harmful contacts before risks escalate.',
+            icon: <PhonelinkLockIcon sx={{ fontSize: 38 }} />,
+            title: 'Instant Device Lock',
+            desc: 'Instantly lock your child\'s device with a single tap to manage screen time, encourage breaks, or during important family moments.',
             color: '#FFB347',
             rating: 'High Priority',
         },
         {
             icon: <MenuBookIcon sx={{ fontSize: 38 }} />,
-            title: 'Track Location Wisely',
-            desc: 'Use live GPS tracking to know your child is safe without being intrusive. Review location history and set trusted zones so you\'re always informed.',
+            title: 'Manage Screen Time',
+            desc: 'Help your child build healthy digital habits. Use app limits and scheduling tools to balance screen time with homework, hobbies, and family time.',
             color: '#EE791A',
             rating: 'Important',
         },
@@ -238,7 +238,7 @@ const LearnPage = () => {
                     <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
                         <Button
                             variant="outlined"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/')}
                             sx={{
                                 textTransform: 'none',
                                 color: '#1e3a8a',
@@ -924,7 +924,7 @@ const LearnPage = () => {
                             {[
                                 { label: 'Home', to: '/' },
                                 { label: 'Product', to: '/product' },
-                                { label: 'Log in', to: '/login' },
+                                { label: 'Log in', to: '/' },
                                 { label: 'Sign up', to: '/register' },
                             ].map((l) => (
                                 <Button

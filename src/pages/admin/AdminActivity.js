@@ -29,7 +29,7 @@ export const logActivity = async (type, details, userId = '', userEmail = '') =>
 };
 
 const AdminActivity = () => {
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -66,7 +66,7 @@ const AdminActivity = () => {
     const cardBorder = colors.cardBorder;
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const txtDim = 'rgba(0,0,0,0.35)';
     const divider = colors.divider;
 
     return (

@@ -18,7 +18,7 @@ import { database } from '../../config/firebase';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const AdminUsers = () => {
-    const { colors, isDark } = useTheme();
+    const { colors } = useTheme();
     const [tab, setTab] = useState(0);
     const [parents, setParents] = useState([]);
     const [children, setChildren] = useState([]);
@@ -82,7 +82,7 @@ const AdminUsers = () => {
     const cardBorder = colors.cardBorder;
     const txtMain = colors.text;
     const txtSub = colors.textSecondary;
-    const txtDim = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+    const txtDim = 'rgba(0,0,0,0.35)';
     const divider = colors.divider;
 
     const statusChip = (status) => {
