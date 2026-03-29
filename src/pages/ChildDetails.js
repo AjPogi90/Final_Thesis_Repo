@@ -20,7 +20,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChildData, updateChildName, updateChildGender, deleteChild } from '../hooks/useFirebase';
+import { useChildData, updateChildName, updateChildGender, deleteChild, approveLogoutRequest, denyLogoutRequest } from '../hooks/useFirebase';
 import { useTheme } from '../contexts/ThemeContext';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -104,6 +104,32 @@ const ChildDetails = () => {
     setTempGender('');
   };
 
+  const handleApproveLogout = async () => {
+    setLoadingAction(true);
+    const result = await approveLogoutRequest(childId);
+    setLoadingAction(false);
+    if (result.success) {
+      setSuccessMessage('Logout approved. The child device will sign out shortly.');
+      setTimeout(() => setSuccessMessage(''), 4000);
+    } else {
+      setSuccessMessage(`Failed to approve logout: ${result.error?.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    }
+  };
+
+  const handleDenyLogout = async () => {
+    setLoadingAction(true);
+    const result = await denyLogoutRequest(childId);
+    setLoadingAction(false);
+    if (result.success) {
+      setSuccessMessage('Logout request denied.');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } else {
+      setSuccessMessage(`Failed to deny logout: ${result.error?.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: colors.background, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -165,6 +191,41 @@ const ChildDetails = () => {
             onClose={() => setSuccessMessage('')}
           >
             {successMessage}
+          </Alert>
+        )}
+
+        {child.logoutRequest === 'pending' && (
+          <Alert
+            severity="warning"
+            sx={{
+              mb: 3,
+              alignItems: 'center',
+              '& .MuiAlert-message': { flexGrow: 1 }
+            }}
+            action={
+              <Stack direction="row" spacing={1}>
+                <Button 
+                  color="warning" 
+                  variant="contained" 
+                  size="small" 
+                  onClick={handleApproveLogout}
+                  disabled={loadingAction}
+                >
+                  Approve Logout
+                </Button>
+                <Button 
+                  color="warning" 
+                  variant="outlined" 
+                  size="small" 
+                  onClick={handleDenyLogout}
+                  disabled={loadingAction}
+                >
+                  Deny
+                </Button>
+              </Stack>
+            }
+          >
+            <strong>Pending Action:</strong> {child.name || 'This child'} has requested to log out. If approved, their device will no longer be monitored by AegisNet.
           </Alert>
         )}
 

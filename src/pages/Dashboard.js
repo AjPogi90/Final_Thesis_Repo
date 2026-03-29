@@ -34,6 +34,9 @@ const Dashboard = () => {
   const onlineCount = safeChildren.filter((c) => isOnline(c.lastUpdated)).length;
   const offlineCount = total - onlineCount;
 
+  // Pending logouts
+  const pendingLogouts = safeChildren.filter(c => c.logoutRequest === 'pending');
+
   // Calculate total blocked apps across all children
   const totalBlockedApps = safeChildren.reduce((sum, child) => {
     if (!child.apps) return sum;
@@ -73,6 +76,31 @@ const Dashboard = () => {
         {error && (
           <Alert severity="error" sx={{ mb: 3, bgcolor: 'rgba(255,0,0,0.08)', color: colors.text }}>
             Error loading dashboard: {error.message}
+          </Alert>
+        )}
+
+        {/* Pending Logouts Global Alert */}
+        {pendingLogouts.length > 0 && (
+          <Alert
+            severity="warning"
+            sx={{
+              mb: 4,
+              alignItems: 'center',
+              borderRadius: 2,
+              '& .MuiAlert-message': { flexGrow: 1 }
+            }}
+            action={
+              <Button
+                color="warning"
+                variant="outlined"
+                size="small"
+                onClick={() => navigate(`/child/${pendingLogouts[0].id}`)}
+              >
+                Review Request
+              </Button>
+            }
+          >
+            <strong>Attention Required:</strong> {pendingLogouts.length} child {pendingLogouts.length > 1 ? 'devices have' : 'device has'} requested to securely log out.
           </Alert>
         )}
 
