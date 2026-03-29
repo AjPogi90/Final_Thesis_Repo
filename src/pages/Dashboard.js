@@ -46,7 +46,7 @@ const Dashboard = () => {
   // Calculate active filters across all children
   const childrenWithFilters = safeChildren.filter((child) => {
     const filters = child.contentFilters || {};
-    return filters.nudity || filters.violence || filters.harmfulText;
+    return filters.nudityActive || filters.violenceActive || filters.harmfulTextActive;
   }).length;
 
   if (loading) {

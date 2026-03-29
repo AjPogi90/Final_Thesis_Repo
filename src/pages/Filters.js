@@ -92,7 +92,7 @@ const Filters = () => {
     }
 
     const selectedChild = children?.find((c) => c.id === selectedChildId);
-    const activeFiltersCount = filterDefinitions.filter(def => filters[def.key]).length;
+    const activeFiltersCount = filterDefinitions.filter(def => filters[`${def.key}Active`]).length;
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: colors.background, color: colors.text }}>
@@ -238,14 +238,19 @@ const Filters = () => {
 
                                 {/* Filter Controls */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                    {filterDefinitions.map((filter) => (
+                                    {filterDefinitions.map((filter) => {
+                                        const requestedState = filters[filter.key] || false;
+                                        const activeState = filters[`${filter.key}Active`] || false;
+                                        const isPending = requestedState && !activeState;
+
+                                        return (
                                         <Paper
                                             key={filter.key}
                                             sx={{
                                                 p: 3,
                                                 borderRadius: 2,
                                                 border: 2,
-                                                borderColor: filters[filter.key] ? colors.success : colors.cardBorder,
+                                                borderColor: activeState ? colors.success : colors.cardBorder,
                                                 bgcolor: colors.cardBg,
                                                 transition: 'all 0.3s',
                                                 '&:hover': {
@@ -267,7 +272,7 @@ const Filters = () => {
                                                         <Typography variant="h6" sx={{ fontWeight: 600, color: colors.text }}>
                                                             {filter.label}
                                                         </Typography>
-                                                        {filters[filter.key] && (
+                                                        {activeState && (
                                                             <Chip
                                                                 label="Active"
                                                                 size="small"
@@ -295,22 +300,29 @@ const Filters = () => {
                                                     </Typography>
                                                 </Box>
 
-                                                <Switch
-                                                    checked={filters[filter.key] || false}
-                                                    onChange={(e) => handleFilterToggle(filter.key, e.target.checked)}
-                                                    disabled={saveLoading}
-                                                    sx={{
-                                                        '& .MuiSwitch-switchBase.Mui-checked': {
-                                                            color: colors.success,
-                                                        },
-                                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                                            bgcolor: colors.success,
-                                                        },
-                                                    }}
-                                                />
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    {isPending && (
+                                                        <Tooltip title="Waiting for child to accept permissions..." arrow placement="top">
+                                                            <CircularProgress size={20} sx={{ color: colors.textSecondary }} />
+                                                        </Tooltip>
+                                                    )}
+                                                    <Switch
+                                                        checked={activeState}
+                                                        onChange={(e) => handleFilterToggle(filter.key, e.target.checked)}
+                                                        disabled={saveLoading || isPending}
+                                                        sx={{
+                                                            '& .MuiSwitch-switchBase.Mui-checked': {
+                                                                color: colors.success,
+                                                            },
+                                                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                                                bgcolor: colors.success,
+                                                            },
+                                                        }}
+                                                    />
+                                                </Box>
                                             </Box>
                                         </Paper>
-                                    ))}
+                                    )})}
                                 </Box>
 
                                 {/* Info Footer */}
