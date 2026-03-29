@@ -111,7 +111,58 @@ export const toggleDeviceLock = async (childId, locked) => {
   }
 };
 
+export const useNsfwIncidents = (childId) => {
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    if (!childId) {
+      setLoading(false);
+      return;
+    }
+
+    const incidentsRef = ref(database, `users/childs/${childId}/nsfw_incidents`);
+    const unsubscribe = onValue(
+      incidentsRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const parsedIncidents = Object.keys(data)
+            .map((key) => ({
+              id: key,
+              ...data[key],
+            }))
+            .sort((a, b) => b.timestamp - a.timestamp); // newest first
+          
+          setIncidents(parsedIncidents);
+        } else {
+          setIncidents([]);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        setError(error);
+        setLoading(false);
+      }
+    );
+
+    return unsubscribe;
+  }, [childId]);
+
+  return { incidents, loading, error };
+};
+
+export const deleteNsfwIncident = async (childId, incidentId) => {
+  try {
+    const incidentRef = ref(database, `users/childs/${childId}/nsfw_incidents/${incidentId}`);
+    await remove(incidentRef);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting NSFW incident:', error);
+    return { success: false, error };
+  }
+};
 // Parent-controlled helper: set or clear the `appDeleted` flag on the child record.
 export const setAppDeleted = async (childId, deleted) => {
   try {

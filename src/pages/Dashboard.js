@@ -16,6 +16,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SecurityIcon from '@mui/icons-material/Security';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import WarningIcon from '@mui/icons-material/Warning';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList } from '../hooks/useFirebase';
@@ -168,7 +169,7 @@ const Dashboard = () => {
             Quick Actions
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={6} md={3}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -189,7 +190,7 @@ const Dashboard = () => {
                 Manage Children
               </Button>
             </Grid>
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={6} md={3}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -210,7 +211,7 @@ const Dashboard = () => {
                 Block Apps
               </Button>
             </Grid>
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={6} md={3}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -229,6 +230,27 @@ const Dashboard = () => {
                 }}
               >
                 Content Filters
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<WarningIcon />}
+                endIcon={<ArrowForwardIcon />}
+                onClick={() => navigate('/incidents')}
+                sx={{
+                  py: 1.5,
+                  justifyContent: 'space-between',
+                  borderColor: colors.divider,
+                  color: colors.text,
+                  '&:hover': {
+                    borderColor: colors.primary,
+                    bgcolor: colors.hover,
+                  }
+                }}
+              >
+                NSFW Alerts
               </Button>
             </Grid>
           </Grid>

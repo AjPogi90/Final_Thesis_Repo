@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import ChildDetails from './pages/ChildDetails';
 import Children from './pages/Children';
 import Apps from './pages/Apps';
+import Incidents from './pages/Incidents';
 
 import Filters from './pages/Filters';
 import Settings from './pages/Settings';
@@ -106,6 +107,16 @@ function App() {
                 <ProtectedRoute>
                   <AppLayout>
                     <Apps />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/incidents"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Incidents />
                   </AppLayout>
                 </ProtectedRoute>
               }

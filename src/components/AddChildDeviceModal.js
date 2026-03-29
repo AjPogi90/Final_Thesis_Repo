@@ -41,6 +41,8 @@ const AddChildDeviceModal = ({ open, onClose }) => {
         },
     ];
 
+    const activeStep = 0;
+
     return (
         <Dialog
             open={open}
@@ -73,7 +75,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                     AegistNet currently supports Android devices only. The child app is required for monitoring and control features.
                 </Alert>
 
-                <Stepper activeStep={-1} orientation="vertical">
+                <Stepper activeStep={activeStep} orientation="vertical">
                     {steps.map((step, index) => (
                         <Step key={step.label} active>
                             <StepLabel
@@ -134,13 +136,17 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                             }}
                                         >
                                             <Box sx={{ bgcolor: 'white', p: 1, display: 'inline-block', borderRadius: 1, mb: 2 }}>
-                                                {user && (
+                                                {user ? (
                                                     <QRCodeSVG
                                                         value={JSON.stringify({ parentEmail: user.email, parentUid: user.uid })}
                                                         size={180}
                                                         level={"H"}
                                                         includeMargin={true}
                                                     />
+                                                ) : (
+                                                    <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                                        Please sign in first to generate a connection QR code.
+                                                    </Typography>
                                                 )}
                                             </Box>
                                             <Typography variant="caption" sx={{ color: colors.textSecondary }} display="block">
