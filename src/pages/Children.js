@@ -115,7 +115,7 @@ const Children = () => {
                             }
                         }}
                     >
-                        Add Child Device
+                        Connect Child Device
                     </Button>
                 </Box>
 
@@ -161,7 +161,7 @@ const Children = () => {
                                     }
                                 }}
                             >
-                                Add Child Device
+                                Connect Child Device
                             </Button>
                         )}
                     </Paper>
