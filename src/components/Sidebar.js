@@ -23,6 +23,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
+import WarningIcon from '@mui/icons-material/Warning';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { signOut } from 'firebase/auth';
@@ -42,7 +43,7 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Children', icon: <PeopleIcon />, path: '/children' },
     { text: 'Apps', icon: <AppsIcon />, path: '/apps' },
-
+    { text: 'Alerts', icon: <WarningIcon />, path: '/incidents' },
     { text: 'Filters', icon: <FilterListIcon />, path: '/filters' },
   ];
 
