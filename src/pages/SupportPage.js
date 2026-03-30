@@ -15,16 +15,16 @@ import {
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import EmailIcon from '@mui/icons-material/Email';
-import ChatIcon from '@mui/icons-material/Chat';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import BugReportIcon from '@mui/icons-material/BugReport';
 
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
-import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
+import MobileOffIcon from '@mui/icons-material/MobileOff';
 import GroupsIcon from '@mui/icons-material/Groups';
 import ForumIcon from '@mui/icons-material/Forum';
 import RateReviewIcon from '@mui/icons-material/RateReview';
@@ -73,25 +73,25 @@ const SupportPage = () => {
             gradient: 'linear-gradient(135deg, #FF6B35, #FF8F5E)',
         },
         {
-            icon: <ChatIcon sx={{ fontSize: 38 }} />,
-            title: 'Live Chat',
-            desc: 'Connect with a support agent instantly during business hours for quick answers and real-time troubleshooting.',
-            action: 'Available 8AM – 8PM',
+            icon: <MenuBookIcon sx={{ fontSize: 38 }} />,
+            title: 'Knowledge Base',
+            desc: 'Browse through our comprehensive library of articles, guides, and tutorials to find answers at your own pace.',
+            action: 'Available 24/7',
             color: '#FFB347',
             gradient: 'linear-gradient(135deg, #FFB347, #FFD080)',
         },
         {
-            icon: <HeadsetMicIcon sx={{ fontSize: 38 }} />,
-            title: 'Phone Support',
-            desc: 'Speak directly with our support team for urgent issues or complex account-related matters that need immediate attention.',
-            action: 'Mon – Fri, 9AM – 6PM',
+            icon: <OndemandVideoIcon sx={{ fontSize: 38 }} />,
+            title: 'Video Tutorials',
+            desc: 'Watch step-by-step video guides to help you set up and make the most out of AegisNet\'s features.',
+            action: 'Watch Anytime',
             color: '#EE791A',
             gradient: 'linear-gradient(135deg, #EE791A, #FF9F4A)',
         },
         {
             icon: <AccessTimeIcon sx={{ fontSize: 38 }} />,
             title: 'Response Times',
-            desc: 'Email: under 24 hours. Live chat: under 5 minutes during business hours. Phone: immediate. We prioritize your family\'s safety.',
+            desc: 'Our dedicated team aims to answer all email inquiries within 24 hours. For immediate help, check out our Knowledge Base and Video Tutorials.',
             action: 'Priority support available',
             color: '#D4651E',
             gradient: 'linear-gradient(135deg, #D4651E, #E88A4A)',
@@ -109,7 +109,7 @@ const SupportPage = () => {
         },
         {
             q: 'How does the real-time AI content filtering work?',
-            a: 'Our AI analyzes on-screen content in real time — not just in browsers, but across native apps too. When explicit or harmful content is detected, it\'s automatically blocked and you receive an alert.',
+            a: 'Our AI analyzes on-screen content in real time not just in browsers, but across native apps too. When explicit or harmful content is detected, it\'s automatically blocked and you receive an alert.',
         },
         {
             q: 'Can I set different rules for different children?',
@@ -138,9 +138,9 @@ const SupportPage = () => {
             desc: 'Pull down to refresh your dashboard. If data is still stale, check that your child\'s device has an active internet connection and the AegisNet service is running.',
         },
         {
-            icon: <BatteryAlertIcon sx={{ fontSize: 42 }} />,
-            title: 'High Battery Usage',
-            desc: 'Disable screen analysis for apps that don\'t need monitoring to optimize battery performance.',
+            icon: <MobileOffIcon sx={{ fontSize: 42 }} />,
+            title: 'Device Shows Offline',
+            desc: 'Verify the child\'s device is powered on and connected to the internet. If connected, open the app on their device to force a sync.',
         },
     ];
 
@@ -349,7 +349,7 @@ const SupportPage = () => {
                         }}
                     >
                         Whether you need help setting up, have a question about features, or
-                        want to report an issue — our dedicated support team is ready to assist
+                        want to report an issue our dedicated support team is ready to assist
                         you every step of the way.
                     </Typography>
 
@@ -362,7 +362,7 @@ const SupportPage = () => {
                         }}
                     >
                         Your family's safety is our priority. Reach out through any of the
-                        channels below, and we'll make sure you get the help you need — quickly
+                        channels below, and we'll make sure you get the help you need quickly
                         and effectively.
                     </Typography>
 
@@ -413,7 +413,7 @@ const SupportPage = () => {
                         }}
                     >
                         {[
-                            { icon: <HeadsetMicIcon sx={{ fontSize: 28 }} />, value: '< 5 min', label: 'Chat Response' },
+                            { icon: <MenuBookIcon sx={{ fontSize: 28 }} />, value: '100+', label: 'Support Articles' },
                             { icon: <EmailIcon sx={{ fontSize: 28 }} />, value: '< 24 hrs', label: 'Email Response' },
                             { icon: <GroupsIcon sx={{ fontSize: 28 }} />, value: '24/7', label: 'Community' },
                         ].map((s, i) => (
@@ -726,7 +726,7 @@ const SupportPage = () => {
                             }}
                         />
                         <Typography sx={{ color: 'rgba(0,0,0,0.7)', fontSize: '1.08rem', lineHeight: 1.85, maxWidth: 650, mx: 'auto', position: 'relative', zIndex: 1 }}>
-                            Still having trouble? Don't worry — our{' '}
+                            Still having trouble? Don't worry our{' '}
                             <Box component="span" sx={{ color: '#EE791A', fontWeight: 700 }}>
                                 support team
                             </Box>{' '}

@@ -23,17 +23,17 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/aut
 import { auth } from '../config/firebase';
 import { ADMIN_EMAIL } from '../contexts/AuthContext';
 
-import ExpandMoreIcon      from '@mui/icons-material/ExpandMore';
-import MenuIcon            from '@mui/icons-material/Menu';
-import SecurityIcon        from '@mui/icons-material/Security';
-import ArrowForwardIcon    from '@mui/icons-material/ArrowForward';
-import LockOutlinedIcon    from '@mui/icons-material/LockOutlined';
-import BoltIcon            from '@mui/icons-material/Bolt';
-import PhoneAndroidIcon    from '@mui/icons-material/PhoneAndroid';
-import Visibility          from '@mui/icons-material/Visibility';
-import VisibilityOff       from '@mui/icons-material/VisibilityOff';
-import EmailOutlinedIcon   from '@mui/icons-material/EmailOutlined';
-import LockIcon            from '@mui/icons-material/Lock';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import MenuIcon from '@mui/icons-material/Menu';
+import SecurityIcon from '@mui/icons-material/Security';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import BoltIcon from '@mui/icons-material/Bolt';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import LockIcon from '@mui/icons-material/Lock';
 
 /* ─────────────────────────────────────────
    Global styles
@@ -125,11 +125,11 @@ const getFriendlyError = (code) => {
   switch (code) {
     case 'auth/invalid-credential':
     case 'auth/wrong-password':
-    case 'auth/user-not-found':    return 'Incorrect email or password.';
-    case 'auth/invalid-email':     return 'Please enter a valid email address.';
-    case 'auth/user-disabled':     return 'This account has been disabled.';
+    case 'auth/user-not-found': return 'Incorrect email or password.';
+    case 'auth/invalid-email': return 'Please enter a valid email address.';
+    case 'auth/user-disabled': return 'This account has been disabled.';
     case 'auth/too-many-requests': return 'Too many attempts. Try again later.';
-    default:                       return 'Something went wrong. Please try again.';
+    default: return 'Something went wrong. Please try again.';
   }
 };
 
@@ -140,23 +140,23 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   /* ── Navbar state ── */
-  const [productOpen,  setProductOpen]  = useState(false);
-  const [learnOpen,    setLearnOpen]    = useState(false);
-  const [supportOpen,  setSupportOpen]  = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
+  const [learnOpen, setLearnOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [mobileMenuEl, setMobileMenuEl] = useState(null);
 
-  const handleMenuToggle    = () => setProductOpen(v  => { const n = !v; if (n) { setLearnOpen(false); setSupportOpen(false); } return n; });
-  const handleLearnToggle   = () => setLearnOpen(v    => { const n = !v; if (n) { setProductOpen(false); setSupportOpen(false); } return n; });
-  const handleSupportToggle = () => setSupportOpen(v  => { const n = !v; if (n) { setProductOpen(false); setLearnOpen(false); } return n; });
+  const handleMenuToggle = () => setProductOpen(v => { const n = !v; if (n) { setLearnOpen(false); setSupportOpen(false); } return n; });
+  const handleLearnToggle = () => setLearnOpen(v => { const n = !v; if (n) { setProductOpen(false); setSupportOpen(false); } return n; });
+  const handleSupportToggle = () => setSupportOpen(v => { const n = !v; if (n) { setProductOpen(false); setLearnOpen(false); } return n; });
 
   /* ── Login card state ── */
-  const [email,        setEmail]        = useState('');
-  const [password,     setPassword]     = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error,        setError]        = useState('');
-  const [loading,      setLoading]      = useState(false);
-  const [resetMode,    setResetMode]    = useState(false);
-  const [resetEmail,   setResetEmail]   = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
 
   const handleLogin = async (e) => {
@@ -206,8 +206,8 @@ const HomePage = () => {
             {/* Desktop nav links */}
             {[
               { label: 'Product', open: productOpen, toggle: handleMenuToggle },
-              { label: 'Learn',   open: learnOpen,   toggle: handleLearnToggle },
-              { label: 'Support', open: supportOpen,  toggle: handleSupportToggle },
+              { label: 'Learn', open: learnOpen, toggle: handleLearnToggle },
+              { label: 'Support', open: supportOpen, toggle: handleSupportToggle },
             ].map(item => (
               <Button
                 key={item.label}
@@ -260,10 +260,10 @@ const HomePage = () => {
             <Container maxWidth="lg">
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Why AegisNet',  desc: 'AI-powered real-time content filtering built for modern families.', link: '/product#discover',    cta: 'Discover more' },
-                  { title: 'Features',      desc: 'App locks, content filters, location tracking and activity reviews.', link: '/product#features', cta: 'View all features' },
-                  { title: 'Get started',   desc: 'Set up takes minutes. Create an account and start protecting right away.', link: '/product#get-started', cta: 'Learn how' },
-                  { title: 'Downloads',     desc: 'Available for Android 9.0+ devices with real-time screen analysis.', link: '/product#downloads', cta: 'Go to downloads' },
+                  { title: 'Why AegisNet', desc: 'AI-powered real-time content filtering built for modern families.', link: '/product#discover', cta: 'Discover more' },
+                  { title: 'Features', desc: 'App locks, content filters, location tracking and activity reviews.', link: '/product#features', cta: 'View all features' },
+                  { title: 'Get started', desc: 'Set up takes minutes. Create an account and start protecting right away.', link: '/product#get-started', cta: 'Learn how' },
+                  { title: 'Downloads', desc: 'Available for Android 9.0+ devices with real-time screen analysis.', link: '/product#downloads', cta: 'Go to downloads' },
                 ].map((col) => (
                   <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
                     <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
@@ -284,9 +284,9 @@ const HomePage = () => {
             <Container maxWidth="lg">
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Product tips',   desc: 'Latest updates and simple guides to get the most out of AegisNet.', link: '/learn#product-tips',   cta: 'Read product tips' },
+                  { title: 'Product tips', desc: 'Latest updates and simple guides to get the most out of AegisNet.', link: '/learn#product-tips', cta: 'Read product tips' },
                   { title: 'Parenting tips', desc: "Kids' online habits, digital safety, and how AI can help protect them.", link: '/learn#parenting-tips', cta: 'Read parenting tips' },
-                  { title: 'Safety guides',  desc: 'Reviews of apps, games, and online content parents should know.', link: '/learn#safety-guides',  cta: 'Read our guides' },
+                  { title: 'Safety guides', desc: 'Reviews of apps, games, and online content parents should know.', link: '/learn#safety-guides', cta: 'Read our guides' },
                   { title: 'Family stories', desc: "Real parents share how AegisNet gave them peace of mind online.", link: '/learn#family-stories', cta: 'Read more stories' },
                 ].map((col) => (
                   <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
@@ -308,10 +308,10 @@ const HomePage = () => {
             <Container maxWidth="lg">
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Contact us',     desc: 'Reach out via email or live chat — our team is ready to help.', link: '/support#contact-us',    cta: 'Get in touch' },
-                  { title: 'FAQ',            desc: 'Quick answers about installation, features, privacy, and devices.', link: '/support#faq',         cta: 'Browse FAQ' },
-                  { title: 'Troubleshooting',desc: 'Step-by-step fixes for filtering, syncing, and battery issues.', link: '/support#troubleshooting', cta: 'Fix common issues' },
-                  { title: 'Community',      desc: 'Forums, beta testing, and local parent groups — join us.', link: '/support#community',       cta: 'Join the community' },
+                  { title: 'Contact us', desc: 'Reach out via email or live chat — our team is ready to help.', link: '/support#contact-us', cta: 'Get in touch' },
+                  { title: 'FAQ', desc: 'Quick answers about installation, features, privacy, and devices.', link: '/support#faq', cta: 'Browse FAQ' },
+                  { title: 'Troubleshooting', desc: 'Step-by-step fixes for filtering, syncing, and battery issues.', link: '/support#troubleshooting', cta: 'Fix common issues' },
+                  { title: 'Community', desc: 'Forums, beta testing, and local parent groups — join us.', link: '/support#community', cta: 'Join the community' },
                 ].map((col) => (
                   <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
                     <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
@@ -358,81 +358,81 @@ const HomePage = () => {
               {/* ── Left: Hero copy ── */}
               <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center', py: { xs: 6, md: 10 }, pr: { md: 8 } }}>
                 <Box sx={{ maxWidth: 520, width: '100%' }}>
-                <Chip
-                  className="fade-slide"
-                  icon={<SecurityIcon sx={{ fontSize: '14px !important', color: '#EE791A !important' }} />}
-                  label="AI-Powered Parental Control"
-                  size="small"
-                  sx={{
-                    mb: 3,
-                    bgcolor: '#FFF5F0',
-                    color: '#EE791A',
-                    fontWeight: 600,
-                    fontSize: '0.78rem',
-                    border: '1px solid #FFD080',
-                    fontFamily: '"Inter", sans-serif',
-                    '& .MuiChip-icon': { color: '#EE791A' },
-                  }}
-                />
-
-                <Typography
-                  className="fade-slide-1"
-                  variant="h1"
-                  sx={{
-                    fontFamily: '"Inter", sans-serif',
-                    fontWeight: 800,
-                    fontSize: { xs: '2.6rem', md: '3.6rem' },
-                    lineHeight: 1.08,
-                    letterSpacing: '-0.03em',
-                    color: '#111827',
-                    mb: 3,
-                  }}
-                >
-                  Keep your kids{' '}
-                  <Box
-                    component="span"
+                  <Chip
+                    className="fade-slide"
+                    icon={<SecurityIcon sx={{ fontSize: '14px !important', color: '#EE791A !important' }} />}
+                    label="AI-Powered Parental Control"
+                    size="small"
                     sx={{
-                      background: 'linear-gradient(90deg, #EE791A, #FFB347)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
+                      mb: 3,
+                      bgcolor: '#FFF5F0',
+                      color: '#EE791A',
+                      fontWeight: 600,
+                      fontSize: '0.78rem',
+                      border: '1px solid #FFD080',
+                      fontFamily: '"Inter", sans-serif',
+                      '& .MuiChip-icon': { color: '#EE791A' },
+                    }}
+                  />
+
+                  <Typography
+                    className="fade-slide-1"
+                    variant="h1"
+                    sx={{
+                      fontFamily: '"Inter", sans-serif',
+                      fontWeight: 800,
+                      fontSize: { xs: '2.6rem', md: '3.6rem' },
+                      lineHeight: 1.08,
+                      letterSpacing: '-0.03em',
+                      color: '#111827',
+                      mb: 3,
                     }}
                   >
-                    safe online
-                  </Box>
-                  <Box component="span" sx={{ color: '#111827' }}>.</Box>
-                </Typography>
-
-                <Typography
-                  className="fade-slide-2"
-                  sx={{
-                    fontFamily: '"Inter", sans-serif',
-                    fontSize: '1.05rem',
-                    color: '#6B7280',
-                    lineHeight: 1.8,
-                    mb: 5,
-                    maxWidth: 460,
-                  }}
-                >
-                  AegisNet uses real-time AI to filter harmful content, set screen-time limits,
-                  and give parents full visibility — without micromanaging every click.
-                </Typography>
-
-                {/* Trust badges */}
-                <Box className="fade-slide-3" sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-                  {[
-                    { Icon: LockOutlinedIcon, label: 'Safe & Secure' },
-                    { Icon: BoltIcon,         label: 'Real-time AI' },
-                    { Icon: PhoneAndroidIcon, label: 'Android 9+' },
-                  ].map(({ Icon, label }) => (
-                    <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
-                      <Icon sx={{ fontSize: 14, color: '#9CA3AF' }} />
-                      <Typography sx={{ fontSize: '0.8rem', color: '#9CA3AF', fontWeight: 500, fontFamily: '"Inter", sans-serif' }}>
-                        {label}
-                      </Typography>
+                    Keep your kids{' '}
+                    <Box
+                      component="span"
+                      sx={{
+                        background: 'linear-gradient(90deg, #EE791A, #FFB347)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      safe online
                     </Box>
-                  ))}
-                </Box>
+                    <Box component="span" sx={{ color: '#111827' }}>.</Box>
+                  </Typography>
+
+                  <Typography
+                    className="fade-slide-2"
+                    sx={{
+                      fontFamily: '"Inter", sans-serif',
+                      fontSize: '1.05rem',
+                      color: '#6B7280',
+                      lineHeight: 1.8,
+                      mb: 5,
+                      maxWidth: 460,
+                    }}
+                  >
+                    AegisNet uses real-time AI to filter harmful content, set App limits,
+                    and give parents full visibility without micromanaging every click.
+                  </Typography>
+
+                  {/* Trust badges */}
+                  <Box className="fade-slide-3" sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                    {[
+                      { Icon: LockOutlinedIcon, label: 'Safe & Secure' },
+                      { Icon: BoltIcon, label: 'Real-time AI' },
+                      { Icon: PhoneAndroidIcon, label: 'Android 9+' },
+                    ].map(({ Icon, label }) => (
+                      <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+                        <Icon sx={{ fontSize: 14, color: '#9CA3AF' }} />
+                        <Typography sx={{ fontSize: '0.8rem', color: '#9CA3AF', fontWeight: 500, fontFamily: '"Inter", sans-serif' }}>
+                          {label}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
               </Grid>
 
@@ -463,7 +463,7 @@ const HomePage = () => {
                   )}
 
                   {/* Alerts */}
-                  {error        && <Alert severity="error"   sx={{ mb: 1.5, borderRadius: '8px', fontSize: '0.78rem', py: 0.5 }}>{error}</Alert>}
+                  {error && <Alert severity="error" sx={{ mb: 1.5, borderRadius: '8px', fontSize: '0.78rem', py: 0.5 }}>{error}</Alert>}
                   {resetSuccess && <Alert severity="success" sx={{ mb: 1.5, borderRadius: '8px', fontSize: '0.78rem', py: 0.5 }}>{resetSuccess}</Alert>}
 
                   {/* Sign‑in form */}

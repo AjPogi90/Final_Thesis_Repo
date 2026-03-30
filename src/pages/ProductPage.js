@@ -15,7 +15,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import LockIcon from '@mui/icons-material/Lock';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
-import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InstallMobileIcon from '@mui/icons-material/InstallMobile';
@@ -71,15 +71,15 @@ const ProductPage = () => {
         {
             icon: <FilterListIcon sx={{ fontSize: 38 }} />,
             title: 'Smart Content Filtering',
-            desc: 'Real-time AI blocks inappropriate content across websites and native apps — not just browsers.',
+            desc: 'Real-time AI blocks inappropriate content across websites and native apps not just browsers.',
             color: '#FFB347',
             gradient: 'linear-gradient(135deg, #FFB347, #FFD080)',
         },
 
         {
-            icon: <PhonelinkLockIcon sx={{ fontSize: 38 }} />,
-            title: 'Instant Device Lock',
-            desc: 'Instantly lock your child\'s device with a single tap to manage screen time or during bedtime routines.',
+            icon: <NotificationsActiveIcon sx={{ fontSize: 38 }} />,
+            title: 'NSFW Incidents Alert',
+            desc: 'Receive immediate notifications when inappropriate content is detected, keeping you informed in real-time.',
             color: '#D4651E',
             gradient: 'linear-gradient(135deg, #D4651E, #E88A4A)',
         },
@@ -103,7 +103,7 @@ const ProductPage = () => {
             icon: <InstallMobileIcon sx={{ fontSize: 44 }} />,
             step: '02',
             title: 'Install on Your Child\'s Device',
-            desc: 'Download and set up the app on their phone or tablet — quick and guided.',
+            desc: 'Download and set up the app on their phone or tablet quick and guided.',
         },
         {
             icon: <VerifiedUserIcon sx={{ fontSize: 44 }} />,
@@ -738,7 +738,7 @@ const ProductPage = () => {
                                 <ScreenSearchDesktopIcon sx={{ color: '#EE791A', fontSize: 22, mt: 0.3, flexShrink: 0 }} />
                                 <Typography sx={{ color: 'rgba(0,0,0,0.55)', fontSize: '0.93rem', lineHeight: 1.75, textAlign: 'left', maxWidth: 500 }}>
                                     Using real-time screen analysis, it monitors and filters harmful content
-                                    as it appears — across websites and native apps. Install in minutes and
+                                    as it appears across websites and native apps. Install in minutes and
                                     start safeguarding your child's digital world immediately.
                                 </Typography>
                             </Box>

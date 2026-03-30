@@ -24,7 +24,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock';
+import LockIcon from '@mui/icons-material/Lock';
 import LanguageIcon from '@mui/icons-material/Language';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
@@ -122,16 +122,16 @@ const LearnPage = () => {
             rating: 'Essential',
         },
         {
-            icon: <PhonelinkLockIcon sx={{ fontSize: 38 }} />,
-            title: 'Instant Device Lock',
-            desc: 'Instantly lock your child\'s device with a single tap to manage screen time, encourage breaks, or during important family moments.',
+            icon: <NotificationsActiveIcon sx={{ fontSize: 38 }} />,
+            title: 'NSFW Incidents Alert',
+            desc: 'Stay informed with immediate notifications when inappropriate content is detected, ensuring timely intervention.',
             color: '#FFB347',
             rating: 'High Priority',
         },
         {
-            icon: <MenuBookIcon sx={{ fontSize: 38 }} />,
-            title: 'Manage Screen Time',
-            desc: 'Help your child build healthy digital habits. Use app limits and scheduling tools to balance screen time with homework, hobbies, and family time.',
+            icon: <LockIcon sx={{ fontSize: 38 }} />,
+            title: 'App Lock',
+            desc: 'Instantly restrict apps you don\'t want your child to access. Set schedules or block instantly to encourage balanced habits.',
             color: '#EE791A',
             rating: 'Important',
         },
