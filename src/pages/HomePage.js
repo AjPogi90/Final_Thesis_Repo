@@ -308,10 +308,10 @@ const HomePage = () => {
             <Container maxWidth="lg">
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
-                  { title: 'Contact us', desc: 'Reach out via email or live chat — our team is ready to help.', link: '/support#contact-us', cta: 'Get in touch' },
+                  { title: 'Contact us', desc: 'Reach out via email or live chat our team is ready to help.', link: '/support#contact-us', cta: 'Get in touch' },
                   { title: 'FAQ', desc: 'Quick answers about installation, features, privacy, and devices.', link: '/support#faq', cta: 'Browse FAQ' },
                   { title: 'Troubleshooting', desc: 'Step-by-step fixes for filtering, syncing, and battery issues.', link: '/support#troubleshooting', cta: 'Fix common issues' },
-                  { title: 'Community', desc: 'Forums, beta testing, and local parent groups — join us.', link: '/support#community', cta: 'Join the community' },
+                  { title: 'Community', desc: 'Forums, beta testing, and local parent groups join us.', link: '/support#community', cta: 'Join the community' },
                 ].map((col) => (
                   <Box key={col.title} sx={{ p: 2.5, borderRight: '1px solid #F3F4F6', '&:last-child': { borderRight: 'none' } }}>
                     <Typography sx={{ fontWeight: 600, mb: 0.8, fontSize: '0.9rem', color: '#111827', fontFamily: '"Inter", sans-serif' }}>{col.title}</Typography>
