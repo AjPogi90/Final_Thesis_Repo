@@ -44,14 +44,14 @@ const Register = () => {
   const [idFile, setIdFile] = useState(null);
 
   // ── Shared async state ────────────────────────────────────────────────────────
-  const [loading,   setLoading]   = useState(false);
-  const [error,     setError]     = useState('');
-  const [registered,setRegistered]= useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [registered, setRegistered] = useState(false);
 
   // ── Post-registration state ───────────────────────────────────────────────────
   const [verificationSent, setVerificationSent] = useState(false);
-  const [resendLoading,    setResendLoading]    = useState(false);
-  const [infoMessage,      setInfoMessage]      = useState('');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
 
   // ── Age helpers ───────────────────────────────────────────────────────────────
   const calculateAge = (dateString) => {
@@ -68,9 +68,9 @@ const Register = () => {
   // ── Step 1 → Step 2 ───────────────────────────────────────────────────────────
   const handleNext = () => {
     setError('');
-    if (!dateOfBirth)                       return setError('Please enter your date of birth.');
-    if (calculateAge(dateOfBirth) < 18)     return setError('You must be at least 18 years old to register.');
-    if (!idFile)                            return setError('Please upload a government-issued ID.');
+    if (!dateOfBirth) return setError('Please enter your date of birth.');
+    if (calculateAge(dateOfBirth) < 18) return setError('You must be at least 18 years old to register.');
+    if (!idFile) return setError('Please upload a government-issued ID.');
     setActiveStep(1);
   };
 

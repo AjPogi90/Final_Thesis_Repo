@@ -71,7 +71,7 @@ const Login = () => {
   return (
     <Box sx={{ width: '100%', minHeight: '100vh', background: '#f5f6fa', display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
       <Box sx={{ p: { xs: 3, sm: 4 }, width: 420, maxWidth: '94%', borderRadius: 2, boxShadow: '0 12px 40px rgba(0,0,0,0.1)', bgcolor: '#ffffff', border: '1px solid rgba(0,0,0,0.05)', color: '#000' }}>
-        
+
         {/* Logo mark */}
         <Box sx={{ textAlign: 'center', mb: 2, cursor: 'pointer' }} onClick={() => navigate('/')}>
           <Box component="img" src="/LoginLogoLIght.png" alt="AegistNet Logo" sx={{ width: 140, mx: 'auto', display: 'block', objectFit: 'contain' }} />
