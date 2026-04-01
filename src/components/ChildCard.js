@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { formatDistanceToNow } from 'date-fns';
 import { isOnline as isOnlineHelper } from '../utils/constants';
 import { useTheme } from '../contexts/ThemeContext';
@@ -102,22 +103,33 @@ const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
             >
               {child.name || 'Unknown Child'}
             </Typography>
-            <Chip
-              icon={<FiberManualRecordIcon sx={{ fontSize: 10 }} />}
-              label={isOnline ? 'Online' : 'Offline'}
-              size="small"
-              sx={{
-                fontWeight: 600,
-                height: 20,
-                bgcolor: isOnline ? 'rgba(76,175,80,0.2)' : 'rgba(158,158,158,0.2)',
-                color: isOnline ? '#4caf50' : '#9e9e9e',
-                border: `1px solid ${isOnline ? '#4caf50' : '#9e9e9e'}`,
-                '& .MuiChip-icon': {
-                  ml: 0.5,
+            <Box display="flex" gap={1} flexWrap="wrap">
+              <Chip
+                icon={<FiberManualRecordIcon sx={{ fontSize: 10 }} />}
+                label={isOnline ? 'Online' : 'Offline'}
+                size="small"
+                sx={{
+                  fontWeight: 600,
+                  height: 20,
+                  bgcolor: isOnline ? 'rgba(76,175,80,0.2)' : 'rgba(158,158,158,0.2)',
                   color: isOnline ? '#4caf50' : '#9e9e9e',
-                },
-              }}
-            />
+                  border: `1px solid ${isOnline ? '#4caf50' : '#9e9e9e'}`,
+                  '& .MuiChip-icon': {
+                    ml: 0.5,
+                    color: isOnline ? '#4caf50' : '#9e9e9e',
+                  },
+                }}
+              />
+              {child.logoutRequest === 'pending' && (
+                <Chip
+                  icon={<LogoutIcon sx={{ fontSize: 14 }} />}
+                  label="Logout Request"
+                  size="small"
+                  color="error"
+                  sx={{ fontWeight: 600, height: 20 }}
+                />
+              )}
+            </Box>
           </Box>
         </Box>
 

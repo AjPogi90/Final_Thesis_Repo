@@ -12,6 +12,7 @@ import {
   Avatar,
   IconButton,
   Tooltip,
+  Badge,
 } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
@@ -29,6 +30,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import ConfirmationModal from './ConfirmationModal';
+import { useChildrenList } from '../hooks/useFirebase';
 
 const DRAWER_WIDTH = 240;
 
@@ -37,11 +39,20 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
   const { colors } = useTheme();
+  const { children } = useChildrenList(user?.email);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
+  const requestingLogoutCount = children?.filter(child => child.logoutRequest === 'pending').length || 0;
+
+  const childrenBadge = requestingLogoutCount > 0 ? (
+      <Badge badgeContent={requestingLogoutCount} color="error" sx={{ '& .MuiBadge-badge': { right: -3, top: 3 } }}>
+          <PeopleIcon />
+      </Badge>
+  ) : <PeopleIcon />;
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Children', icon: <PeopleIcon />, path: '/children' },
+    { text: 'Children', icon: childrenBadge, path: '/children' },
     { text: 'Apps', icon: <AppsIcon />, path: '/apps' },
     { text: 'Alerts', icon: <WarningIcon />, path: '/incidents' },
     { text: 'Filters', icon: <FilterListIcon />, path: '/filters' },
