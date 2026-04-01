@@ -17,6 +17,7 @@ import {
     Chip,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LanguageIcon from '@mui/icons-material/Language';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -32,7 +33,14 @@ const filterDefinitions = [
         details:
             'Prevents access to websites and apps with nudity or sexually explicit content. Helps protect children from age-inappropriate material.',
     },
-
+    {
+        key: 'webFilter',
+        label: 'Web Filtering',
+        Icon: LanguageIcon,
+        colorKey: 'primary',
+        description: 'Monitors and blocks access to malicious or inappropriate websites.',
+        details: 'Uses the accessibility service to track URLs in browsers and block matches against the blacklist.',
+    },
 ];
 
 const Filters = () => {
@@ -92,7 +100,7 @@ const Filters = () => {
     }
 
     const selectedChild = children?.find((c) => c.id === selectedChildId);
-    const activeFiltersCount = filterDefinitions.filter(def => filters[`${def.key}Active`]).length;
+    const activeFiltersCount = filterDefinitions.filter(def => filters[def.key]).length;
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: colors.background, color: colors.text }}>
@@ -239,9 +247,8 @@ const Filters = () => {
                                 {/* Filter Controls */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                     {filterDefinitions.map((filter) => {
-                                        const requestedState = filters[filter.key] || false;
-                                        const activeState = filters[`${filter.key}Active`] || false;
-                                        const isPending = requestedState && !activeState;
+                                        const activeState = filters[filter.key] || false;
+                                        const isPending = false;
 
                                         return (
                                         <Paper
@@ -301,15 +308,10 @@ const Filters = () => {
                                                 </Box>
 
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    {isPending && (
-                                                        <Tooltip title="Waiting for child to accept permissions..." arrow placement="top">
-                                                            <CircularProgress size={20} sx={{ color: colors.textSecondary }} />
-                                                        </Tooltip>
-                                                    )}
                                                     <Switch
                                                         checked={activeState}
                                                         onChange={(e) => handleFilterToggle(filter.key, e.target.checked)}
-                                                        disabled={saveLoading || isPending}
+                                                        disabled={saveLoading}
                                                         sx={{
                                                             '& .MuiSwitch-switchBase.Mui-checked': {
                                                                 color: colors.success,
