@@ -204,19 +204,19 @@ const ChildDetails = () => {
             }}
             action={
               <Stack direction="row" spacing={1}>
-                <Button 
-                  color="warning" 
-                  variant="contained" 
-                  size="small" 
+                <Button
+                  color="warning"
+                  variant="contained"
+                  size="small"
                   onClick={handleApproveLogout}
                   disabled={loadingAction}
                 >
                   Approve Logout
                 </Button>
-                <Button 
-                  color="warning" 
-                  variant="outlined" 
-                  size="small" 
+                <Button
+                  color="warning"
+                  variant="outlined"
+                  size="small"
                   onClick={handleDenyLogout}
                   disabled={loadingAction}
                 >

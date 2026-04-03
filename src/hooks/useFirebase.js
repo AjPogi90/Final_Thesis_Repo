@@ -134,7 +134,7 @@ export const useNsfwIncidents = (childId) => {
               ...data[key],
             }))
             .sort((a, b) => b.timestamp - a.timestamp); // newest first
-          
+
           setIncidents(parsedIncidents);
         } else {
           setIncidents([]);
@@ -247,25 +247,25 @@ export const updateContentFilters = async (childId, filters) => {
 };
 
 export const approveLogoutRequest = async (childId) => {
-    try {
-        const childRef = ref(database, `users/childs/${childId}`);
-        await update(childRef, { logoutRequest: 'approved' });
-        return { success: true };
-    } catch (error) {
-        console.error("Error approving logout request:", error);
-        return { success: false, error };
-    }
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await update(childRef, { logoutRequest: 'approved' });
+    return { success: true };
+  } catch (error) {
+    console.error("Error approving logout request:", error);
+    return { success: false, error };
+  }
 };
 
 export const denyLogoutRequest = async (childId) => {
-    try {
-        const childRef = ref(database, `users/childs/${childId}`);
-        await update(childRef, { logoutRequest: 'none' });
-        return { success: true };
-    } catch (error) {
-        console.error("Error denying logout request:", error);
-        return { success: false, error };
-    }
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await update(childRef, { logoutRequest: 'none' });
+    return { success: true };
+  } catch (error) {
+    console.error("Error denying logout request:", error);
+    return { success: false, error };
+  }
 };
 
 export const deleteChild = async (childId) => {

@@ -32,10 +32,6 @@ const AddChildDeviceModal = ({ open, onClose }) => {
             description: 'Install the companion app on your child\'s Android device',
         },
         {
-            label: 'Sign In on Child\'s Device',
-            description: 'Use your parent account credentials',
-        },
-        {
             label: 'Grant Permissions',
             description: 'Allow location, app usage, and device admin access',
         },
@@ -158,36 +154,6 @@ const AddChildDeviceModal = ({ open, onClose }) => {
 
                                 {index === 1 && (
                                     <Box sx={{ mt: 2 }}>
-                                        <Alert
-                                            severity="success"
-                                            icon={<CheckCircleIcon />}
-                                            sx={{ borderRadius: 2, bgcolor: 'rgba(76,175,80,0.08)', color: colors.text }}
-                                        >
-                                            <Typography variant="body2">
-                                                Sign up for child account and enter parent email to pair or link, then you can login the child account on device
-                                            </Typography>
-                                        </Alert>
-                                        <Box sx={{ mt: 2, p: 2, bgcolor: colors.inputBg, borderRadius: 2, border: `1px solid ${colors.divider}` }}>
-                                            <Typography variant="caption" sx={{ color: colors.textSecondary }} display="block" gutterBottom>
-                                                Your parent email:
-                                            </Typography>
-                                            <Chip
-                                                label={user?.email || 'your-email@example.com'}
-                                                size="small"
-                                                sx={{
-                                                    fontWeight: 600,
-                                                    fontFamily: 'monospace',
-                                                    bgcolor: 'rgba(238,121,26,0.2)',
-                                                    color: colors.primary,
-                                                    border: `1px solid ${colors.primary}`,
-                                                }}
-                                            />
-                                        </Box>
-                                    </Box>
-                                )}
-
-                                {index === 2 && (
-                                    <Box sx={{ mt: 2 }}>
                                         <Alert severity="warning" sx={{ borderRadius: 2, mb: 2, bgcolor: 'rgba(255,152,0,0.08)', color: colors.text }}>
                                             <Typography variant="body2">
                                                 The app will request several permissions. All are required for AegistNet to function:
@@ -209,6 +175,8 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                         </Box>
                                     </Box>
                                 )}
+
+
                             </StepContent>
                         </Step>
                     ))}
