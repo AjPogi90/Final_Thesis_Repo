@@ -183,9 +183,6 @@ const Children = () => {
                                         child={child}
                                         onViewDetails={() => navigate(`/child/${child.id}`)}
                                         onViewApps={() => navigate(`/child/${child.id}?tab=apps`)}
-                                        onViewLocation={() =>
-                                            navigate(`/child/${child.id}?tab=location`)
-                                        }
                                     />
                                 </Grid>
                             ))}

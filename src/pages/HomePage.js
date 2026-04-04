@@ -261,7 +261,7 @@ const HomePage = () => {
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', py: 1 }}>
                 {[
                   { title: 'Why AegisNet', desc: 'AI-powered real-time content filtering built for modern families.', link: '/product#discover', cta: 'Discover more' },
-                  { title: 'Features', desc: 'App locks, content filters, location tracking and activity reviews.', link: '/product#features', cta: 'View all features' },
+                  { title: 'Features', desc: 'App locks, content filters, and activity reviews.', link: '/product#features', cta: 'View all features' },
                   { title: 'Get started', desc: 'Set up takes minutes. Create an account and start protecting right away.', link: '/product#get-started', cta: 'Learn how' },
                   { title: 'Downloads', desc: 'Available for Android 9.0+ devices with real-time screen analysis.', link: '/product#downloads', cta: 'Go to downloads' },
                 ].map((col) => (

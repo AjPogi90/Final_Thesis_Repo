@@ -33,7 +33,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
         },
         {
             label: 'Grant Permissions',
-            description: 'Allow location, app usage, and device admin access',
+            description: 'Allow app usage and device admin access',
         },
     ];
 
@@ -160,9 +160,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                             </Typography>
                                         </Alert>
                                         <Box component="ul" sx={{ pl: 2, mt: 1 }}>
-                                            <Typography component="li" variant="body2" sx={{ mb: 0.5, color: colors.text }}>
-                                                <strong>Location:</strong> Track device location
-                                            </Typography>
+
                                             <Typography component="li" variant="body2" sx={{ mb: 0.5, color: colors.text }}>
                                                 <strong>App Usage:</strong> Monitor installed apps
                                             </Typography>
@@ -184,7 +182,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
 
                 <Alert severity="success" sx={{ mt: 3, borderRadius: 2, bgcolor: 'rgba(76,175,80,0.08)', color: colors.text }}>
                     <AlertTitle sx={{ color: colors.text }}>What happens next?</AlertTitle>
-                    Once your child's device is connected, it will appear on your Children page within 30 seconds. You can then manage apps, view location, and enable content filters.
+                    Once your child's device is connected, it will appear on your Children page within 30 seconds. You can then manage apps and enable content filters.
                 </Alert>
 
                 <Box sx={{ mt: 3, p: 2, bgcolor: colors.inputBg, borderRadius: 2, border: `1px solid ${colors.divider}` }}>
