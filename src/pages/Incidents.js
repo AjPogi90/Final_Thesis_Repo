@@ -17,11 +17,16 @@ import {
     CardContent,
     CardActions,
     IconButton,
+    Dialog,
+    DialogContent,
+    DialogTitle,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WarningIcon from '@mui/icons-material/Warning';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import CloseIcon from '@mui/icons-material/Close';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList, useNsfwIncidents, deleteNsfwIncident } from '../hooks/useFirebase';
@@ -38,6 +43,7 @@ const Incidents = () => {
 
     // Track which images are unblurred
     const [unblurredImages, setUnblurredImages] = useState({});
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const { incidents, loading: loadingIncidents } = useNsfwIncidents(selectedChildId);
 
@@ -169,30 +175,45 @@ const Incidents = () => {
                                                             height="250"
                                                             image={incident.imageUrl}
                                                             alt="Incident Screenshot"
+                                                            onClick={() => unblurredImages[incident.id] && setSelectedImage(incident)}
                                                             sx={{
                                                                 filter: unblurredImages[incident.id] ? 'none' : 'blur(20px)',
-                                                                transition: 'filter 0.3s',
+                                                                transition: 'all 0.3s',
                                                                 objectFit: 'cover',
                                                                 width: '100%',
-                                                                height: '100%'
+                                                                height: '100%',
+                                                                cursor: unblurredImages[incident.id] ? 'zoom-in' : 'default',
+                                                                '&:hover': {
+                                                                    opacity: unblurredImages[incident.id] ? 0.9 : 1
+                                                                }
                                                             }}
                                                         />
-                                                        <Button
-                                                            variant="contained"
-                                                            startIcon={unblurredImages[incident.id] ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                                                            onClick={() => toggleBlur(incident.id)}
-                                                            sx={{
-                                                                position: 'absolute',
-                                                                top: '50%',
-                                                                left: '50%',
-                                                                transform: 'translate(-50%, -50%)',
-                                                                bgcolor: 'rgba(0, 0, 0, 0.6)',
-                                                                color: '#fff',
-                                                                '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' },
-                                                            }}
-                                                        >
-                                                            {unblurredImages[incident.id] ? 'Hide' : 'Reveal'}
-                                                        </Button>
+                                                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', gap: 1 }}>
+                                                            <Button
+                                                                variant="contained"
+                                                                startIcon={unblurredImages[incident.id] ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                                onClick={() => toggleBlur(incident.id)}
+                                                                sx={{
+                                                                    bgcolor: 'rgba(0, 0, 0, 0.6)',
+                                                                    color: '#fff',
+                                                                    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' },
+                                                                }}
+                                                            >
+                                                                {unblurredImages[incident.id] ? 'Hide' : 'Reveal'}
+                                                            </Button>
+                                                            {unblurredImages[incident.id] && (
+                                                                <IconButton
+                                                                    onClick={() => setSelectedImage(incident)}
+                                                                    sx={{ 
+                                                                        bgcolor: 'rgba(0, 0, 0, 0.6)', 
+                                                                        color: '#fff',
+                                                                        '&:hover': { bgcolor: colors.primary }
+                                                                    }}
+                                                                >
+                                                                    <ZoomInIcon />
+                                                                </IconButton>
+                                                            )}
+                                                        </Box>
                                                     </>
                                                 ) : incident.uploadError ? (
                                                     <Box textAlign="center" p={2}>
@@ -265,6 +286,58 @@ const Incidents = () => {
                     danger={true}
                     confirmText="Delete"
                 />
+
+                {/* Full Image Viewer Dialog */}
+                <Dialog
+                    open={Boolean(selectedImage)}
+                    onClose={() => setSelectedImage(null)}
+                    maxWidth="lg"
+                    fullWidth
+                    PaperProps={{
+                        sx: {
+                            bgcolor: colors.cardBg,
+                            backgroundImage: 'none',
+                            maxHeight: '90vh',
+                            borderRadius: 2,
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                        }
+                    }}
+                >
+                    <DialogTitle sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        color: colors.text,
+                        borderBottom: `1px solid ${colors.divider}`,
+                        py: 2
+                    }}>
+                        <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                {selectedImage?.appName}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                {selectedImage && new Date(selectedImage.timestamp).toLocaleString()}
+                            </Typography>
+                        </Box>
+                        <IconButton onClick={() => setSelectedImage(null)} sx={{ color: colors.textSecondary }}>
+                            <CloseIcon />
+                        </IconButton>
+                    </DialogTitle>
+                    <DialogContent sx={{ p: 0, bgcolor: '#000', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+                        {selectedImage && (
+                            <Box
+                                component="img"
+                                src={selectedImage.imageUrl}
+                                alt="Full screenshot"
+                                sx={{
+                                    maxWidth: '100%',
+                                    maxHeight: 'calc(90vh - 80px)',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
             </Container>
         </Box>
     );
