@@ -35,8 +35,8 @@ const Children = () => {
 
         return children.filter((child) => {
             const name = (child.name || '').toLowerCase();
-            const email = (child.email || '').toLowerCase();
-            return name.includes(query) || email.includes(query);
+            const deviceModel = (child.deviceModel || child.device || '').toLowerCase();
+            return name.includes(query) || deviceModel.includes(query);
         });
     }, [children, searchTerm]);
 
@@ -72,7 +72,7 @@ const Children = () => {
                     }}
                 >
                     <TextField
-                        placeholder="Search by name or email..."
+                        placeholder="Search by name or device model..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         size="medium"
