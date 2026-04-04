@@ -314,10 +314,10 @@ const ChildDetails = () => {
 
               <Box sx={{ p: 2, bgcolor: colors.inputBg, borderRadius: 1, border: `1px solid ${colors.divider}` }}>
                 <Typography variant="body2" sx={{ mb: 0.5, color: colors.textSecondary }}>
-                  Child Email
+                  Child Device
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600, wordBreak: 'break-all', color: colors.text }}>
-                  {child.email}
+                  {child.deviceModel || child.device || child.email}
                 </Typography>
               </Box>
 

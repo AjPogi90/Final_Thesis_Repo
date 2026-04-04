@@ -172,7 +172,7 @@ const Apps = () => {
                         >
                             {children.map((child) => (
                                 <MenuItem key={child.id} value={child.id} sx={{ bgcolor: colors.cardBg, color: colors.text, '&:hover': { bgcolor: colors.hover } }}>
-                                    {child.name} ({child.email})
+                                    {child.name} ({child.deviceModel || child.device || 'Unknown Device'})
                                 </MenuItem>
                             ))}
                         </Select>

@@ -1,13 +1,4 @@
 // Centralized constants and helpers for status/time calculations
-export const ONLINE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
-
-export function isOnline(lastUpdated) {
-  if (!lastUpdated) return false;
-  const last = typeof lastUpdated === 'number' ? lastUpdated : Number(lastUpdated);
-  if (Number.isNaN(last)) return false;
-  return Date.now() - last < ONLINE_THRESHOLD_MS;
-}
-
 export const formatTimestamp = (timestamp) => {
   if (!timestamp) return 'Never';
   const date = new Date(Number(timestamp));

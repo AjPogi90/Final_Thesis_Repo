@@ -8,37 +8,14 @@ import {
   Box,
   Chip,
   Avatar,
-  Badge,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { formatDistanceToNow } from 'date-fns';
-import { isOnline as isOnlineHelper } from '../utils/constants';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import { useTheme } from '../contexts/ThemeContext';
 
 const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
   const { colors } = useTheme();
-  const isOnline = isOnlineHelper(child.lastUpdated);
-
-  // Calculate "last seen" in human-readable format
-  const getLastSeenText = () => {
-    if (!child.lastUpdated) return 'Never';
-
-    try {
-      const timestamp = typeof child.lastUpdated === 'number'
-        ? child.lastUpdated
-        : new Date(child.lastUpdated).getTime();
-
-      if (isOnline) {
-        return 'Active now';
-      }
-
-      return `Active ${formatDistanceToNow(new Date(timestamp), { addSuffix: true })}`;
-    } catch (e) {
-      return 'Unknown';
-    }
-  };
 
   return (
     <Card
@@ -65,21 +42,6 @@ const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
       <CardContent sx={{ flexGrow: 1 }}>
         {/* Profile Section */}
         <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Badge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            badgeContent={
-              <Box
-                sx={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: '50%',
-                  bgcolor: isOnline ? '#4caf50' : '#9e9e9e',
-                  border: `2px solid ${colors.cardBg}`,
-                }}
-              />
-            }
-          >
             <Avatar
               src={child.profilePicture || undefined}
               sx={{
@@ -93,7 +55,6 @@ const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
                 child.name?.charAt(0).toUpperCase() || <PersonIcon />
               )}
             </Avatar>
-          </Badge>
 
           <Box flex={1} minWidth={0}>
             <Typography
@@ -104,22 +65,6 @@ const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
               {child.name || 'Unknown Child'}
             </Typography>
             <Box display="flex" gap={1} flexWrap="wrap">
-              <Chip
-                icon={<FiberManualRecordIcon sx={{ fontSize: 10 }} />}
-                label={isOnline ? 'Online' : 'Offline'}
-                size="small"
-                sx={{
-                  fontWeight: 600,
-                  height: 20,
-                  bgcolor: isOnline ? 'rgba(76,175,80,0.2)' : 'rgba(158,158,158,0.2)',
-                  color: isOnline ? '#4caf50' : '#9e9e9e',
-                  border: `1px solid ${isOnline ? '#4caf50' : '#9e9e9e'}`,
-                  '& .MuiChip-icon': {
-                    ml: 0.5,
-                    color: isOnline ? '#4caf50' : '#9e9e9e',
-                  },
-                }}
-              />
               {child.logoutRequest === 'pending' && (
                 <Chip
                   icon={<LogoutIcon sx={{ fontSize: 14 }} />}
@@ -133,18 +78,23 @@ const ChildCard = ({ child, onViewDetails, onViewApps, onViewLocation }) => {
           </Box>
         </Box>
 
-        {/* Details */}
-        <Typography
-          variant="body2"
-          sx={{ color: colors.textSecondary, mb: 1, wordBreak: 'break-word' }}
-          noWrap
-        >
-          📧 {child.email || 'N/A'}
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} mb={2}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: colors.textSecondary,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              fontWeight: 500
+            }}
+          >
+            <PhoneAndroidIcon sx={{ fontSize: 18, color: colors.primary }} />
+            {child.deviceModel || child.device || 'Unknown Device'}
+          </Typography>
+        </Box>
 
-        <Typography variant="caption" sx={{ color: colors.textSecondary, display: 'block' }}>
-          {getLastSeenText()}
-        </Typography>
+
       </CardContent>
 
       <CardActions sx={{ flexDirection: 'column', gap: 1, pt: 0, px: 2, pb: 2 }}>

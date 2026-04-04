@@ -75,8 +75,8 @@ ParentalDashBoard/
 
 ### Dashboard ✅
 - [x] Child device cards
-- [x] Online/offline status indicators
-- [x] Last updated timestamps
+- [x] Devices Locked status
+- [x] Apps Blocked counts
 - [x] Profile avatars
 - [x] Quick action buttons
 - [x] Responsive grid layout
@@ -85,7 +85,7 @@ ParentalDashBoard/
 
 ### Child Details - Device Info Tab ✅
 - [x] Child name display
-- [x] Child email display
+- [x] Child device display
 - [x] Parent account link
 - [x] Device lock toggle
 - [x] Emergency lock button

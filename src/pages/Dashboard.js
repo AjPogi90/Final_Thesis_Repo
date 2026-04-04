@@ -21,7 +21,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList } from '../hooks/useFirebase';
 import { useNavigate } from 'react-router-dom';
-import { isOnline } from '../utils/constants';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -31,26 +30,29 @@ const Dashboard = () => {
 
   const safeChildren = children || [];
   const total = safeChildren.length;
-  const onlineCount = safeChildren.filter((c) => isOnline(c.lastUpdated)).length;
-  const offlineCount = total - onlineCount;
 
   // Pending logouts
   const pendingLogouts = safeChildren.filter(c => c.logoutRequest === 'pending');
 
   // Calculate total blocked apps across all children
+  let totalAppsCount = 0;
   const totalBlockedApps = safeChildren.reduce((sum, child) => {
     if (!child.apps) return sum;
     const appsArray = Array.isArray(child.apps)
       ? child.apps
       : Object.values(child.apps);
+    totalAppsCount += appsArray.length;
     return sum + appsArray.filter((app) => app.blocked).length;
   }, 0);
 
-  // Calculate active filters across all children
-  const childrenWithFilters = safeChildren.filter((child) => {
-    const filters = child.contentFilters || {};
-    return filters.nudityActive || filters.violenceActive || filters.harmfulTextActive;
-  }).length;
+  // Calculate web filtering status across all children
+  const webFiltersCount = safeChildren.filter(c => c.contentFilters?.webFilter).length;
+
+  // Calculate nudity filtering status across all children
+  const nudityFiltersCount = safeChildren.filter(c => c.contentFilters?.nudity).length;
+  
+  // Calculate total protected children (at least one filter active)
+  const protectedCount = safeChildren.filter(c => c.contentFilters?.nudity || c.contentFilters?.webFilter).length;
 
   if (loading) {
     return (
@@ -114,9 +116,16 @@ const Dashboard = () => {
                 bgcolor: colors.cardBg,
                 border: `1px solid ${colors.cardBorder}`,
                 color: colors.text,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-4px)' },
+                height: '100%',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, background-color 0.2s',
+                '&:hover': { 
+                  transform: 'translateY(-4px)',
+                  bgcolor: colors.hover,
+                },
               }}
+              onClick={() => navigate('/children')}
+              title="View all children"
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <PeopleIcon sx={{ fontSize: 40, opacity: 0.9, color: colors.primary }} />
@@ -129,6 +138,9 @@ const Dashboard = () => {
                   </Typography>
                 </Box>
               </Box>
+              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                Connected and managed
+              </Typography>
             </Paper>
           </Grid>
 
@@ -140,9 +152,16 @@ const Dashboard = () => {
                 bgcolor: colors.cardBg,
                 border: `1px solid ${colors.cardBorder}`,
                 color: colors.text,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-4px)' },
+                height: '100%',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, background-color 0.2s',
+                '&:hover': { 
+                  transform: 'translateY(-4px)',
+                  bgcolor: colors.hover,
+                },
               }}
+              onClick={() => navigate('/apps')}
+              title="Manage blocked apps"
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <AppsIcon sx={{ fontSize: 40, opacity: 0.9, color: colors.primary }} />
@@ -169,15 +188,22 @@ const Dashboard = () => {
                 bgcolor: colors.cardBg,
                 border: `1px solid ${colors.cardBorder}`,
                 color: colors.text,
-                transition: 'transform 0.2s',
-                '&:hover': { transform: 'translateY(-4px)' },
+                height: '100%',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, background-color 0.2s',
+                '&:hover': { 
+                  transform: 'translateY(-4px)',
+                  bgcolor: colors.hover,
+                },
               }}
+              onClick={() => navigate('/filters')}
+              title="Manage content filters"
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <FilterListIcon sx={{ fontSize: 40, opacity: 0.9, color: colors.primary }} />
                 <Box sx={{ textAlign: 'right' }}>
                   <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                    {childrenWithFilters}
+                    {protectedCount}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
                     Protected
@@ -295,18 +321,32 @@ const Dashboard = () => {
                 </Typography>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
+
+              <Box 
+                sx={{ 
+                  mb: 3, 
+                  cursor: 'pointer',
+                  p: 1.5,
+                  borderRadius: 1,
+                  transition: 'background-color 0.2s',
+                  '&:hover': {
+                    bgcolor: colors.hover,
+                  }
+                }}
+                onClick={() => navigate('/filters')}
+                title="Click to manage web filtering"
+              >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                    Online Devices
+                    Web Filtering
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }}>
-                    {onlineCount}/{total}
+                    {webFiltersCount}/{total}
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={total > 0 ? (onlineCount / total) * 100 : 0}
+                  value={total > 0 ? (webFiltersCount / total) * 100 : 0}
                   sx={{
                     height: 8,
                     borderRadius: 4,
@@ -318,18 +358,67 @@ const Dashboard = () => {
                 />
               </Box>
 
-              <Box sx={{ mb: 3 }}>
+              <Box 
+                sx={{ 
+                  mb: 3,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  borderRadius: 1,
+                  transition: 'background-color 0.2s',
+                  '&:hover': {
+                    bgcolor: colors.hover,
+                  }
+                }}
+                onClick={() => navigate('/filters')}
+                title="Click to manage nudity filtering"
+              >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                    Content Filters Active
+                    Nudity Filter
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }}>
-                    {childrenWithFilters}/{total}
+                    {nudityFiltersCount}/{total}
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={total > 0 ? (childrenWithFilters / total) * 100 : 0}
+                  value={total > 0 ? (nudityFiltersCount / total) * 100 : 0}
+                  sx={{
+                    height: 8,
+                    borderRadius: 4,
+                    bgcolor: colors.divider,
+                    '& .MuiLinearProgress-bar': {
+                      bgcolor: colors.primary,
+                    }
+                  }}
+                />
+              </Box>
+
+              <Box 
+                sx={{ 
+                  mb: 3,
+                  cursor: 'pointer',
+                  p: 1.5,
+                  borderRadius: 1,
+                  transition: 'background-color 0.2s',
+                  '&:hover': {
+                    bgcolor: colors.hover,
+                  }
+                }}
+                onClick={() => navigate('/apps')}
+                title="Click to manage blocked apps"
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                    Apps Blocked
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }}>
+                    {totalBlockedApps}/{totalAppsCount}
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={totalAppsCount > 0 ? (totalBlockedApps / totalAppsCount) * 100 : 0}
                   sx={{
                     height: 8,
                     borderRadius: 4,
