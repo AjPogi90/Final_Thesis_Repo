@@ -23,6 +23,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList, useChildData, updateBlockedApp } from '../hooks/useFirebase';
 import ConfirmationModal from '../components/ConfirmationModal';
+import AppIcon from '../components/AppIcon';
 import { formatDistanceToNow } from 'date-fns';
 
 const Apps = () => {
@@ -312,79 +313,99 @@ const Apps = () => {
                                                     <Paper
                                                         sx={{
                                                             p: 2,
-                                                            borderRadius: 2,
+                                                            borderRadius: 3,
                                                             border: 1,
-                                                            borderColor: app.blocked ? '#f44336' : colors.cardBorder,
-                                                            bgcolor: colors.inputBg,
-                                                            transition: 'all 0.2s',
+                                                            borderColor: app.blocked ? 'rgba(244,67,54,0.3)' : colors.cardBorder,
+                                                            bgcolor: colors.cardBg,
+                                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                            position: 'relative',
+                                                            overflow: 'hidden',
                                                             '&:hover': {
-                                                                boxShadow: '0 4px 12px rgba(238,121,26,0.2)',
-                                                                transform: 'translateY(-2px)',
+                                                                boxShadow: '0 8px 24px rgba(238,121,26,0.15)',
+                                                                transform: 'translateY(-4px)',
+                                                                borderColor: colors.primary,
                                                             },
                                                         }}
                                                     >
+                                                        {/* Top indicator for blocked status */}
+                                                        {app.blocked && (
+                                                            <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, bgcolor: '#f44336' }} />
+                                                        )}
+
                                                         <Box
                                                             sx={{
                                                                 display: 'flex',
-                                                                justifyContent: 'space-between',
                                                                 alignItems: 'flex-start',
-                                                                gap: 1,
+                                                                gap: 2,
                                                             }}
                                                         >
+                                                            <AppIcon 
+                                                                packageName={app.packageName}
+                                                                appName={app.appName}
+                                                                appIconBase64={app.appIconBase64}
+                                                                size={56}
+                                                            />
+
                                                             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                                                                 <Typography
                                                                     variant="subtitle1"
-                                                                    sx={{ fontWeight: 600, color: colors.text }}
+                                                                    sx={{ fontWeight: 700, color: colors.text, mb: 0.2, fontSize: '0.95rem' }}
                                                                     noWrap
                                                                 >
                                                                     {app.appName}
                                                                 </Typography>
                                                                 <Typography
                                                                     variant="caption"
-                                                                    sx={{ color: colors.textSecondary, display: 'block', mb: 1 }}
+                                                                    sx={{ color: colors.textSecondary, display: 'block', mb: 1.5, fontFamily: 'monospace', fontSize: '0.75rem' }}
                                                                     noWrap
                                                                 >
                                                                     {app.packageName}
                                                                 </Typography>
-                                                                <Chip
-                                                                    label={app.blocked ? 'Blocked' : 'Allowed'}
-                                                                    size="small"
-                                                                    sx={{
-                                                                        fontWeight: 600,
-                                                                        bgcolor: app.blocked ? 'rgba(244,67,54,0.2)' : 'rgba(76,175,80,0.2)',
-                                                                        color: app.blocked ? '#f44336' : '#4caf50',
-                                                                        border: `1px solid ${app.blocked ? '#f44336' : '#4caf50'}`,
-                                                                    }}
-                                                                />
+                                                                
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                                    <Chip
+                                                                        label={app.blocked ? 'Blocked' : 'Allowed'}
+                                                                        size="small"
+                                                                        sx={{
+                                                                            fontWeight: 600,
+                                                                            height: 24,
+                                                                            bgcolor: app.blocked ? 'rgba(244,67,54,0.1)' : 'rgba(76,175,80,0.1)',
+                                                                            color: app.blocked ? '#f44336' : '#4caf50',
+                                                                            border: `1px solid ${app.blocked ? 'rgba(244,67,54,0.2)' : 'rgba(76,175,80,0.2)'}`,
+                                                                        }}
+                                                                    />
+                                                                    <Switch
+                                                                        checked={app.blocked || false}
+                                                                        onChange={(e) =>
+                                                                            handleAppToggle(
+                                                                                app.appId || originalIndex,
+                                                                                e.target.checked
+                                                                            )
+                                                                        }
+                                                                        disabled={actionLoading}
+                                                                        size="small"
+                                                                        sx={{
+                                                                            '& .MuiSwitch-switchBase.Mui-checked': {
+                                                                                color: '#f44336',
+                                                                            },
+                                                                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                                                                bgcolor: '#f44336',
+                                                                            },
+                                                                        }}
+                                                                    />
+                                                                </Box>
+                                                                
                                                                 {app.blockedAt && (
                                                                     <Typography
                                                                         variant="caption"
-                                                                        sx={{ color: colors.textSecondary, display: 'block', mt: 0.5 }}
+                                                                        sx={{ color: colors.textSecondary, display: 'block', mt: 1, fontSize: '0.7rem' }}
                                                                     >
-                                                                        {formatDistanceToNow(new Date(app.blockedAt), {
+                                                                        Blocked {formatDistanceToNow(new Date(app.blockedAt), {
                                                                             addSuffix: true,
                                                                         })}
                                                                     </Typography>
                                                                 )}
                                                             </Box>
-                                                            <Switch
-                                                                checked={app.blocked || false}
-                                                                onChange={(e) =>
-                                                                    handleAppToggle(
-                                                                        app.appId || originalIndex,
-                                                                        e.target.checked
-                                                                    )
-                                                                }
-                                                                disabled={actionLoading}
-                                                                sx={{
-                                                                    '& .MuiSwitch-switchBase.Mui-checked': {
-                                                                        color: '#f44336',
-                                                                    },
-                                                                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                                                        bgcolor: '#f44336',
-                                                                    },
-                                                                }}
-                                                            />
                                                         </Box>
                                                     </Paper>
                                                 </Grid>
