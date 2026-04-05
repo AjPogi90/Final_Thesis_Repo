@@ -45,9 +45,9 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
   const requestingLogoutCount = children?.filter(child => child.logoutRequest === 'pending').length || 0;
 
   const childrenBadge = requestingLogoutCount > 0 ? (
-      <Badge badgeContent={requestingLogoutCount} color="error" sx={{ '& .MuiBadge-badge': { right: -3, top: 3 } }}>
-          <PeopleIcon />
-      </Badge>
+    <Badge badgeContent={requestingLogoutCount} color="error" sx={{ '& .MuiBadge-badge': { right: -3, top: 3 } }}>
+      <PeopleIcon />
+    </Badge>
   ) : <PeopleIcon />;
 
   const menuItems = [

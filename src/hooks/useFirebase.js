@@ -278,4 +278,26 @@ export const deleteChild = async (childId) => {
     return { success: false, error };
   }
 };
+// Update child's profile picture
+export const updateChildProfilePicture = async (childId, base64Image) => {
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await update(childRef, { profilePicture: base64Image });
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating profile picture:', error);
+    return { success: false, error };
+  }
+};
 
+// Remove child's profile picture
+export const removeChildProfilePicture = async (childId) => {
+  try {
+    const childRef = ref(database, `users/childs/${childId}`);
+    await update(childRef, { profilePicture: null });
+    return { success: true };
+  } catch (error) {
+    console.error('Error removing profile picture:', error);
+    return { success: false, error };
+  }
+};

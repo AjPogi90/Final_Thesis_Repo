@@ -11,45 +11,7 @@ import {
   updatePassword,
 } from 'firebase/auth';
 import { ref, set, onValue, update, remove } from 'firebase/database';
-
-/**
- * Compresses an image file using the browser Canvas API and returns a
- * base64-encoded data URL (JPEG, 80% quality, max 1200×900 px).
- * PDFs and non-image files are returned as-is via FileReader.
- */
-const compressImageToBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-      // Non-image (e.g. PDF) — just base64-encode the raw bytes
-      const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        const MAX_W = 1200;
-        const MAX_H = 900;
-        let w = img.width;
-        let h = img.height;
-        if (w > MAX_W) { h = Math.round((h * MAX_W) / w); w = MAX_W; }
-        if (h > MAX_H) { w = Math.round((w * MAX_H) / h); h = MAX_H; }
-        const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
+import { compressImageToBase64 } from '../utils/imageCompressor';
 
 export const AuthContext = createContext();
 

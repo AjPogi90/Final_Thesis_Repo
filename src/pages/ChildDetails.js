@@ -20,9 +20,22 @@ import {
   DialogActions,
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChildData, updateChildName, updateChildGender, deleteChild, approveLogoutRequest, denyLogoutRequest } from '../hooks/useFirebase';
+import {
+  useChildData,
+  updateChildName,
+  updateChildGender,
+  deleteChild,
+  approveLogoutRequest,
+  denyLogoutRequest,
+  updateChildProfilePicture,
+  removeChildProfilePicture
+} from '../hooks/useFirebase';
 import { useTheme } from '../contexts/ThemeContext';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Avatar, IconButton } from '@mui/material';
+import { compressImageToBase64 } from '../utils/imageCompressor';
 
 const ChildDetails = () => {
   const { childId } = useParams();
@@ -35,6 +48,8 @@ const ChildDetails = () => {
   const [editingGender, setEditingGender] = useState(false);
   const [tempGender, setTempGender] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = React.useRef(null);
 
   const { data: child, loading, error } = useChildData(childId);
 
@@ -130,6 +145,51 @@ const ChildDetails = () => {
     }
   };
 
+  const handlePhotoChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingPhoto(true);
+    try {
+      // Compress to max 400x400 to keep Base64 size reasonable
+      const base64 = await compressImageToBase64(file, 400, 400);
+      const result = await updateChildProfilePicture(childId, base64);
+
+      if (result.success) {
+        setSuccessMessage('Profile picture updated successfully');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        throw result.error;
+      }
+    } catch (err) {
+      setSuccessMessage(`Failed to upload photo: ${err.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } finally {
+      setUploadingPhoto(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (window.confirm("Are you sure you want to remove the profile picture for " + (child.name || "this child") + "?")) {
+      setLoadingAction(true);
+      try {
+        const result = await removeChildProfilePicture(childId);
+        if (result.success) {
+          setSuccessMessage('Profile picture removed');
+          setTimeout(() => setSuccessMessage(''), 3000);
+        } else {
+          throw result.error;
+        }
+      } catch (err) {
+        setSuccessMessage(`Failed to remove photo: ${err.message || 'Unknown error'}`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } finally {
+        setLoadingAction(false);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: colors.background, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -182,6 +242,61 @@ const ChildDetails = () => {
           >
             Back to Dashboard
           </Button>
+        </Box>
+
+        {/* Profile Header */}
+        <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ position: 'relative' }}>
+            <Avatar
+              src={child.profilePicture}
+              sx={{
+                width: 120,
+                height: 120,
+                bgcolor: colors.primary,
+                fontSize: '3rem',
+                border: `4px solid ${colors.cardBg}`,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}
+            >
+              {child.name?.charAt(0).toUpperCase()}
+            </Avatar>
+            <input
+              type="file"
+              hidden
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={handlePhotoChange}
+            />
+            <IconButton
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingPhoto}
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                bgcolor: colors.primary,
+                color: '#fff',
+                '&:hover': { bgcolor: '#c05905ff' },
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                width: 36,
+                height: 36
+              }}
+            >
+              {uploadingPhoto ? <CircularProgress size={20} color="inherit" /> : <PhotoCameraIcon size="small" />}
+            </IconButton>
+          </Box>
+          {child.profilePicture && (
+            <Button
+              startIcon={<DeleteIcon />}
+              onClick={handleRemovePhoto}
+              disabled={loadingAction || uploadingPhoto}
+              color="error"
+              size="small"
+              sx={{ mt: 1, textTransform: 'none' }}
+            >
+              Remove Photo
+            </Button>
+          )}
         </Box>
 
         {successMessage && (
@@ -434,6 +549,7 @@ const ChildDetails = () => {
             <Button onClick={handleDeleteChild} color="error" variant="contained" disabled={loadingAction}>Remove</Button>
           </DialogActions>
         </Dialog>
+
 
       </Container>
     </Box>
