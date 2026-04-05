@@ -9,11 +9,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
 import PersonIcon from '@mui/icons-material/Person';
 import ChildCareIcon from '@mui/icons-material/ChildCare';
 import CloseIcon from '@mui/icons-material/Close';
-import { ref, onValue, update, remove } from 'firebase/database';
+import { ref, onValue, update } from 'firebase/database';
 import { database } from '../../config/firebase';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -62,16 +61,6 @@ const AdminUsers = () => {
             await update(ref(database, `users/parents/${uid}`), { disabled: !currentlyDisabled });
             showAlert('success', currentlyDisabled ? 'User enabled.' : 'User disabled.');
         } catch { showAlert('error', 'Failed to update user.'); }
-        setActionLoading(false);
-        setConfirmAction(null);
-    };
-
-    const handleDelete = async (uid) => {
-        setActionLoading(true);
-        try {
-            await remove(ref(database, `users/parents/${uid}`));
-            showAlert('success', 'User removed from database.');
-        } catch { showAlert('error', 'Failed to delete user.'); }
         setActionLoading(false);
         setConfirmAction(null);
     };
@@ -165,7 +154,6 @@ const AdminUsers = () => {
                                             <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
                                                 <Tooltip title="View details"><IconButton size="small" onClick={() => setViewUser(p)} sx={{ color: txtDim }}><VisibilityIcon fontSize="small" /></IconButton></Tooltip>
                                                 <Tooltip title={p.disabled ? 'Enable' : 'Disable'}><IconButton size="small" onClick={() => setConfirmAction({ type: 'disable', user: p })} sx={{ color: p.disabled ? '#4caf50' : '#EE791A' }}>{p.disabled ? <CheckCircleIcon fontSize="small" /> : <BlockIcon fontSize="small" />}</IconButton></Tooltip>
-                                                <Tooltip title="Delete"><IconButton size="small" onClick={() => setConfirmAction({ type: 'delete', user: p })} sx={{ color: '#ef4444' }}><DeleteIcon fontSize="small" /></IconButton></Tooltip>
                                             </Box>
                                         </TableCell>
                                     </TableRow>
@@ -244,12 +232,10 @@ const AdminUsers = () => {
             {/* Confirm Action Dialog */}
             <Dialog open={Boolean(confirmAction)} onClose={() => setConfirmAction(null)} PaperProps={dialogPaper}>
                 {confirmAction && (<>
-                    <DialogTitle sx={{ fontWeight: 700, color: txtMain }}>{confirmAction.type === 'delete' ? 'Delete User' : (confirmAction.user.disabled ? 'Enable User' : 'Disable User')}</DialogTitle>
+                    <DialogTitle sx={{ fontWeight: 700, color: txtMain }}>{confirmAction.user.disabled ? 'Enable User' : 'Disable User'}</DialogTitle>
                     <DialogContent>
                         <Typography variant="body2" sx={{ color: txtSub }}>
-                            {confirmAction.type === 'delete'
-                                ? `Are you sure you want to delete ${confirmAction.user.email}? This cannot be undone.`
-                                : `Are you sure you want to ${confirmAction.user.disabled ? 'enable' : 'disable'} ${confirmAction.user.email}?`}
+                            {`Are you sure you want to ${confirmAction.user.disabled ? 'enable' : 'disable'} ${confirmAction.user.email}?`}
                         </Typography>
                     </DialogContent>
                     <DialogActions sx={{ p: 2 }}>
@@ -257,8 +243,8 @@ const AdminUsers = () => {
                         <Button
                             variant="contained"
                             disabled={actionLoading}
-                            onClick={() => confirmAction.type === 'delete' ? handleDelete(confirmAction.user.uid) : handleDisable(confirmAction.user.uid, confirmAction.user.disabled)}
-                            sx={{ bgcolor: confirmAction.type === 'delete' ? '#ef4444' : '#EE791A', '&:hover': { bgcolor: confirmAction.type === 'delete' ? '#dc2626' : '#c05905' } }}
+                            onClick={() => handleDisable(confirmAction.user.uid, confirmAction.user.disabled)}
+                            sx={{ bgcolor: '#EE791A', '&:hover': { bgcolor: '#c05905' } }}
                         >
                             {actionLoading ? <CircularProgress size={18} sx={{ color: '#fff' }} /> : 'Confirm'}
                         </Button>
