@@ -246,6 +246,21 @@ export const updateContentFilters = async (childId, filters) => {
   }
 };
 
+// Update the NSFW filter strictness level (1 = Strict, 2 = Moderate, 3 = Tolerant)
+export const updateFilterLevel = async (childId, level) => {
+  try {
+    const filtersRef = ref(database, `users/childs/${childId}/contentFilters`);
+    await update(filtersRef, {
+      filterLevel: level,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating filter level:', error);
+    return { success: false, error };
+  }
+};
+
 export const approveLogoutRequest = async (childId) => {
   try {
     const childRef = ref(database, `users/childs/${childId}`);

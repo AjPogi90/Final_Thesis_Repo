@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container,
     Typography,
@@ -15,34 +15,68 @@ import {
     Tooltip,
     IconButton,
     Chip,
+    Divider,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import ShieldIcon from '@mui/icons-material/Shield';
+import TuneIcon from '@mui/icons-material/Tune';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useChildrenList, useChildData, updateContentFilters } from '../hooks/useFirebase';
+import { useChildrenList, useChildData, updateContentFilters, updateFilterLevel } from '../hooks/useFirebase';
 
-const filterDefinitions = [
+// ─── Filter level definitions ───────────────────────────────────────────────
+const FILTER_LEVELS = [
     {
-        key: 'nudity',
-        label: 'Nudity Filter',
-        Icon: VisibilityOffIcon,
-        colorKey: 'error',
-        description: 'Blocks inappropriate images, adult content, and explicit material',
-        details:
-            'Prevents access to websites and apps with nudity or sexually explicit content. Helps protect children from age-inappropriate material.',
+        value: 1,
+        label: 'Strict',
+        ageRange: 'Ages 7–11',
+        description: 'Blocks suggestive, semi-nude & explicit content',
+        detail: 'All three model classes are blocked for all genders. Any skin-revealing or sexualised image is intercepted.',
+        color: '#ef4444',
+        chipBg: 'rgba(239,68,68,0.12)',
     },
     {
-        key: 'webFilter',
-        label: 'Web Filtering',
-        Icon: LanguageIcon,
-        colorKey: 'primary',
-        description: 'Monitors and blocks access to malicious or inappropriate websites.',
-        details: 'Uses the accessibility service to track URLs in browsers and block matches against the blacklist.',
+        value: 2,
+        label: 'Moderate',
+        ageRange: 'Ages 12–14',
+        description: 'Blocks bikinis/briefs & explicit content',
+        detail: 'Boys: swimwear + nudity blocked. Girls: men\'s underwear + nudity blocked. Swimsuits on girls are allowed.',
+        color: '#f59e0b',
+        chipBg: 'rgba(245,158,11,0.12)',
+    },
+    {
+        value: 3,
+        label: 'Tolerant',
+        ageRange: 'Ages 15–17',
+        description: 'Blocks explicit nudity only',
+        detail: 'Only fully explicit nudity (class 1) is blocked for all genders. Swimwear and underwear are allowed.',
+        color: '#22c55e',
+        chipBg: 'rgba(34,197,94,0.12)',
     },
 ];
 
+/** Derive a suggested filter level from the child's age string */
+function suggestLevelFromAge(ageStr) {
+    const age = parseInt(ageStr, 10);
+    if (isNaN(age)) return 2;
+    if (age <= 11) return 1;
+    if (age <= 14) return 2;
+    return 3;
+}
+
+// ─── Static filter card definitions (web filter keeps its own card) ──────────
+const webFilterDef = {
+    key: 'webFilter',
+    label: 'Web Filtering',
+    Icon: LanguageIcon,
+    colorKey: 'primary',
+    description: 'Monitors and blocks access to malicious or inappropriate websites.',
+    details: 'Uses the accessibility service to track URLs in browsers and block matches against the blacklist.',
+};
+
+// ─── Component ───────────────────────────────────────────────────────────────
 const Filters = () => {
     const { user } = useAuth();
     const { colors } = useTheme();
@@ -51,28 +85,36 @@ const Filters = () => {
     const [applyToAll, setApplyToAll] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [levelSaving, setLevelSaving] = useState(false);
 
     const { data: childData, loading: loadingChild } = useChildData(selectedChildId);
 
     // Auto-select first child
-    React.useEffect(() => {
+    useEffect(() => {
         if (children && children.length > 0 && !selectedChildId) {
             setSelectedChildId(children[0].id);
         }
     }, [children, selectedChildId]);
 
-    const filters = childData?.contentFilters || {
-        nudity: false,
-    };
+    const filters = childData?.contentFilters || { nudity: false };
+    const nudityActive = filters.nudity || false;
 
+    // Resolve filter level: stored value → age suggestion → default 2
+    const storedLevel = filters.filterLevel;
+    const ageSuggestedLevel = suggestLevelFromAge(childData?.age);
+    const activeLevel = storedLevel != null ? Number(storedLevel) : ageSuggestedLevel;
+    const currentLevelDef = FILTER_LEVELS.find(l => l.value === activeLevel) || FILTER_LEVELS[1];
+
+    const selectedChild = children?.find((c) => c.id === selectedChildId);
+    const activeFiltersCount = [filters.nudity, filters.webFilter].filter(Boolean).length;
+
+    // ── Handlers ──────────────────────────────────────────────────────────────
     const handleFilterToggle = async (filterKey, newValue) => {
         if (!selectedChildId) return;
-
         setSaveLoading(true);
         const updatedFilters = { ...filters, [filterKey]: newValue };
 
         if (applyToAll && children) {
-            // Apply to all children
             let successCount = 0;
             for (const child of children) {
                 const result = await updateContentFilters(child.id, updatedFilters);
@@ -80,17 +122,26 @@ const Filters = () => {
             }
             setSuccessMessage(`Filter updated for ${successCount} child(ren)`);
         } else {
-            // Apply to selected child only
             const result = await updateContentFilters(selectedChildId, updatedFilters);
-            if (result.success) {
-                setSuccessMessage('Filter settings updated successfully');
-            }
+            if (result.success) setSuccessMessage('Filter settings updated successfully');
         }
 
         setTimeout(() => setSuccessMessage(''), 3000);
         setSaveLoading(false);
     };
 
+    const handleLevelChange = async (newLevel) => {
+        if (!selectedChildId) return;
+        setLevelSaving(true);
+        const result = await updateFilterLevel(selectedChildId, newLevel);
+        if (result.success) {
+            setSuccessMessage(`Filter level set to "${FILTER_LEVELS.find(l => l.value === newLevel)?.label}"`);
+        }
+        setTimeout(() => setSuccessMessage(''), 3000);
+        setLevelSaving(false);
+    };
+
+    // ── Loading state ─────────────────────────────────────────────────────────
     if (loadingChildren) {
         return (
             <Box sx={{ minHeight: '100vh', bgcolor: colors.background, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -99,12 +150,27 @@ const Filters = () => {
         );
     }
 
-    const selectedChild = children?.find((c) => c.id === selectedChildId);
-    const activeFiltersCount = filterDefinitions.filter(def => filters[def.key]).length;
+    // ── Shared Select sx ──────────────────────────────────────────────────────
+    const selectSx = {
+        bgcolor: colors.inputBg,
+        color: colors.text,
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: colors.divider },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: colors.primary },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: colors.primary },
+        '& .MuiSvgIcon-root': { color: colors.text },
+    };
+    const menuPropsSx = { PaperProps: { sx: { bgcolor: colors.cardBg, color: colors.text } } };
+    const menuItemSx = { bgcolor: colors.cardBg, color: colors.text, '&:hover': { bgcolor: colors.hover } };
+    const switchSx = {
+        '& .MuiSwitch-switchBase.Mui-checked': { color: colors.success },
+        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: colors.success },
+    };
 
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: colors.background, color: colors.text }}>
             <Container maxWidth="lg" sx={{ py: 4 }}>
+
                 {/* Header */}
                 <Box sx={{ mb: 4 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: colors.text }}>
@@ -139,33 +205,11 @@ const Filters = () => {
                                 value={selectedChildId}
                                 onChange={(e) => setSelectedChildId(e.target.value)}
                                 label="Select Child"
-                                sx={{
-                                    bgcolor: colors.inputBg,
-                                    color: colors.text,
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: colors.divider,
-                                    },
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: colors.primary,
-                                    },
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: colors.primary,
-                                    },
-                                    '& .MuiSvgIcon-root': {
-                                        color: colors.text,
-                                    },
-                                }}
-                                MenuProps={{
-                                    PaperProps: {
-                                        sx: {
-                                            bgcolor: colors.cardBg,
-                                            color: colors.text,
-                                        },
-                                    },
-                                }}
+                                sx={selectSx}
+                                MenuProps={menuPropsSx}
                             >
                                 {children.map((child) => (
-                                    <MenuItem key={child.id} value={child.id} sx={{ bgcolor: colors.cardBg, color: colors.text, '&:hover': { bgcolor: colors.hover } }}>
+                                    <MenuItem key={child.id} value={child.id} sx={menuItemSx}>
                                         {child.name} ({child.deviceModel || child.device || 'Unknown Device'})
                                     </MenuItem>
                                 ))}
@@ -178,12 +222,8 @@ const Filters = () => {
                                     checked={applyToAll}
                                     onChange={(e) => setApplyToAll(e.target.checked)}
                                     sx={{
-                                        '& .MuiSwitch-switchBase.Mui-checked': {
-                                            color: colors.primary,
-                                        },
-                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                            bgcolor: colors.primary,
-                                        },
+                                        '& .MuiSwitch-switchBase.Mui-checked': { color: colors.primary },
+                                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: colors.primary },
                                     }}
                                 />
                             }
@@ -197,10 +237,7 @@ const Filters = () => {
                                     </Tooltip>
                                 </Box>
                             }
-                            sx={{
-                                alignItems: 'center',
-                                m: 0,
-                            }}
+                            sx={{ alignItems: 'center', m: 0 }}
                         />
                     </Box>
                 ) : (
@@ -214,6 +251,7 @@ const Filters = () => {
                     </Alert>
                 )}
 
+                {/* Filter Cards */}
                 {selectedChildId && selectedChild && (
                     <>
                         {loadingChild ? (
@@ -222,7 +260,7 @@ const Filters = () => {
                             </Box>
                         ) : (
                             <>
-                                {/* Filter Stats */}
+                                {/* Protection Status Banner */}
                                 <Paper sx={{ p: 3, mb: 3, borderRadius: 2, bgcolor: colors.primary, color: 'white' }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Box>
@@ -231,11 +269,12 @@ const Filters = () => {
                                             </Typography>
                                             <Typography variant="body2" sx={{ opacity: 0.9 }}>
                                                 {selectedChild.name}
+                                                {selectedChild.age ? ` · Age ${selectedChild.age}` : ''}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ textAlign: 'right' }}>
                                             <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                                                {activeFiltersCount}/{filterDefinitions.length}
+                                                {activeFiltersCount}/2
                                             </Typography>
                                             <Typography variant="body2" sx={{ opacity: 0.9 }}>
                                                 Filters Active
@@ -244,87 +283,210 @@ const Filters = () => {
                                     </Box>
                                 </Paper>
 
-                                {/* Filter Controls */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                    {filterDefinitions.map((filter) => {
-                                        const activeState = filters[filter.key] || false;
-                                        const isPending = false;
 
-                                        return (
-                                        <Paper
-                                            key={filter.key}
-                                            sx={{
-                                                p: 3,
-                                                borderRadius: 2,
-                                                border: 2,
-                                                borderColor: activeState ? colors.success : colors.cardBorder,
-                                                bgcolor: colors.cardBg,
-                                                transition: 'all 0.3s',
-                                                '&:hover': {
-                                                    boxShadow: '0 4px 12px rgba(238,121,26,0.2)',
-                                                },
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'flex-start',
-                                                    gap: 2,
-                                                }}
-                                            >
-                                                <Box sx={{ flexGrow: 1 }}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                                                        <filter.Icon sx={{ fontSize: 32, color: colors[filter.colorKey] }} />
-                                                        <Typography variant="h6" sx={{ fontWeight: 600, color: colors.text }}>
-                                                            {filter.label}
+                                    {/* ── Nudity Filter Card (with level dropdown) ── */}
+                                    <Paper
+                                        sx={{
+                                            p: 3,
+                                            borderRadius: 2,
+                                            border: 2,
+                                            borderColor: nudityActive ? colors.success : colors.cardBorder,
+                                            bgcolor: colors.cardBg,
+                                            transition: 'all 0.3s',
+                                            '&:hover': { boxShadow: '0 4px 12px rgba(238,121,26,0.2)' },
+                                        }}
+                                    >
+                                        {/* Top row: icon + label + toggle */}
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+                                            <Box sx={{ flexGrow: 1 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                                    <VisibilityOffIcon sx={{ fontSize: 32, color: colors.error }} />
+                                                    <Typography variant="h6" sx={{ fontWeight: 600, color: colors.text }}>
+                                                        Nudity Filter
+                                                    </Typography>
+                                                    {nudityActive && (
+                                                        <Chip
+                                                            label="Active"
+                                                            size="small"
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                bgcolor: `${colors.success}22`,
+                                                                color: colors.success,
+                                                                border: `1px solid ${colors.success}`,
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <Tooltip title="Uses on-device AI to detect and block inappropriate images in real-time." arrow>
+                                                        <IconButton size="small" sx={{ color: colors.textSecondary }}>
+                                                            <InfoOutlinedIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+                                                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                                    Blocks inappropriate images, adult content, and explicit material
+                                                </Typography>
+                                            </Box>
+
+                                            <Switch
+                                                checked={nudityActive}
+                                                onChange={(e) => handleFilterToggle('nudity', e.target.checked)}
+                                                disabled={saveLoading}
+                                                sx={switchSx}
+                                            />
+                                        </Box>
+
+                                        {/* Level selector — only when filter is ON */}
+                                        {nudityActive && (
+                                            <>
+                                                <Divider sx={{ my: 2, borderColor: colors.divider }} />
+
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
+                                                    {/* Tune icon label */}
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pt: 1, minWidth: 130 }}>
+                                                        <TuneIcon sx={{ fontSize: 18, color: colors.primary }} />
+                                                        <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }}>
+                                                            Strictness Level
                                                         </Typography>
-                                                        {activeState && (
-                                                            <Chip
-                                                                label="Active"
-                                                                size="small"
-                                                                sx={{
-                                                                    fontWeight: 600,
-                                                                    bgcolor: `${colors.success}22`,
-                                                                    color: colors.success,
-                                                                    border: `1px solid ${colors.success}`,
-                                                                }}
-                                                            />
-                                                        )}
-                                                        <Tooltip title={filter.details} arrow>
-                                                            <IconButton size="small" sx={{ color: colors.textSecondary }}>
-                                                                <InfoOutlinedIcon fontSize="small" />
-                                                            </IconButton>
-                                                        </Tooltip>
                                                     </Box>
 
-                                                    <Typography variant="body2" sx={{ color: colors.textSecondary }} paragraph>
-                                                        {filter.description}
-                                                    </Typography>
+                                                    {/* Dropdown */}
+                                                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                                                        <Select
+                                                            value={activeLevel}
+                                                            onChange={(e) => handleLevelChange(Number(e.target.value))}
+                                                            disabled={levelSaving}
+                                                            sx={selectSx}
+                                                            MenuProps={menuPropsSx}
+                                                            displayEmpty
+                                                        >
+                                                            {FILTER_LEVELS.map((lvl) => (
+                                                                <MenuItem key={lvl.value} value={lvl.value} sx={menuItemSx}>
+                                                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                            <Box
+                                                                                sx={{
+                                                                                    width: 8,
+                                                                                    height: 8,
+                                                                                    borderRadius: '50%',
+                                                                                    bgcolor: lvl.color,
+                                                                                    flexShrink: 0,
+                                                                                }}
+                                                                            />
+                                                                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                                                                Level {lvl.value} — {lvl.label}
+                                                                            </Typography>
+                                                                        </Box>
+                                                                        <Typography variant="caption" sx={{ color: colors.textSecondary, pl: 2.2 }}>
+                                                                            {lvl.ageRange}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
 
-                                                    <Typography variant="caption" sx={{ color: colors.textSecondary }}>
-                                                        {filter.details}
-                                                    </Typography>
+                                                    {/* Current level info chip */}
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pt: 0.5 }}>
+                                                        <Chip
+                                                            icon={<ShieldIcon sx={{ fontSize: '14px !important', color: `${currentLevelDef.color} !important` }} />}
+                                                            label={currentLevelDef.description}
+                                                            size="small"
+                                                            sx={{
+                                                                bgcolor: currentLevelDef.chipBg,
+                                                                color: currentLevelDef.color,
+                                                                border: `1px solid ${currentLevelDef.color}40`,
+                                                                fontWeight: 500,
+                                                                fontSize: '0.72rem',
+                                                            }}
+                                                        />
+                                                        {storedLevel == null && (
+                                                            <Typography variant="caption" sx={{ color: colors.textSecondary, fontSize: '0.68rem', pl: 0.5 }}>
+                                                                ✦ Auto-suggested from age
+                                                            </Typography>
+                                                        )}
+                                                        {levelSaving && (
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                                <CircularProgress size={10} sx={{ color: colors.primary }} />
+                                                                <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                                                    Saving…
+                                                                </Typography>
+                                                            </Box>
+                                                        )}
+                                                    </Box>
                                                 </Box>
 
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <Switch
-                                                        checked={activeState}
-                                                        onChange={(e) => handleFilterToggle(filter.key, e.target.checked)}
-                                                        disabled={saveLoading}
-                                                        sx={{
-                                                            '& .MuiSwitch-switchBase.Mui-checked': {
+                                                {/* Level detail explanation */}
+                                                <Box
+                                                    sx={{
+                                                        mt: 1.5,
+                                                        p: 1.5,
+                                                        borderRadius: 1,
+                                                        bgcolor: `${currentLevelDef.color}0D`,
+                                                        border: `1px solid ${currentLevelDef.color}30`,
+                                                    }}
+                                                >
+                                                    <Typography variant="caption" sx={{ color: colors.textSecondary, lineHeight: 1.6 }}>
+                                                        <strong style={{ color: currentLevelDef.color }}>Level {currentLevelDef.value} – {currentLevelDef.label}:</strong>{' '}
+                                                        {currentLevelDef.detail}
+                                                    </Typography>
+                                                </Box>
+                                            </>
+                                        )}
+                                    </Paper>
+
+                                    {/* ── Web Filter Card (unchanged) ── */}
+                                    <Paper
+                                        sx={{
+                                            p: 3,
+                                            borderRadius: 2,
+                                            border: 2,
+                                            borderColor: (filters.webFilter || false) ? colors.success : colors.cardBorder,
+                                            bgcolor: colors.cardBg,
+                                            transition: 'all 0.3s',
+                                            '&:hover': { boxShadow: '0 4px 12px rgba(238,121,26,0.2)' },
+                                        }}
+                                    >
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+                                            <Box sx={{ flexGrow: 1 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                                    <LanguageIcon sx={{ fontSize: 32, color: colors.primary }} />
+                                                    <Typography variant="h6" sx={{ fontWeight: 600, color: colors.text }}>
+                                                        {webFilterDef.label}
+                                                    </Typography>
+                                                    {(filters.webFilter || false) && (
+                                                        <Chip
+                                                            label="Active"
+                                                            size="small"
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                bgcolor: `${colors.success}22`,
                                                                 color: colors.success,
-                                                            },
-                                                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                                                                bgcolor: colors.success,
-                                                            },
-                                                        }}
-                                                    />
+                                                                border: `1px solid ${colors.success}`,
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <Tooltip title={webFilterDef.details} arrow>
+                                                        <IconButton size="small" sx={{ color: colors.textSecondary }}>
+                                                            <InfoOutlinedIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Box>
+                                                <Typography variant="body2" sx={{ color: colors.textSecondary }} paragraph>
+                                                    {webFilterDef.description}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+                                                    {webFilterDef.details}
+                                                </Typography>
                                             </Box>
-                                        </Paper>
-                                    )})}
+                                            <Switch
+                                                checked={filters.webFilter || false}
+                                                onChange={(e) => handleFilterToggle('webFilter', e.target.checked)}
+                                                disabled={saveLoading}
+                                                sx={switchSx}
+                                            />
+                                        </Box>
+                                    </Paper>
                                 </Box>
 
                                 {/* Info Footer */}
