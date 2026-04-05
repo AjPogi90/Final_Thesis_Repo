@@ -246,11 +246,6 @@ const Incidents = () => {
                                                         Confidence: {Math.round(incident.confidence * 100)}%
                                                     </Typography>
                                                 </Box>
-                                                {incident.contentType && (
-                                                    <Typography variant="body2" sx={{ color: '#f44336', mb: 1, fontWeight: 600 }}>
-                                                        Content Type: {incident.contentType}
-                                                    </Typography>
-                                                )}
                                                 <Typography variant="body2" sx={{ color: colors.textSecondary }}>
                                                     Device: {incident.deviceModel}
                                                 </Typography>
