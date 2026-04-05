@@ -112,7 +112,7 @@ const Filters = () => {
                     </Typography>
                     <Typography variant="body1" sx={{ color: colors.textSecondary, mb: 2 }}>
                         Protect your children from harmful content online. Enable filters to block
-                        inappropriate material, violence, and offensive language.
+                        inappropriate material.
                     </Typography>
                     <Alert severity="info" sx={{ borderRadius: 2, bgcolor: 'rgba(33,150,243,0.08)', color: colors.text }}>
                         <Typography variant="body2">
