@@ -189,36 +189,104 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
       <Box sx={{ p: 2 }}>
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            p: 1.5,
-            bgcolor: colors.hover,
-            borderRadius: 2,
+            borderRadius: 2.5,
+            border: `1px solid ${colors.cardBorder}`,
+            overflow: 'hidden',
           }}
         >
-          <Avatar sx={{ width: 36, height: 36, bgcolor: colors.primary }}>
-            <PersonIcon fontSize="small" sx={{ color: '#fff' }} />
-          </Avatar>
-          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }} noWrap>
-              {user?.email?.split('@')[0] || 'Parent'}
-            </Typography>
-            <Typography variant="caption" sx={{ color: colors.textSecondary }} noWrap>
-              {user?.email}
-            </Typography>
-          </Box>
-          <Tooltip title="Sign Out">
-            <IconButton
-              size="small"
-              onClick={handleLogoutClick}
-              sx={{ color: colors.textSecondary }}
+          {/* Avatar + Name row */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              px: 1.5,
+              pt: 1.5,
+              pb: 1,
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                background: `linear-gradient(135deg, ${colors.primary} 0%, #c05905 100%)`,
+                fontWeight: 700,
+                fontSize: '1rem',
+                flexShrink: 0,
+                boxShadow: `0 2px 8px rgba(238,121,26,0.4)`,
+              }}
             >
-              <LogoutIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+              {user?.email?.charAt(0).toUpperCase() || 'P'}
+            </Avatar>
+            <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                  color: colors.text,
+                  lineHeight: 1.3,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user?.email?.split('@')[0] || 'Parent'}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: colors.textSecondary,
+                  fontSize: '0.7rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  display: 'block',
+                }}
+              >
+                Parent Account
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Sign Out button */}
+          <Box sx={{ px: 1.5, pb: 1.5 }}>
+            <Tooltip title="Sign Out" placement="top">
+              <Box
+                onClick={handleLogoutClick}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  px: 1.5,
+                  py: 0.8,
+                  borderRadius: 1.5,
+                  cursor: 'pointer',
+                  bgcolor: colors.hover,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'rgba(239,68,68,0.1)',
+                    '& .logout-icon': { color: '#ef4444' },
+                    '& .logout-text': { color: '#ef4444' },
+                  },
+                }}
+              >
+                <LogoutIcon
+                  className="logout-icon"
+                  sx={{ fontSize: 16, color: colors.textSecondary, transition: 'color 0.2s' }}
+                />
+                <Typography
+                  className="logout-text"
+                  variant="caption"
+                  sx={{ fontWeight: 600, color: colors.textSecondary, transition: 'color 0.2s', letterSpacing: 0.3 }}
+                >
+                  Sign Out
+                </Typography>
+              </Box>
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
+
 
       {/* Logout Confirmation Modal */}
       <ConfirmationModal
