@@ -48,6 +48,7 @@ const ChildDetails = () => {
   const [editingGender, setEditingGender] = useState(false);
   const [tempGender, setTempGender] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showRemovePhotoConfirm, setShowRemovePhotoConfirm] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = React.useRef(null);
 
@@ -171,22 +172,21 @@ const ChildDetails = () => {
   };
 
   const handleRemovePhoto = async () => {
-    if (window.confirm("Are you sure you want to remove the profile picture for " + (child.name || "this child") + "?")) {
-      setLoadingAction(true);
-      try {
-        const result = await removeChildProfilePicture(childId);
-        if (result.success) {
-          setSuccessMessage('Profile picture removed');
-          setTimeout(() => setSuccessMessage(''), 3000);
-        } else {
-          throw result.error;
-        }
-      } catch (err) {
-        setSuccessMessage(`Failed to remove photo: ${err.message || 'Unknown error'}`);
+    setLoadingAction(true);
+    try {
+      const result = await removeChildProfilePicture(childId);
+      if (result.success) {
+        setSuccessMessage('Profile picture removed');
         setTimeout(() => setSuccessMessage(''), 3000);
-      } finally {
-        setLoadingAction(false);
+      } else {
+        throw result.error;
       }
+    } catch (err) {
+      setSuccessMessage(`Failed to remove photo: ${err.message || 'Unknown error'}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } finally {
+      setLoadingAction(false);
+      setShowRemovePhotoConfirm(false);
     }
   };
 
@@ -288,7 +288,7 @@ const ChildDetails = () => {
           {child.profilePicture && (
             <Button
               startIcon={<DeleteIcon />}
-              onClick={handleRemovePhoto}
+              onClick={() => setShowRemovePhotoConfirm(true)}
               disabled={loadingAction || uploadingPhoto}
               color="error"
               size="small"
@@ -550,6 +550,49 @@ const ChildDetails = () => {
           </DialogActions>
         </Dialog>
 
+
+        {/* Remove Photo Confirmation Dialog */}
+        <Dialog
+          open={showRemovePhotoConfirm}
+          onClose={() => !loadingAction && setShowRemovePhotoConfirm(false)}
+          maxWidth="xs"
+          fullWidth
+          PaperProps={{ sx: { borderRadius: 3, bgcolor: colors.cardBg, border: `1px solid ${colors.cardBorder}` } }}
+        >
+          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#ef4444', fontWeight: 700 }}>
+            <DeleteIcon />
+            Remove Profile Picture
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText sx={{ color: colors.textSecondary }}>
+              Are you sure you want to remove the profile picture for <strong style={{ color: colors.text }}>{child?.name || 'this child'}</strong>? The avatar will revert to the default initial.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+            <Button
+              onClick={() => setShowRemovePhotoConfirm(false)}
+              disabled={loadingAction}
+              sx={{ color: colors.textSecondary, textTransform: 'none' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleRemovePhoto}
+              disabled={loadingAction}
+              startIcon={loadingAction ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <DeleteIcon />}
+              sx={{
+                bgcolor: '#ef4444',
+                textTransform: 'none',
+                fontWeight: 600,
+                '&:hover': { bgcolor: '#dc2626' },
+                '&.Mui-disabled': { bgcolor: 'rgba(239,68,68,0.3)' },
+              }}
+            >
+              {loadingAction ? 'Removing...' : 'Yes, Remove Photo'}
+            </Button>
+          </DialogActions>
+        </Dialog>
 
       </Container>
     </Box>
