@@ -206,18 +206,16 @@ const Sidebar = ({ isMobile = false, open = true, onClose = () => { } }) => {
             }}
           >
             <Avatar
+              src="/ParentLogo.png"
+              alt="Parent Profile"
               sx={{
                 width: 40,
                 height: 40,
-                background: `linear-gradient(135deg, ${colors.primary} 0%, #c05905 100%)`,
-                fontWeight: 700,
-                fontSize: '1rem',
                 flexShrink: 0,
                 boxShadow: `0 2px 8px rgba(238,121,26,0.4)`,
+                bgcolor: 'transparent',
               }}
-            >
-              {user?.email?.charAt(0).toUpperCase() || 'P'}
-            </Avatar>
+            />
             <Box sx={{ minWidth: 0, flexGrow: 1 }}>
               <Typography
                 variant="body2"

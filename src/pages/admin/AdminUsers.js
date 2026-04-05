@@ -153,7 +153,7 @@ const AdminUsers = () => {
                                     <TableRow key={p.uid} sx={{ '& td': tdSx, opacity: p.disabled ? 0.5 : 1 }}>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <Avatar sx={{ width: 32, height: 32, bgcolor: '#EE791A', fontSize: '0.8rem' }}>{(p.name || '?')[0].toUpperCase()}</Avatar>
+                                                <Avatar src="/ParentLogo.png" alt="Parent" sx={{ width: 32, height: 32, bgcolor: 'transparent' }} />
                                                 <Typography variant="body2" sx={{ fontWeight: 500, color: txtMain }}>{p.name || 'No name'}</Typography>
                                             </Box>
                                         </TableCell>

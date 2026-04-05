@@ -120,7 +120,7 @@ const AdminVerification = () => {
                             <Paper key={u.uid} sx={{ p: 2.5, bgcolor: cardBg, border: `1px solid ${cardBorder}`, borderRadius: 2, '&:hover': { borderColor: 'rgba(0,0,0,0.2)' } }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, minWidth: 200 }}>
-                                        <Avatar sx={{ bgcolor: '#EE791A', width: 44, height: 44, fontWeight: 700 }}>{(u.name || u.email || '?')[0].toUpperCase()}</Avatar>
+                                        <Avatar src="/ParentLogo.png" alt="Parent" sx={{ bgcolor: 'transparent', width: 44, height: 44 }} />
                                         <Box>
                                             <Typography variant="body1" sx={{ fontWeight: 600, color: txtMain }}>{u.name || 'No name'}</Typography>
                                             <Typography variant="body2" sx={{ color: txtSub }}>{u.email}</Typography>

@@ -156,9 +156,7 @@ const AdminDashboard = () => {
                                     <TableRow key={p.uid} sx={{ '& td': { color: txtSub, borderColor: divider, py: 1.5 } }}>
                                         <TableCell>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                <Avatar sx={{ width: 32, height: 32, bgcolor: '#EE791A', fontSize: '0.8rem', fontWeight: 700 }}>
-                                                    {(p.name || p.email || '?')[0].toUpperCase()}
-                                                </Avatar>
+                                                <Avatar src="/ParentLogo.png" alt="Parent" sx={{ width: 32, height: 32, bgcolor: 'transparent' }} />
                                                 <Typography variant="body2" sx={{ fontWeight: 500, color: txtMain }}>{p.name || 'No name'}</Typography>
                                             </Box>
                                         </TableCell>
