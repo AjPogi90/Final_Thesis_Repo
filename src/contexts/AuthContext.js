@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { descriptorToArray } from '../utils/faceRecognition';
 import { auth, database } from '../config/firebase';
 import {
   onAuthStateChanged,
@@ -182,6 +183,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Store the face recognition descriptor vector in Firebase.
+   * Only the 128-float vector is stored — the raw selfie image is NEVER saved.
+   * matchScore: Euclidean distance from the comparison (lower = better match).
+   */
+  const storeFaceDescriptor = async (descriptor, matchScore = null) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return { success: false, error: new Error('Not authenticated') };
+    try {
+      await update(ref(database, `users/parents/${currentUser.uid}/faceVerification`), {
+        descriptorVector: descriptorToArray(descriptor), // plain array, safe for Firebase
+        verifiedAt: Date.now(),
+        matchScore: matchScore !== null ? Math.round(matchScore * 10000) / 10000 : null,
+        livenessConfirmed: true,
+      });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error };
+    }
+  };
+
   // Admin action: approve or reject a user's ID verification
   const reviewUser = async (targetUid, decision) => {
     if (!user) return { success: false, error: 'Not logged in' };
@@ -199,7 +221,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, reviewUser, deleteAccount, changePassword }}
+      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, storeFaceDescriptor, reviewUser, deleteAccount, changePassword }}
     >
       {children}
     </AuthContext.Provider>

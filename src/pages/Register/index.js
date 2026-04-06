@@ -14,46 +14,46 @@ import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import IDVerificationStep from '../../components/IDVerificationStep';
+import FaceVerificationStep from '../../components/FaceVerificationStep';
 import AccountDetailsForm from './AccountDetailsForm';
 import RegistrationSuccess from './RegistrationSuccess';
-
-const STEPS = ['Verify Identity', 'Create Account'];
+const STEPS = ['Upload ID', 'Verify Face', 'Create Account'];
 
 /**
- * Register/index.js  — Main orchestrator
+ * Register/index.js — Main orchestrator (3-step wizard)
  *
- * Responsibilities:
- *  - Manage the multi-step wizard state (activeStep)
- *  - Hold ID-verification data from Step 1
- *  - Call Firebase via AuthContext to create the account (Step 2 submit)
- *  - Render the correct sub-component for each phase
+ * Step 0  — IDVerificationStep   : date of birth + government ID upload
+ * Step 1  — FaceVerificationStep : live selfie + liveness + face matching vs ID
+ * Step 2  — AccountDetailsForm   : name, email, password (React Hook Form + Zod)
  *
- * All form validation logic lives inside AccountDetailsForm (React Hook Form + Zod).
- * All post-registration UI lives inside RegistrationSuccess.
- * Password strength lives inside PasswordStrengthIndicator.
+ * On completion →  RegistrationSuccess
  */
 const Register = () => {
-  const { signup, uploadVerificationId } = useAuth();
+  const { signup, uploadVerificationId, storeFaceDescriptor } = useAuth();
   const navigate = useNavigate();
 
-  // ── Wizard state ──────────────────────────────────────────────────────────────
+  // ── Wizard state ────────────────────────────────────────────────────────────
   const [activeStep, setActiveStep] = useState(0);
 
-  // ── Step 1 data (collected locally, uploaded after account creation) ──────────
+  // ── Step 0 data ─────────────────────────────────────────────────────────────
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [idFile, setIdFile] = useState(null);
 
-  // ── Shared async state ────────────────────────────────────────────────────────
+  // ── Step 1 data ─────────────────────────────────────────────────────────────
+  const [faceDescriptor, setFaceDescriptor] = useState(null); // Float32Array
+  const [faceMatchScore, setFaceMatchScore] = useState(null);
+
+  // ── Shared async state ───────────────────────────────────────────────────────
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [registered, setRegistered] = useState(false);
 
-  // ── Post-registration state ───────────────────────────────────────────────────
+  // ── Post-registration state ──────────────────────────────────────────────────
   const [verificationSent, setVerificationSent] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState('');
 
-  // ── Age helpers ───────────────────────────────────────────────────────────────
+  // ── Age helper ───────────────────────────────────────────────────────────────
   const calculateAge = (dateString) => {
     const birth = new Date(dateString);
     const today = new Date();
@@ -63,9 +63,9 @@ const Register = () => {
     return age;
   };
 
-  const isStep1Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile;
+  const isStep0Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile;
 
-  // ── Step 1 → Step 2 ───────────────────────────────────────────────────────────
+  // ── Step 0 → Step 1 ─────────────────────────────────────────────────────────
   const handleNext = () => {
     setError('');
     if (!dateOfBirth) return setError('Please enter your date of birth.');
@@ -74,13 +74,20 @@ const Register = () => {
     setActiveStep(1);
   };
 
-  const handleBack = () => {
-    setError('');
-    setActiveStep(0);
+  // ── Called by FaceVerificationStep on success ────────────────────────────────
+  const handleFaceVerified = (descriptor, matchScore) => {
+    setFaceDescriptor(descriptor);
+    setFaceMatchScore(matchScore);
+    setActiveStep(2);
   };
 
-  // ── Step 2 form submission (called by AccountDetailsForm after Zod passes) ────
-  // `data` is the validated { name, email, password, confirm } object from RHF.
+  // ── Step 1 → Step 0 (back) ──────────────────────────────────────────────────
+  const handleBack = () => {
+    setError('');
+    setActiveStep((s) => Math.max(0, s - 1));
+  };
+
+  // ── Step 2 form submission ───────────────────────────────────────────────────
   const handleFormSubmit = async ({ name, email, password }) => {
     setError('');
     setLoading(true);
@@ -88,7 +95,14 @@ const Register = () => {
     const result = await signup(email, password, name, dateOfBirth);
 
     if (result.success) {
+      // Upload ID (compressed to base64) — existing behaviour
       if (idFile) await uploadVerificationId(idFile);
+
+      // Store face descriptor vector — new behaviour
+      if (faceDescriptor && storeFaceDescriptor) {
+        await storeFaceDescriptor(faceDescriptor, faceMatchScore);
+      }
+
       setLoading(false);
       setRegistered(true);
       setVerificationSent(Boolean(result.verificationSent));
@@ -108,7 +122,7 @@ const Register = () => {
     }
   };
 
-  // ── Resend verification email ─────────────────────────────────────────────────
+  // ── Resend verification email ────────────────────────────────────────────────
   const handleResend = async () => {
     setResendLoading(true);
     setError('');
@@ -129,7 +143,7 @@ const Register = () => {
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────────
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <Box
       sx={{
@@ -145,7 +159,7 @@ const Register = () => {
       <Box
         sx={{
           p: { xs: 3, sm: 4 },
-          width: 560,
+          width: 580,
           maxWidth: '94%',
           borderRadius: 2,
           boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
@@ -177,7 +191,7 @@ const Register = () => {
           Create AegistNet Account
         </Typography>
 
-        {/* ── Stepper ── */}
+        {/* ── Stepper (3-step) ── */}
         {!registered && (
           <Stepper
             activeStep={activeStep}
@@ -185,7 +199,7 @@ const Register = () => {
             sx={{
               mb: 3,
               mt: 2,
-              '& .MuiStepLabel-label': { color: 'rgba(0,0,0,0.4)', fontSize: '0.82rem', fontWeight: 500 },
+              '& .MuiStepLabel-label': { color: 'rgba(0,0,0,0.4)', fontSize: '0.78rem', fontWeight: 500 },
               '& .MuiStepLabel-label.Mui-active': { color: '#EE791A', fontWeight: 700 },
               '& .MuiStepLabel-label.Mui-completed': { color: '#4caf50' },
               '& .MuiStepIcon-root': { color: 'rgba(0,0,0,0.12)' },
@@ -218,7 +232,7 @@ const Register = () => {
           />
         ) : (
           <>
-            {/* ──── STEP 1: Identity Verification ──── */}
+            {/* ── STEP 0: Identity + ID Upload ── */}
             {activeStep === 0 && (
               <Box>
                 <IDVerificationStep
@@ -232,8 +246,8 @@ const Register = () => {
                   component="button"
                   type="button"
                   onClick={handleNext}
-                  disabled={!isStep1Valid}
-                  aria-label="Continue to account setup"
+                  disabled={!isStep0Valid}
+                  aria-label="Continue to selfie verification"
                   sx={{
                     mt: 3,
                     width: '100%',
@@ -241,14 +255,14 @@ const Register = () => {
                     px: 3,
                     border: 'none',
                     borderRadius: 1,
-                    cursor: isStep1Valid ? 'pointer' : 'not-allowed',
-                    backgroundColor: isStep1Valid ? '#EE791A' : 'rgba(0,0,0,0.06)',
-                    color: isStep1Valid ? '#fff' : 'rgba(0,0,0,0.25)',
+                    cursor: isStep0Valid ? 'pointer' : 'not-allowed',
+                    backgroundColor: isStep0Valid ? '#EE791A' : 'rgba(0,0,0,0.06)',
+                    color: isStep0Valid ? '#fff' : 'rgba(0,0,0,0.25)',
                     fontWeight: 600,
                     fontSize: '0.95rem',
                     fontFamily: 'inherit',
                     transition: 'background-color 0.2s ease',
-                    '&:hover': isStep1Valid ? { backgroundColor: '#c05905' } : {},
+                    '&:hover': isStep0Valid ? { backgroundColor: '#c05905' } : {},
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -258,7 +272,7 @@ const Register = () => {
                   {loading && activeStep === 0 ? (
                     <CircularProgress size={20} sx={{ color: '#fff' }} />
                   ) : (
-                    'Continue to Account Setup →'
+                    'Continue to Selfie Verification →'
                   )}
                 </Box>
 
@@ -279,8 +293,41 @@ const Register = () => {
               </Box>
             )}
 
-            {/* ──── STEP 2: Account Details ──── */}
+            {/* ── STEP 1: Face Verification ── */}
             {activeStep === 1 && (
+              <Box>
+                <FaceVerificationStep
+                  idFile={idFile}
+                  onVerified={handleFaceVerified}
+                />
+
+                {/* Back to Step 0 */}
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={handleBack}
+                  sx={{
+                    mt: 2,
+                    width: '100%',
+                    py: 1,
+                    border: 'none',
+                    borderRadius: 1,
+                    bgcolor: 'transparent',
+                    color: 'rgba(0,0,0,0.45)',
+                    fontSize: '0.85rem',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                    '&:hover': { color: '#EE791A' },
+                  }}
+                >
+                  ← Back to ID Upload
+                </Box>
+              </Box>
+            )}
+
+            {/* ── STEP 2: Account Details ── */}
+            {activeStep === 2 && (
               <AccountDetailsForm
                 onBack={handleBack}
                 onSubmit={handleFormSubmit}
