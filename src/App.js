@@ -30,9 +30,7 @@ import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminVerification from './pages/admin/AdminVerification';
-import AdminActivity from './pages/admin/AdminActivity';
 import AdminReports from './pages/admin/AdminReports';
-import AdminManagement from './pages/admin/AdminManagement';
 
 function AppLayout({ children }) {
   return (
@@ -167,9 +165,7 @@ function App() {
             <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute requireAdmin><AdminLayout><AdminUsers /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/verification" element={<ProtectedRoute requireAdmin><AdminLayout><AdminVerification /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/activity" element={<ProtectedRoute requireAdmin><AdminLayout><AdminActivity /></AdminLayout></ProtectedRoute>} />
             <Route path="/admin/reports" element={<ProtectedRoute requireAdmin><AdminLayout><AdminReports /></AdminLayout></ProtectedRoute>} />
-            <Route path="/admin/admins" element={<ProtectedRoute requireAdmin><AdminLayout><AdminManagement /></AdminLayout></ProtectedRoute>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

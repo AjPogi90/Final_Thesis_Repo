@@ -27,9 +27,7 @@ const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
     { text: 'User Management', icon: <PeopleIcon />, path: '/admin/users' },
     { text: 'ID Verification', icon: <BadgeIcon />, path: '/admin/verification' },
-    { text: 'Activity Logs', icon: <TimelineIcon />, path: '/admin/activity' },
     { text: 'Reports', icon: <BarChartIcon />, path: '/admin/reports' },
-    { text: 'Admin Management', icon: <AdminPanelSettingsIcon />, path: '/admin/admins' },
 ];
 
 const AdminLayout = ({ children }) => {

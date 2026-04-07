@@ -241,7 +241,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                 border: '1px solid rgba(238,121,26,0.15)',
             }}>
                 <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.65)', lineHeight: 1.6 }}>
-                    🔒 Your government ID will be stored securely and used solely for age verification purposes. It will not be shared with third parties.
+                    Your government ID will be stored securely and used solely for age verification purposes. It will not be shared with third parties.
                 </Typography>
             </Box>
         </Box>
