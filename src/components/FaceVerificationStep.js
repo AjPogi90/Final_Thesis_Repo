@@ -199,15 +199,6 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
   // 3. Main Liveness Loop
   const startDetectionLoop = () => {
     stopLoop();
-    
-    // Fallback timer: if stuck in 'blink' for 10s, allow manual capture
-    setTimeout(() => {
-      if (camStageRef.current === 'blink') {
-        setCamStage('fallback');
-        setFeedbackMsg('Blink not detected. Perform manual capture.');
-        setFeedbackColor('#f44336');
-      }
-    }, 10000);
 
     intervalRef.current = setInterval(async () => {
       if (isProcessingRef.current || phase !== 'active') return;
@@ -215,7 +206,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
       if (!video || video.readyState < 2) return;
 
       const stage = camStageRef.current;
-      if (stage === 'capturing' || stage === 'fallback') return; // Handled elsewhere
+      if (stage === 'capturing') return; // Handled elsewhere
 
       isProcessingRef.current = true;
       try {
@@ -244,29 +235,29 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
           
           if (!isCenteredX || !isCenteredY) {
             setFeedbackMsg('Center your face in the oval');
-            setFeedbackColor('#ff9800');
+            setFeedbackColor('rgba(255,152,0,1)');
             setBoxColor('rgba(255,152,0,0.5)');
             perfectFramesRef.current = 0;
           } else if (faceAreaRatio < 0.12) {
             setFeedbackMsg('Move closer');
-            setFeedbackColor('#ff9800');
+            setFeedbackColor('rgba(255,152,0,1)');
             setBoxColor('rgba(255,152,0,0.5)');
             perfectFramesRef.current = 0;
           } else if (faceAreaRatio > 0.40) {
             setFeedbackMsg('Move farther away');
-            setFeedbackColor('#ff9800');
+            setFeedbackColor('rgba(255,152,0,1)');
             setBoxColor('rgba(255,152,0,0.5)');
             perfectFramesRef.current = 0;
           } else {
             perfectFramesRef.current += 1;
             setFeedbackMsg('Perfect! Holding...');
-            setFeedbackColor('#4caf50');
+            setFeedbackColor('rgba(76,175,80,1)');
             setBoxColor('rgba(76,175,80,0.8)');
             
             if (perfectFramesRef.current >= 4) {
               setCamStage('blink');
               setFeedbackMsg('Look at camera and BLINK normally');
-              setFeedbackColor('#2196f3');
+              setFeedbackColor('rgba(33,150,243,1)');
               setBoxColor('rgba(33,150,243,0.8)');
               earHistoryRef.current = [];
             }
@@ -304,7 +295,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
     stopLoop();
     setCamStage('capturing');
     setFeedbackMsg('Capturing face data...');
-    setFeedbackColor('#EE791A');
+    setFeedbackColor('rgba(238,121,26,1)');
     setBoxColor('rgba(238,121,26,1)');
     
     try {
@@ -338,7 +329,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
       stopCamera();
       
       if (descriptors.length === 0) {
-        handleFailure('Failed to extract face features. Please try again with better lighting.');
+        handleFailure('Unable to detect clear facial features. Please ensure your face is well-lit, steady, and fully visible.');
         return;
       }
 
@@ -346,12 +337,9 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
       runIDComparison(avgDescriptor);
 
     } catch (err) {
-      handleFailure('Error during capture: ' + err.message);
+      handleFailure('An unexpected error occurred during capture. Please try again.');
     }
   };
-
-  // Fallback trigger (called manually by user if blink fails)
-  const handleManualCapture = () => triggerCaptureSequence();
 
   // 5. Compare with uploaded ID
   const runIDComparison = async (selfieDescriptor) => {
@@ -359,12 +347,12 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
     
     try {
       if (!idFile || isPDF) {
-        handleFailure('Missing valid photo ID.');
+        handleFailure('A valid, non-PDF photo ID is required to complete verification.');
         return;
       }
       const idDescriptor = await extractDescriptorFromFile(idFile);
       if (!idDescriptor) {
-        handleFailure('No face found in uploaded ID. Please upload a clear photo.');
+        handleFailure('We could not identify a clear face in your uploaded document. Please provide a clear, unobstructed ID photo.');
         return;
       }
 
@@ -377,10 +365,10 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
         setPhase('success');
         onVerified(selfieDescriptor, distance);
       } else {
-        handleFailure(`Face did not match ID. (Score: ${distance.toFixed(2)} - needs to be < ${MATCH_THRESHOLD})`);
+        handleFailure('We were unable to verify a match with your ID. Please ensure good lighting and that you are not wearing glasses, hats, or masks.');
       }
     } catch (err) {
-      handleFailure('Error comparing faces: ' + err.message);
+      handleFailure('An error occurred while securely comparing your images. Please try again.');
     }
   };
 
@@ -475,15 +463,6 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
             </Box>
           )}
         </Box>
-
-        {/* Fallback button if blink fails */}
-        {camStage === 'fallback' && (
-          <Box sx={{ mt: 2 }}>
-            <OrangeBtn onClick={handleManualCapture} icon={<CheckCircleIcon fontSize="small"/>}>
-              Capture Manually
-            </OrangeBtn>
-          </Box>
-        )}
       </Box>
     );
   }
@@ -518,7 +497,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
     return (
       <Box sx={{ textAlign: 'center', py: 3 }}>
         <CancelIcon sx={{ fontSize: 64, color: '#f44336', mb: 1 }} />
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>Mismatch</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700 }}>Verification Unsuccessful</Typography>
         <Alert severity="error" sx={{ mx: 'auto', mt: 1, mb: 2, textAlign: 'left', fontSize:'0.85rem' }}>{errorMsg}</Alert>
         <OrangeBtn onClick={() => { setPhase('guide'); }} icon={<RefreshIcon fontSize="small" />}>Try Again</OrangeBtn>
       </Box>
