@@ -90,11 +90,11 @@ const Register = () => {
   };
 
   // ── Step 2 form submission ───────────────────────────────────────────────────
-  const handleFormSubmit = async ({ name, email, password }) => {
+  const handleFormSubmit = async ({ firstName, middleName, lastName, email, password }) => {
     setError('');
     setLoading(true);
 
-    const result = await signup(email, password, name, dateOfBirth);
+    const result = await signup(email, password, { firstName, middleName, lastName }, dateOfBirth);
 
     if (result.success) {
       // Upload ID (compressed to base64) — existing behaviour

@@ -73,19 +73,26 @@ export const AuthProvider = ({ children }) => {
    * Does NOT touch Firebase Storage at all, so CORS issues cannot block
    * account creation. The idFile is uploaded separately in Step 2.
    */
-  const signup = async (email, password, name, dateOfBirth) => {
+  const signup = async (email, password, nameData, dateOfBirth) => {
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const createdUser = userCred.user;
+      
+      const { firstName = '', middleName = '', lastName = '' } = nameData || {};
+      const fullNameParts = [firstName, middleName, lastName].filter(Boolean);
+      const fullName = fullNameParts.join(' ');
 
-      if (name) {
-        await updateProfile(createdUser, { displayName: name });
+      if (fullName) {
+        await updateProfile(createdUser, { displayName: fullName });
       }
 
       await set(ref(database, `users/parents/${createdUser.uid}`), {
         uid: createdUser.uid,
         email: createdUser.email,
-        name: name || '',
+        name: fullName || '',
+        firstName,
+        middleName,
+        lastName,
         createdAt: Date.now(),
         role: 'parent',
         isAdmin: false,

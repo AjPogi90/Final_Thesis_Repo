@@ -55,10 +55,19 @@ export const analyzePassword = (password) => {
  */
 export const accountSchema = z
   .object({
-    name: z
+    firstName: z
       .string()
-      .min(2, 'Full name must be at least 2 characters')
-      .max(80, 'Name is too long'),
+      .min(2, 'First name must be at least 2 characters')
+      .max(40, 'First name is too long'),
+    middleName: z
+      .string()
+      .max(40, 'Middle name is too long')
+      .optional()
+      .or(z.literal('')),
+    lastName: z
+      .string()
+      .min(2, 'Last name must be at least 2 characters')
+      .max(40, 'Last name is too long'),
     email: z
       .string()
       .email('Please enter a valid email address'),

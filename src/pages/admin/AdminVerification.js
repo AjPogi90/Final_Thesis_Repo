@@ -157,7 +157,7 @@ const AdminVerification = () => {
                     </DialogTitle>
                     <DialogContent dividers sx={{ borderColor: divider }}>
                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 3 }}>
-                            {[{ l: 'Full Name', v: previewUser.name || 'N/A' }, { l: 'Email', v: previewUser.email }, { l: 'Date of Birth', v: previewUser.idVerification?.dateOfBirth || 'N/A' }, { l: 'Submitted', v: previewUser.idVerification?.submittedAt ? new Date(previewUser.idVerification.submittedAt).toLocaleString() : 'N/A' }].map(x => (
+                            {[{ l: 'First Name', v: previewUser.firstName || 'N/A' }, { l: 'Middle Name', v: previewUser.middleName || 'N/A' }, { l: 'Last Name', v: previewUser.lastName || 'N/A' }, { l: 'Email', v: previewUser.email }, { l: 'Date of Birth', v: previewUser.idVerification?.dateOfBirth || 'N/A' }, { l: 'Submitted', v: previewUser.idVerification?.submittedAt ? new Date(previewUser.idVerification.submittedAt).toLocaleString() : 'N/A' }].map(x => (
                                 <Paper key={x.l} sx={{ p: 2, bgcolor: colors.hover, border: `1px solid ${cardBorder}`, borderRadius: 2 }}>
                                     <Typography variant="caption" sx={{ color: txtDim, display: 'block', mb: 0.5 }}>{x.l}</Typography>
                                     <Typography variant="body1" sx={{ fontWeight: 600, color: txtMain }}>{x.v}</Typography>

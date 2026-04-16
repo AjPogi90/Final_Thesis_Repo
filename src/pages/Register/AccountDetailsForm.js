@@ -51,7 +51,7 @@ const AccountDetailsForm = ({ onBack, onSubmit: onFormSubmit, serverError, loadi
   } = useForm({
     resolver: zodResolver(accountSchema),
     mode: 'onChange',           // validate on every keystroke for live feedback
-    defaultValues: { name: '', email: '', password: '', confirm: '' },
+    defaultValues: { firstName: '', middleName: '', lastName: '', email: '', password: '', confirm: '' },
   });
 
   const watchedPassword = watch('password');
@@ -94,25 +94,61 @@ const AccountDetailsForm = ({ onBack, onSubmit: onFormSubmit, serverError, loadi
         Identity verified! Now set up your parent account.
       </Typography>
 
-      {/* ── Full Name ── */}
+      {/* ── Name Fields ── */}
       <Controller
-        name="name"
+        name="lastName"
         control={control}
         render={({ field }) => (
           <TextField
-            {...field}
-            fullWidth
-            label="Full name"
-            autoComplete="name"
-            variant="filled"
-            sx={fieldSx}
-            InputProps={inputProps}
-            InputLabelProps={labelProps}
-            error={!!errors.name}
-            helperText={errors.name?.message}
+             {...field}
+             fullWidth
+             label="Last name *"
+             autoComplete="family-name"
+             variant="filled"
+             sx={fieldSx}
+             InputProps={inputProps}
+             InputLabelProps={labelProps}
+             error={!!errors.lastName}
+             helperText={errors.lastName?.message}
           />
         )}
       />
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Controller
+          name="firstName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="First name *"
+              autoComplete="given-name"
+              variant="filled"
+              InputProps={inputProps}
+              InputLabelProps={labelProps}
+              error={!!errors.firstName}
+              helperText={errors.firstName?.message}
+            />
+          )}
+        />
+        <Controller
+          name="middleName"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="Middle name"
+              autoComplete="additional-name"
+              variant="filled"
+              InputProps={inputProps}
+              InputLabelProps={labelProps}
+              error={!!errors.middleName}
+              helperText={errors.middleName?.message}
+            />
+          )}
+        />
+      </Box>
 
       {/* ── Email ── */}
       <Controller
