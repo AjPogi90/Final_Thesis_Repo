@@ -164,13 +164,26 @@ const AdminVerification = () => {
                                 </Paper>
                             ))}
                         </Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: txtSub, mb: 1.5 }}>📄 Uploaded Government ID</Typography>
-                        {(() => {
-                            const imgSrc = previewUser.idVerification?.idBase64 || previewUser.idVerification?.idFileUrl;
-                            if (imgSrc) return <Box sx={{ border: `1px solid ${cardBorder}`, borderRadius: 2, overflow: 'hidden', textAlign: 'center', p: 1 }}><Box component="img" src={imgSrc} alt="Government ID" sx={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', borderRadius: 1 }} /></Box>;
-                            if (previewUser.idVerification?.idUploadPending) return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(238,121,26,0.06)', border: '1px solid rgba(238,121,26,0.2)', borderRadius: 2 }}><Typography sx={{ color: '#EE791A', fontWeight: 600 }}>⏳ ID not yet uploaded</Typography><Typography variant="caption" sx={{ color: txtDim }}>The user has been asked to upload their ID.</Typography></Paper>;
-                            return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: cardBg, borderRadius: 2 }}><Typography sx={{ color: txtDim }}>No ID image available</Typography></Paper>;
-                        })()}
+                        <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', md: 'row' } }}>
+                            <Box sx={{ flex: 1 }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: txtSub, mb: 1.5 }}>📄 Uploaded Government ID</Typography>
+                                {(() => {
+                                    const imgSrc = previewUser.idVerification?.idBase64 || previewUser.idVerification?.idFileUrl;
+                                    if (imgSrc) return <Box sx={{ border: `1px solid ${cardBorder}`, borderRadius: 2, overflow: 'hidden', textAlign: 'center', p: 1 }}><Box component="img" src={imgSrc} alt="Government ID" sx={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', borderRadius: 1 }} /></Box>;
+                                    if (previewUser.idVerification?.idUploadPending) return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(238,121,26,0.06)', border: '1px solid rgba(238,121,26,0.2)', borderRadius: 2 }}><Typography sx={{ color: '#EE791A', fontWeight: 600 }}>⏳ ID not yet uploaded</Typography><Typography variant="caption" sx={{ color: txtDim }}>The user has been asked to upload their ID.</Typography></Paper>;
+                                    return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: cardBg, borderRadius: 2 }}><Typography sx={{ color: txtDim }}>No ID image available</Typography></Paper>;
+                                })()}
+                            </Box>
+                            
+                            <Box sx={{ flex: 1 }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: txtSub, mb: 1.5 }}>📸 Selfie Verification</Typography>
+                                {(() => {
+                                    const selfieSrc = previewUser.faceVerification?.selfieBase64;
+                                    if (selfieSrc) return <Box sx={{ border: `1px solid ${cardBorder}`, borderRadius: 2, overflow: 'hidden', textAlign: 'center', p: 1 }}><Box component="img" src={selfieSrc} alt="Selfie Verification" sx={{ maxWidth: '100%', maxHeight: 400, objectFit: 'contain', borderRadius: 1 }} /></Box>;
+                                    return <Paper sx={{ p: 3, textAlign: 'center', bgcolor: cardBg, borderRadius: 2 }}><Typography sx={{ color: txtDim }}>No Selfie available</Typography></Paper>;
+                                })()}
+                            </Box>
+                        </Box>
                     </DialogContent>
                     {(previewUser.verificationStatus === 'pending_verification' || previewUser.verificationStatus === 'resubmit_id') && (
                         <DialogActions sx={{ p: 2.5, borderTop: `1px solid ${divider}`, gap: 1, flexWrap: 'wrap' }}>

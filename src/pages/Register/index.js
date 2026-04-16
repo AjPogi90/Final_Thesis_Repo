@@ -42,6 +42,7 @@ const Register = () => {
   // ── Step 1 data ─────────────────────────────────────────────────────────────
   const [faceDescriptor, setFaceDescriptor] = useState(null); // Float32Array
   const [faceMatchScore, setFaceMatchScore] = useState(null);
+  const [selfieBase64, setSelfieBase64] = useState(null);
 
   // ── Shared async state ───────────────────────────────────────────────────────
   const [loading, setLoading] = useState(false);
@@ -75,9 +76,10 @@ const Register = () => {
   };
 
   // ── Called by FaceVerificationStep on success ────────────────────────────────
-  const handleFaceVerified = (descriptor, matchScore) => {
+  const handleFaceVerified = (descriptor, matchScore, selfieImgBase64) => {
     setFaceDescriptor(descriptor);
     setFaceMatchScore(matchScore);
+    setSelfieBase64(selfieImgBase64);
     setActiveStep(2);
   };
 
@@ -100,7 +102,7 @@ const Register = () => {
 
       // Store face descriptor vector — new behaviour
       if (faceDescriptor && storeFaceDescriptor) {
-        await storeFaceDescriptor(faceDescriptor, faceMatchScore);
+        await storeFaceDescriptor(faceDescriptor, faceMatchScore, selfieBase64);
       }
 
       setLoading(false);

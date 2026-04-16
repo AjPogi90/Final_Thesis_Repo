@@ -301,6 +301,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
     try {
       const descriptors = [];
       const video = videoRef.current;
+      let lastSelfieBase64 = null;
       
       // Capture 3 frames, 400ms apart
       for (let i = 0; i < 3; i++) {
@@ -316,9 +317,12 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 0, 0);
 
+        const frameDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        if (i === 2) lastSelfieBase64 = frameDataUrl; // save the last frame
+
         // Using Image element for SSD MobileNet extraction
         const img = new Image();
-        img.src = canvas.toDataURL('image/jpeg');
+        img.src = frameDataUrl;
         await new Promise((res) => { img.onload = res; });
         
         const desc = await extractDescriptorFromImage(img);
@@ -334,7 +338,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
       }
 
       const avgDescriptor = averageDescriptors(descriptors);
-      runIDComparison(avgDescriptor);
+      runIDComparison(avgDescriptor, lastSelfieBase64);
 
     } catch (err) {
       handleFailure('An unexpected error occurred during capture. Please try again.');
@@ -342,7 +346,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
   };
 
   // 5. Compare with uploaded ID
-  const runIDComparison = async (selfieDescriptor) => {
+  const runIDComparison = async (selfieDescriptor, selfieBase64) => {
     setPhase('comparing');
     
     try {
@@ -363,7 +367,7 @@ const FaceVerificationStep = ({ idFile, onVerified }) => {
       if (matched) {
         setMatchScore(distance);
         setPhase('success');
-        onVerified(selfieDescriptor, distance);
+        onVerified(selfieDescriptor, distance, selfieBase64);
       } else {
         handleFailure('We were unable to verify a match with your ID. Please ensure good lighting and that you are not wearing glasses, hats, or masks.');
       }

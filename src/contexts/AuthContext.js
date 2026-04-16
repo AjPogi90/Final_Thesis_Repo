@@ -185,19 +185,23 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Store the face recognition descriptor vector in Firebase.
-   * Only the 128-float vector is stored — the raw selfie image is NEVER saved.
    * matchScore: Euclidean distance from the comparison (lower = better match).
+   * selfieBase64: The captured selfie to store in the database for admin review.
    */
-  const storeFaceDescriptor = async (descriptor, matchScore = null) => {
+  const storeFaceDescriptor = async (descriptor, matchScore = null, selfieBase64 = null) => {
     const currentUser = auth.currentUser;
     if (!currentUser) return { success: false, error: new Error('Not authenticated') };
     try {
-      await update(ref(database, `users/parents/${currentUser.uid}/faceVerification`), {
+      const updateData = {
         descriptorVector: descriptorToArray(descriptor), // plain array, safe for Firebase
         verifiedAt: Date.now(),
         matchScore: matchScore !== null ? Math.round(matchScore * 10000) / 10000 : null,
         livenessConfirmed: true,
-      });
+      };
+      if (selfieBase64) {
+        updateData.selfieBase64 = selfieBase64;
+      }
+      await update(ref(database, `users/parents/${currentUser.uid}/faceVerification`), updateData);
       return { success: true };
     } catch (error) {
       return { success: false, error };
