@@ -16,15 +16,36 @@ import {
     IconButton,
     Chip,
     Divider,
+    TextField,
+    Button,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ShieldIcon from '@mui/icons-material/Shield';
 import TuneIcon from '@mui/icons-material/Tune';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useChildrenList, useChildData, updateContentFilters, updateFilterLevel } from '../hooks/useFirebase';
+import {
+    useChildrenList,
+    useChildData,
+    updateContentFilters,
+    updateFilterLevel,
+    useBlockedSites,
+    addBlockedSite,
+    removeBlockedSite,
+} from '../hooks/useFirebase';
 
 // ─── Filter level definitions ───────────────────────────────────────────────
 const FILTER_LEVELS = [
@@ -87,7 +108,15 @@ const Filters = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [levelSaving, setLevelSaving] = useState(false);
 
+    // Blocked sites state
+    const [newSiteUrl, setNewSiteUrl] = useState('');
+    const [addingSite, setAddingSite] = useState(false);
+    const [siteError, setSiteError] = useState('');
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [siteToDelete, setSiteToDelete] = useState(null);
+
     const { data: childData, loading: loadingChild } = useChildData(selectedChildId);
+    const { sites: blockedSites, loading: loadingBlockedSites } = useBlockedSites(selectedChildId);
 
     // Auto-select first child
     useEffect(() => {
@@ -139,6 +168,51 @@ const Filters = () => {
         }
         setTimeout(() => setSuccessMessage(''), 3000);
         setLevelSaving(false);
+    };
+
+    // ── Blocked sites handlers ────────────────────────────────────────────────
+    const handleAddBlockedSite = async () => {
+        const trimmed = newSiteUrl.trim().toLowerCase();
+        if (!trimmed) {
+            setSiteError('Please enter a website URL');
+            return;
+        }
+        // Strip protocol prefixes so users can paste full URLs
+        const cleaned = trimmed.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+        if (!cleaned || cleaned.length < 3) {
+            setSiteError('Please enter a valid domain (e.g. facebook.com)');
+            return;
+        }
+        // Check for duplicate
+        if (blockedSites.some((s) => s.url === cleaned)) {
+            setSiteError('This site is already blocked');
+            return;
+        }
+        setAddingSite(true);
+        setSiteError('');
+        const result = await addBlockedSite(selectedChildId, cleaned);
+        if (result.success) {
+            setSuccessMessage(`${cleaned} added to blocked sites`);
+            setNewSiteUrl('');
+            setTimeout(() => setSuccessMessage(''), 3000);
+        }
+        setAddingSite(false);
+    };
+
+    const handleRemoveBlockedSite = async () => {
+        if (!siteToDelete) return;
+        const result = await removeBlockedSite(selectedChildId, siteToDelete.id);
+        if (result.success) {
+            setSuccessMessage(`${siteToDelete.url} removed from blocked sites`);
+            setTimeout(() => setSuccessMessage(''), 3000);
+        }
+        setDeleteDialogOpen(false);
+        setSiteToDelete(null);
+    };
+
+    const openDeleteDialog = (site) => {
+        setSiteToDelete(site);
+        setDeleteDialogOpen(true);
     };
 
     // ── Loading state ─────────────────────────────────────────────────────────
@@ -435,7 +509,7 @@ const Filters = () => {
                                         )}
                                     </Paper>
 
-                                    {/* ── Web Filter Card (unchanged) ── */}
+                                    {/* ── Web Filter Card ── */}
                                     <Paper
                                         sx={{
                                             p: 3,
@@ -486,7 +560,193 @@ const Filters = () => {
                                                 sx={switchSx}
                                             />
                                         </Box>
+
+                                        {/* ── Blocked Sites Section (visible when web filter is ON) ── */}
+                                        {(filters.webFilter || false) && (
+                                            <>
+                                                <Divider sx={{ my: 2, borderColor: colors.divider }} />
+
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1.5 }}>
+                                                    <BlockIcon sx={{ fontSize: 18, color: colors.error }} />
+                                                    <Typography variant="body2" sx={{ fontWeight: 600, color: colors.text }}>
+                                                        Custom Blocked Sites
+                                                    </Typography>
+                                                    <Chip
+                                                        label={blockedSites.length}
+                                                        size="small"
+                                                        sx={{
+                                                            ml: 0.5,
+                                                            height: 20,
+                                                            minWidth: 20,
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 700,
+                                                            bgcolor: `${colors.primary}22`,
+                                                            color: colors.primary,
+                                                        }}
+                                                    />
+                                                    <Tooltip title="Add websites you want to block on your child's device. The child's browser will be redirected away from these sites." arrow>
+                                                        <IconButton size="small" sx={{ color: colors.textSecondary }}>
+                                                            <InfoOutlinedIcon sx={{ fontSize: 16 }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Box>
+
+                                                {/* Add Site Input */}
+                                                <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                                                    <TextField
+                                                        size="small"
+                                                        fullWidth
+                                                        placeholder="Enter website URL (e.g. facebook.com)"
+                                                        value={newSiteUrl}
+                                                        onChange={(e) => {
+                                                            setNewSiteUrl(e.target.value);
+                                                            if (siteError) setSiteError('');
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') handleAddBlockedSite();
+                                                        }}
+                                                        error={!!siteError}
+                                                        helperText={siteError}
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                bgcolor: colors.inputBg,
+                                                                color: colors.text,
+                                                                '& fieldset': { borderColor: colors.divider },
+                                                                '&:hover fieldset': { borderColor: colors.primary },
+                                                                '&.Mui-focused fieldset': { borderColor: colors.primary },
+                                                            },
+                                                            '& .MuiInputBase-input::placeholder': { color: colors.textSecondary, opacity: 0.7 },
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={handleAddBlockedSite}
+                                                        disabled={addingSite || !newSiteUrl.trim()}
+                                                        startIcon={addingSite ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <AddCircleOutlineIcon />}
+                                                        sx={{
+                                                            minWidth: 100,
+                                                            bgcolor: colors.primary,
+                                                            textTransform: 'none',
+                                                            fontWeight: 600,
+                                                            '&:hover': { bgcolor: colors.primaryDark || colors.primary, filter: 'brightness(0.9)' },
+                                                            '&.Mui-disabled': { bgcolor: `${colors.primary}66`, color: 'rgba(255,255,255,0.5)' },
+                                                        }}
+                                                    >
+                                                        {addingSite ? 'Adding…' : 'Block'}
+                                                    </Button>
+                                                </Box>
+
+                                                {/* Blocked Sites List */}
+                                                {loadingBlockedSites ? (
+                                                    <Box sx={{ textAlign: 'center', py: 2 }}>
+                                                        <CircularProgress size={20} sx={{ color: colors.primary }} />
+                                                    </Box>
+                                                ) : blockedSites.length === 0 ? (
+                                                    <Box
+                                                        sx={{
+                                                            py: 2,
+                                                            px: 2,
+                                                            borderRadius: 1,
+                                                            bgcolor: `${colors.primary}08`,
+                                                            border: `1px dashed ${colors.divider}`,
+                                                            textAlign: 'center',
+                                                        }}
+                                                    >
+                                                        <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                                            No custom blocked sites yet. Add a website above to block it.
+                                                        </Typography>
+                                                    </Box>
+                                                ) : (
+                                                    <List
+                                                        dense
+                                                        sx={{
+                                                            maxHeight: 240,
+                                                            overflow: 'auto',
+                                                            bgcolor: `${colors.primary}06`,
+                                                            borderRadius: 1,
+                                                            border: `1px solid ${colors.divider}`,
+                                                            p: 0,
+                                                        }}
+                                                    >
+                                                        {blockedSites.map((site, idx) => (
+                                                            <ListItem
+                                                                key={site.id}
+                                                                sx={{
+                                                                    borderBottom: idx < blockedSites.length - 1 ? `1px solid ${colors.divider}` : 'none',
+                                                                    '&:hover': { bgcolor: `${colors.error}0A` },
+                                                                    transition: 'background 0.2s',
+                                                                    pr: 6,
+                                                                }}
+                                                            >
+                                                                <BlockIcon sx={{ fontSize: 16, color: colors.error, mr: 1.5, flexShrink: 0 }} />
+                                                                <ListItemText
+                                                                    primary={site.url}
+                                                                    primaryTypographyProps={{
+                                                                        variant: 'body2',
+                                                                        sx: { fontWeight: 500, color: colors.text, fontFamily: 'monospace' },
+                                                                    }}
+                                                                />
+                                                                <ListItemSecondaryAction>
+                                                                    <Tooltip title="Remove blocked site" arrow>
+                                                                        <IconButton
+                                                                            edge="end"
+                                                                            size="small"
+                                                                            onClick={() => openDeleteDialog(site)}
+                                                                            sx={{
+                                                                                color: colors.textSecondary,
+                                                                                '&:hover': { color: colors.error, bgcolor: `${colors.error}14` },
+                                                                            }}
+                                                                        >
+                                                                            <DeleteOutlineIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                </ListItemSecondaryAction>
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                )}
+                                            </>
+                                        )}
                                     </Paper>
+
+                                    {/* ── Delete Confirmation Dialog ── */}
+                                    <Dialog
+                                        open={deleteDialogOpen}
+                                        onClose={() => setDeleteDialogOpen(false)}
+                                        PaperProps={{
+                                            sx: {
+                                                bgcolor: colors.cardBg,
+                                                color: colors.text,
+                                                borderRadius: 2,
+                                                minWidth: 340,
+                                            },
+                                        }}
+                                    >
+                                        <DialogTitle sx={{ fontWeight: 600 }}>Remove Blocked Site</DialogTitle>
+                                        <DialogContent>
+                                            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                                Are you sure you want to unblock{' '}
+                                                <strong style={{ color: colors.text }}>{siteToDelete?.url}</strong>?
+                                                Your child will be able to access this website again.
+                                            </Typography>
+                                        </DialogContent>
+                                        <DialogActions sx={{ px: 3, pb: 2 }}>
+                                            <Button
+                                                onClick={() => setDeleteDialogOpen(false)}
+                                                sx={{ color: colors.textSecondary, textTransform: 'none' }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                onClick={handleRemoveBlockedSite}
+                                                variant="contained"
+                                                color="error"
+                                                sx={{ textTransform: 'none', fontWeight: 600 }}
+                                            >
+                                                Remove
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
                                 </Box>
 
                                 {/* Info Footer */}

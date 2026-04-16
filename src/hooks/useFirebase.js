@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { database } from '../config/firebase';
-import { ref, onValue, update, get, remove } from 'firebase/database';
+import { ref, onValue, update, get, remove, push } from 'firebase/database';
 
 export const useChildData = (childId) => {
   const [data, setData] = useState(null);
@@ -313,6 +313,68 @@ export const removeChildProfilePicture = async (childId) => {
     return { success: true };
   } catch (error) {
     console.error('Error removing profile picture:', error);
+    return { success: false, error };
+  }
+};
+
+// ─── Blocked Sites ───────────────────────────────────────────────────────────
+
+/** Real-time listener for a child's blocked sites list */
+export const useBlockedSites = (childId) => {
+  const [sites, setSites] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!childId) {
+      setLoading(false);
+      return;
+    }
+
+    const sitesRef = ref(database, `users/childs/${childId}/blockedSites`);
+    const unsubscribe = onValue(
+      sitesRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const parsed = Object.keys(data).map((key) => ({
+            id: key,
+            ...data[key],
+          }));
+          setSites(parsed);
+        } else {
+          setSites([]);
+        }
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
+
+    return unsubscribe;
+  }, [childId]);
+
+  return { sites, loading };
+};
+
+/** Add a blocked site (push a new entry) */
+export const addBlockedSite = async (childId, url) => {
+  try {
+    const sitesRef = ref(database, `users/childs/${childId}/blockedSites`);
+    await push(sitesRef, { url });
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding blocked site:', error);
+    return { success: false, error };
+  }
+};
+
+/** Remove a blocked site by its push-key */
+export const removeBlockedSite = async (childId, siteId) => {
+  try {
+    const siteRef = ref(database, `users/childs/${childId}/blockedSites/${siteId}`);
+    await remove(siteRef);
+    return { success: true };
+  } catch (error) {
+    console.error('Error removing blocked site:', error);
     return { success: false, error };
   }
 };
