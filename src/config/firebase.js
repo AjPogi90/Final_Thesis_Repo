@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
+import { getMessaging, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -24,5 +25,12 @@ export const database = getDatabase(app);
 
 // Initialize Firebase Storage for file uploads (e.g. government ID verification)
 export const storage = getStorage(app);
+
+// Initialize Firebase Cloud Messaging for push notifications.
+// isSupported() returns false on browsers that don't support the Push API (e.g. Safari on iOS).
+// We export a promise that resolves to either the messaging instance or null.
+export const messagingPromise = isSupported().then((supported) =>
+  supported ? getMessaging(app) : null
+);
 
 export default app;

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { descriptorToArray } from '../utils/faceRecognition';
 import { auth, database } from '../config/firebase';
 import {
@@ -13,6 +13,12 @@ import {
 } from 'firebase/auth';
 import { ref, set, onValue, update, remove } from 'firebase/database';
 import { compressImageToBase64 } from '../utils/imageCompressor';
+import {
+  requestAndSaveToken,
+  removeCurrentDeviceToken,
+  onForegroundMessage,
+  getNotificationPermission,
+} from '../utils/pushNotifications';
 
 export const AuthContext = createContext();
 
@@ -27,9 +33,38 @@ export const AuthProvider = ({ children }) => {
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [foregroundAlert, setForegroundAlert] = useState(null);
+
+  // ── Auto-register FCM token when permission is already granted ──────────
+  const initPushNotifications = useCallback(async (uid) => {
+    try {
+      const permission = getNotificationPermission();
+      if (permission === 'granted') {
+        // Silently refresh/register the token
+        await requestAndSaveToken(uid);
+      }
+
+      // Listen for foreground messages (tab is open)
+      const unsubForeground = await onForegroundMessage((payload) => {
+        const notification = payload.notification || payload.data || {};
+        setForegroundAlert({
+          title: notification.title || '⚠️ NSFW Alert',
+          body: notification.body || 'New incident detected.',
+          timestamp: Date.now(),
+        });
+      });
+
+      return unsubForeground;
+    } catch (error) {
+      console.warn('[Auth] Push notification init failed:', error);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    let unsubForeground = null;
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         // Admin is determined by email only — cannot be set via database
@@ -56,7 +91,16 @@ export const AuthProvider = ({ children }) => {
           }
           setLoading(false);
         });
-        return () => unsub();
+
+        // Initialize push notifications for this parent
+        initPushNotifications(currentUser.uid).then((unsub) => {
+          unsubForeground = unsub;
+        });
+
+        return () => {
+          unsub();
+          if (typeof unsubForeground === 'function') unsubForeground();
+        };
       } else {
         setVerificationStatus(null);
         setIsAdmin(false);
@@ -65,8 +109,11 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    return unsubscribe;
-  }, []);
+    return () => {
+      unsubscribe();
+      if (typeof unsubForeground === 'function') unsubForeground();
+    };
+  }, [initPushNotifications]);
 
   /**
    * STEP 1 — Create the Firebase Auth account and write the parent profile.
@@ -232,7 +279,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, isDisabled, signup, uploadVerificationId, storeFaceDescriptor, reviewUser, deleteAccount, changePassword }}
+      value={{ user, loading, verificationStatus, isAdmin, isDisabled, foregroundAlert, signup, uploadVerificationId, storeFaceDescriptor, reviewUser, deleteAccount, changePassword, removeCurrentDeviceToken }}
     >
       {children}
     </AuthContext.Provider>

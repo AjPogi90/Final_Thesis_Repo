@@ -24,6 +24,7 @@ import DisabledAccount from './pages/DisabledAccount';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import SessionTimeout from './components/SessionTimeout';
+import ForegroundNotificationAlert from './components/ForegroundNotificationAlert';
 
 // Admin pages
 import AdminLayout from './components/AdminLayout';
@@ -58,6 +59,9 @@ function AppLayout({ children }) {
 
       {/* Session Timeout Manager */}
       <SessionTimeout />
+
+      {/* In-app push notification alerts (foreground) */}
+      <ForegroundNotificationAlert />
     </Box>
   );
 }

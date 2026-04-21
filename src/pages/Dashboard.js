@@ -21,6 +21,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList } from '../hooks/useFirebase';
 import { useNavigate } from 'react-router-dom';
+import NotificationPermission from '../components/NotificationPermission';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -74,6 +75,9 @@ const Dashboard = () => {
             Welcome back! Here's an overview of your parental controls.
           </Typography>
         </Box>
+
+                {/* Push Notification Permission Banner */}
+                <NotificationPermission />
 
         {error && (
           <Alert severity="error" sx={{ mb: 3, bgcolor: 'rgba(255,0,0,0.08)', color: colors.text }}>

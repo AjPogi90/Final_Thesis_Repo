@@ -27,11 +27,40 @@ import { useNavigate } from 'react-router-dom';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import { getNotificationPermission, requestAndSaveToken } from '../utils/pushNotifications';
 
 const Settings = () => {
     const { colors } = useTheme();
-    const { deleteAccount, changePassword } = useAuth();
+    const { user, deleteAccount, changePassword, removeCurrentDeviceToken } = useAuth();
     const navigate = useNavigate();
+
+    // ── Notifications state ──
+    const [pushEnabled, setPushEnabled] = useState(false);
+
+    React.useEffect(() => {
+        const perm = getNotificationPermission();
+        const disabled = localStorage.getItem('push_notifications_disabled') === 'true';
+        if (perm === 'granted' && !disabled) {
+            setPushEnabled(true);
+        }
+    }, []);
+
+    const handleTogglePush = async (e) => {
+        const checked = e.target.checked;
+        setPushEnabled(checked);
+        if (checked) {
+            localStorage.removeItem('push_notifications_disabled');
+            if (user) {
+                await requestAndSaveToken(user.uid);
+            }
+        } else {
+            localStorage.setItem('push_notifications_disabled', 'true');
+            if (user) {
+                await removeCurrentDeviceToken(user.uid);
+            }
+        }
+    };
 
     // ── Change Password state ──
     const [pwDialogOpen, setPwDialogOpen] = useState(false);
@@ -203,6 +232,48 @@ const Settings = () => {
                         >
                             Change Password
                         </Button>
+                    </Box>
+                </Paper>
+
+                {/* Notifications Section */}
+                <Paper
+                    sx={{
+                        p: 3,
+                        mb: 3,
+                        borderRadius: 2,
+                        bgcolor: colors.cardBg,
+                        border: `1px solid ${colors.cardBorder}`,
+                    }}
+                >
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>
+                        Notifications
+                    </Typography>
+                    <Divider sx={{ mb: 2, borderColor: colors.divider }} />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <NotificationsActiveIcon sx={{ fontSize: 32, color: colors.primary }} />
+                            <Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: colors.text }}>
+                                    Push Notifications (This Device)
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                    Receive instant desktop alerts for NSFW incidents
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Switch
+                            checked={pushEnabled}
+                            onChange={handleTogglePush}
+                            sx={{
+                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: colors.primary,
+                                },
+                                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                    backgroundColor: colors.primary,
+                                },
+                            }}
+                        />
                     </Box>
                 </Paper>
 
