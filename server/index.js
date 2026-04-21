@@ -15,34 +15,43 @@ process.on('uncaughtException',  (err) => console.error('[CRASH GUARD] uncaughtE
 process.on('unhandledRejection', (err) => console.error('[CRASH GUARD] unhandledRejection:', err));
 
 // ── Validate env vars ─────────────────────────────────────────────────────────
-const REQUIRED_VARS = ['FIREBASE_SERVICE_ACCOUNT', 'FIREBASE_DATABASE_URL'];
-for (const v of REQUIRED_VARS) {
-  if (!process.env[v]) {
-    console.error(`[Server] FATAL: Missing required environment variable: ${v}`);
-    process.exit(1);
-  }
+// Accepts FIREBASE_SERVICE_ACCOUNT_BASE64 (preferred — avoids newline issues)
+// or falls back to FIREBASE_SERVICE_ACCOUNT (raw JSON)
+const HAS_B64  = !!process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+const HAS_JSON = !!process.env.FIREBASE_SERVICE_ACCOUNT;
+
+if (!HAS_B64 && !HAS_JSON) {
+  console.error('[Server] FATAL: Set FIREBASE_SERVICE_ACCOUNT_BASE64 (recommended) or FIREBASE_SERVICE_ACCOUNT.');
+  process.exit(1);
+}
+if (!process.env.FIREBASE_DATABASE_URL) {
+  console.error('[Server] FATAL: Missing FIREBASE_DATABASE_URL.');
+  process.exit(1);
 }
 
-// ── Parse service account JSON ────────────────────────────────────────────────
-// Render.com sometimes wraps the value in extra quotes or escapes newlines.
-// We handle both raw JSON and the "stringified" version safely.
+// ── Parse service account ───────────────────────────────────────────────────
+// Preferred: FIREBASE_SERVICE_ACCOUNT_BASE64  (base64-encoded JSON — no newline issues)
+// Fallback:  FIREBASE_SERVICE_ACCOUNT         (raw JSON — may fail if newlines are literal)
 let serviceAccount;
 try {
-  let raw = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
-
-  // If Render added surrounding quotes, strip them
-  if (raw.startsWith('"') && raw.endsWith('"')) {
-    raw = raw.slice(1, -1);
+  if (HAS_B64) {
+    // Decode base64 → UTF-8 JSON string → object
+    const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64.trim(), 'base64').toString('utf8');
+    serviceAccount = JSON.parse(decoded);
+    console.log('[Server] ✅ Service account loaded from Base64. Project:', serviceAccount.project_id);
+  } else {
+    // Fallback: try to fix common Render pasting issues
+    let raw = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
+    if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
+    // Re-escape any literal newlines that ended up inside the JSON string value
+    raw = raw.replace(/(?<=:\s*")([^"]*?)\n([^"]*?)(?=")/gs, (_, a, b) => `${a}\\n${b}`);
+    serviceAccount = JSON.parse(raw);
+    console.log('[Server] ✅ Service account loaded from raw JSON. Project:', serviceAccount.project_id);
   }
-
-  // Render sometimes escapes newlines inside the private key as \\n → fix them
-  raw = raw.replace(/\\n/g, '\n');
-
-  serviceAccount = JSON.parse(raw);
-  console.log('[Server] ✅ Service account parsed. Project:', serviceAccount.project_id);
 } catch (e) {
-  console.error('[Server] FATAL: Could not parse FIREBASE_SERVICE_ACCOUNT as JSON.');
-  console.error('[Server] Tip: paste the raw JSON value (not the file path) into the Render env var.');
+  console.error('[Server] FATAL: Could not parse service account credentials.');
+  console.error('[Server] → Recommended fix: use FIREBASE_SERVICE_ACCOUNT_BASE64 instead.');
+  console.error('[Server] → Run the helper script: node scripts/encode-service-account.js');
   console.error('[Server] Parse error:', e.message);
   process.exit(1);
 }
