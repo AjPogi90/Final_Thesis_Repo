@@ -25,6 +25,8 @@ import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import SessionTimeout from './components/SessionTimeout';
 import ForegroundNotificationAlert from './components/ForegroundNotificationAlert';
+import AppLockScreen from './components/AppLockScreen';
+import { useAppLock } from './hooks/useAppLock';
 
 // Admin pages
 import AdminLayout from './components/AdminLayout';
@@ -67,9 +69,14 @@ function AppLayout({ children }) {
 }
 
 function App() {
+  const { isLocked, unlock } = useAppLock();
+
   return (
     <ThemeProvider>
       <AuthProvider>
+        {/* App Lock — sits above everything, blocks access until PIN entered */}
+        {isLocked && <AppLockScreen onUnlock={unlock} />}
+
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}

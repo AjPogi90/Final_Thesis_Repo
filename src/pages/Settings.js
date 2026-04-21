@@ -29,11 +29,14 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { getNotificationPermission, requestAndSaveToken } from '../utils/pushNotifications';
+import AppLockSettings from '../components/AppLockSettings';
+import { useAppLock } from '../hooks/useAppLock';
 
 const Settings = () => {
     const { colors } = useTheme();
     const { user, deleteAccount, changePassword, removeCurrentDeviceToken } = useAuth();
     const navigate = useNavigate();
+    const { isLockEnabled, enableLock, disableLock, changePin } = useAppLock();
 
     // ── Notifications state ──
     const [pushEnabled, setPushEnabled] = useState(false);
@@ -233,6 +236,24 @@ const Settings = () => {
                             Change Password
                         </Button>
                     </Box>
+                </Paper>
+
+                {/* App Lock Section */}
+                <Paper
+                    sx={{
+                        p: 3,
+                        mb: 3,
+                        borderRadius: 2,
+                        bgcolor: colors.cardBg,
+                        border: `1px solid ${colors.cardBorder}`,
+                    }}
+                >
+                    <AppLockSettings
+                        isLockEnabled={isLockEnabled}
+                        enableLock={enableLock}
+                        disableLock={disableLock}
+                        changePin={changePin}
+                    />
                 </Paper>
 
                 {/* Notifications Section */}
