@@ -66,16 +66,39 @@ exports.sendNsfwIncidentAlert = functions.database
 
       // 4. Prepare the push notification payload
       const appName = incidentData.appName || 'an app';
+      const notificationTitle = '⚠️ NSFW Content Detected';
+      const notificationBody = `NSFW content detected on ${childName}'s device in ${appName}.`;
+
       const payload = {
         notification: {
-          title: '⚠️ NSFW Content Detected',
-          body: `NSFW content detected on ${childName}'s device in ${appName}.`,
+          title: notificationTitle,
+          body: notificationBody,
         },
         data: {
           incidentId: context.params.incidentId,
-          clickAction: '/incidents', // Handled heavily by the frontend / service worker
-          childId: childId
-        }
+          clickAction: '/incidents',
+          childId: childId,
+          title: notificationTitle,
+          body: notificationBody,
+        },
+        // ─── CRITICAL: webpush block is required for Chrome on Android/Desktop ───
+        // Without this, FCM sends an Android-native-style message that Chrome
+        // silently drops. The webpush block ensures the Web Push Protocol is used.
+        webpush: {
+          notification: {
+            title: notificationTitle,
+            body: notificationBody,
+            icon: '/Aegistnet_48x48.png',
+            badge: '/Aegistnet_48x48.png',
+            tag: `nsfw-incident-${context.params.incidentId}`,
+            requireInteraction: true,
+            vibrate: [200, 100, 200],
+          },
+          fcmOptions: {
+            // Absolute URL: tapping the notification opens/focuses the incidents page
+            link: 'https://aegistnet.firebaseapp.com/incidents',
+          },
+        },
       };
 
       // 5. Send the notifications
@@ -83,7 +106,8 @@ exports.sendNsfwIncidentAlert = functions.database
       const response = await admin.messaging().sendEachForMulticast({
         tokens: tokens,
         notification: payload.notification,
-        data: payload.data
+        data: payload.data,
+        webpush: payload.webpush,
       });
 
       console.log('Successfully sent message:', response);

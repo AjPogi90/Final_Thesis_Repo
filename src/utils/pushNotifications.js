@@ -62,6 +62,10 @@ export const requestAndSaveToken = async (parentUid) => {
     // Register the service worker explicitly so we control which file is used.
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
+    // Wait for the service worker to become active before requesting the token.
+    // On mobile Chrome, calling getToken() before the SW is active silently fails.
+    await waitForServiceWorkerActive(registration);
+
     // Get (or refresh) the FCM device token
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
@@ -180,4 +184,28 @@ function simpleHash(str) {
   }
   // Return a positive hex string
   return (hash >>> 0).toString(16);
+}
+
+/**
+ * Wait for a service worker registration to reach the 'activated' state.
+ * On mobile Chrome, getToken() silently fails if called while the SW is
+ * still in 'installing' or 'waiting' state.
+ *
+ * @param {ServiceWorkerRegistration} registration
+ * @returns {Promise<void>}
+ */
+function waitForServiceWorkerActive(registration) {
+  return new Promise((resolve) => {
+    if (registration.active) {
+      return resolve();
+    }
+    const sw = registration.installing || registration.waiting;
+    if (!sw) return resolve();
+    sw.addEventListener('statechange', function onStateChange() {
+      if (sw.state === 'activated') {
+        sw.removeEventListener('statechange', onStateChange);
+        resolve();
+      }
+    });
+  });
 }

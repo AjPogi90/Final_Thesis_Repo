@@ -22,36 +22,36 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // Handle background messages (when the tab is closed or not in focus).
-// The notification is automatically displayed by the browser using the
-// "notification" payload sent from the Cloud Function.
+// NOTE: We always call showNotification() explicitly — even when payload.notification
+// is present — because Android Chrome does NOT reliably auto-display notifications
+// when only relying on the FCM SDK's built-in behaviour. Calling it ourselves
+// guarantees the notification always appears in the system tray.
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Background message received:', payload);
 
-  // If the Cloud Function sends a "notification" key, the browser shows it
-  // automatically. We only need to handle "data-only" messages here.
-  if (payload.notification) {
-    // Already handled by the browser
-    return;
-  }
-
-  // Fallback: build a notification from the data payload
+  // Prefer the server-sent notification fields; fall back to data fields
+  const notification = payload.notification || {};
   const data = payload.data || {};
-  const title = data.title || '⚠️ AegisNet Alert';
+
+  const title = notification.title || data.title || '⚠️ AegisNet Alert';
   const options = {
-    body: data.body || 'New incident detected on a child device.',
-    icon: '/Aegistnet_48x48.png',
+    body: notification.body || data.body || 'New incident detected on a child device.',
+    icon: notification.icon || '/Aegistnet_48x48.png',
     badge: '/Aegistnet_48x48.png',
     tag: 'nsfw-incident-' + (data.incidentId || Date.now()),
     data: {
-      url: data.clickAction || '/incidents',
+      url: data.clickAction || data.link || '/incidents',
       incidentId: data.incidentId,
     },
     // Vibrate pattern for mobile browsers that support it
     vibrate: [200, 100, 200],
-    requireInteraction: true, // Keep the notification visible until the user interacts
+    // Keep the notification visible until the user interacts (desktop only; ignored on mobile)
+    requireInteraction: true,
+    // Renotify if a new incident arrives with the same tag
+    renotify: true,
   };
 
-  self.registration.showNotification(title, options);
+  return self.registration.showNotification(title, options);
 });
 
 // Handle notification click — open the incidents page
