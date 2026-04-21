@@ -14,7 +14,7 @@
 import * as faceapi from 'face-api.js';
 
 // Where the model weight files live (served from public/)
-const MODEL_URL = `${window.location.origin}/models`;
+const MODEL_URL = process.env.PUBLIC_URL + '/models';
 
 /** Euclidean distance below this value → faces match. 
  *  face-api.js recommends 0.6. We use 0.58 for a slightly stricter but fair check.

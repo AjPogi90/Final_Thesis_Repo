@@ -157,10 +157,7 @@ export const AuthProvider = ({ children }) => {
 
       let verificationSent = false;
       try {
-        await sendEmailVerification(createdUser, {
-          url: window.location.origin + '/',
-          handleCodeInApp: false,
-        });
+        await sendEmailVerification(createdUser);
         verificationSent = true;
       } catch (e) {
         console.warn('sendEmailVerification failed:', e);
