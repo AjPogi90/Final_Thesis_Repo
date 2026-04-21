@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: aegistnet-notification-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FIREBASE_DATABASE_URL
+        value: https://aegistnet-default-rtdb.firebaseio.com
+      - key: APP_URL
+        value: https://aegistnet.firebaseapp.com
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false   # You must paste this secret manually in the Render dashboard
