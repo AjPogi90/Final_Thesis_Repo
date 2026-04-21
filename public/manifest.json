@@ -1,0 +1,25 @@
+{
+  "short_name": "AegisNet",
+  "name": "AegisNet Parental Control Dashboard",
+  "description": "Monitor and control your child's device activity",
+  "icons": [
+    {
+      "src": "Aegistnet_48x48.png",
+      "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "ParentLogo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "scope": "/"
+}

@@ -4,13 +4,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#1a1a2e" />
   <meta name="description" content="Parental Dashboard - Monitor and control your child's device" />
   <title>AegisNet</title>
-  <!-- Favicon: place your image files in the public/ folder -->
-  <!-- Recommended: add a 48x48 or 32x32 ICO as public/falcon.ico and a PNG as public/falcon.png -->
+
+  <!-- PWA Manifest (required for iOS Safari web push) -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+  <!-- iOS Safari PWA meta tags (REQUIRED for push notifications on iPhone) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AegisNet" />
+
+  <!-- Icons -->
   <link rel="icon" href="%PUBLIC_URL%/Aegistnet_48x48.png" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/Aegistnet_48x48.png" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/ParentLogo.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="%PUBLIC_URL%/ParentLogo.png" />
+
+  <!-- Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
   <!-- Leaflet CSS for map -->
