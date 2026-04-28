@@ -8,6 +8,9 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Checkbox,
+  FormControlLabel,
+  Collapse,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,6 +40,8 @@ const fieldSx      = { mb: 2 };
  *  - Gate submission until password is Strong (score ≥ 3) AND all regex rules pass
  */
 const AccountDetailsForm = ({ onBack, onSubmit: onFormSubmit, serverError, loading }) => {
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [showPrivacyDetails, setShowPrivacyDetails] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword]   = useState(false);
   const [showConfirm,  setShowConfirm]    = useState(false);
@@ -58,7 +63,7 @@ const AccountDetailsForm = ({ onBack, onSubmit: onFormSubmit, serverError, loadi
   const { score: pwScore, allRulesPassed } = analyzePassword(watchedPassword);
 
   // Disable submit until: form is valid + password strong enough + all rules pass
-  const isSubmitDisabled = loading || !isValid || pwScore < 3 || !allRulesPassed;
+  const isSubmitDisabled = loading || !isValid || pwScore < 3 || !allRulesPassed || !privacyAccepted;
 
   /**
    * Email uniqueness check — fires onBlur so the user gets instant feedback
@@ -267,6 +272,101 @@ const AccountDetailsForm = ({ onBack, onSubmit: onFormSubmit, serverError, loadi
           {serverError}
         </Typography>
       )}
+
+      {/* ── Data Privacy Disclaimer ── */}
+      <Box
+        sx={{
+          mb: 2,
+          p: 1.5,
+          borderRadius: 1.5,
+          border: '1px solid',
+          borderColor: privacyAccepted ? 'rgba(238,121,26,0.4)' : 'rgba(0,0,0,0.1)',
+          bgcolor: privacyAccepted ? 'rgba(238,121,26,0.04)' : 'rgba(0,0,0,0.02)',
+          transition: 'border-color 0.2s, background-color 0.2s',
+        }}
+      >
+        <FormControlLabel
+          control={
+            <Checkbox
+              id="privacy-consent-checkbox"
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              size="small"
+              sx={{
+                color: 'rgba(0,0,0,0.4)',
+                '&.Mui-checked': { color: '#EE791A' },
+                pt: 0,
+                alignSelf: 'flex-start',
+                mt: 0.2,
+              }}
+            />
+          }
+          label={
+            <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.7)', lineHeight: 1.5 }}>
+              I have read and agree to the{' '}
+              <Link
+                component="button"
+                type="button"
+                variant="caption"
+                onClick={() => setShowPrivacyDetails((v) => !v)}
+                sx={{ color: '#EE791A', fontWeight: 600, textDecoration: 'underline' }}
+              >
+                Data Privacy Notice
+              </Link>
+              {' '}and consent to the collection and processing of my personal and biometric data in
+              accordance with the{' '}
+              <strong>Philippine Data Privacy Act of 2012 (RA 10173)</strong>.
+            </Typography>
+          }
+          alignItems="flex-start"
+          sx={{ mr: 0 }}
+        />
+
+        {/* Collapsible full privacy notice */}
+        <Collapse in={showPrivacyDetails}>
+          <Box
+            sx={{
+              mt: 1.5,
+              p: 1.5,
+              borderRadius: 1,
+              bgcolor: 'rgba(0,0,0,0.03)',
+              border: '1px solid rgba(0,0,0,0.07)',
+              maxHeight: 200,
+              overflowY: 'auto',
+            }}
+          >
+            <Typography variant="caption" component="div" sx={{ color: 'rgba(0,0,0,0.65)', lineHeight: 1.7 }}>
+              <strong>DATA PRIVACY NOTICE — AegisNet Parental Control System</strong>
+              <br /><br />
+              In compliance with the <strong>Philippine Data Privacy Act of 2012 (Republic Act No. 10173)</strong> and
+              its Implementing Rules and Regulations, AegisNet informs you of the following:
+              <br /><br />
+              <strong>1. Data Collected</strong><br />
+              We collect your: full name, email address, date of birth, government-issued ID image,
+              and facial biometric data (face descriptor vectors and selfie image) for identity
+              verification purposes only.
+              <br /><br />
+              <strong>2. Purpose of Processing</strong><br />
+              Your data is collected to verify your identity as a parent/guardian, prevent fraudulent
+              account creation, and secure access to the parental control dashboard. Biometric data
+              is not used for any commercial purpose.
+              <br /><br />
+              <strong>3. Data Retention</strong><br />
+              Your personal and biometric data will be retained for the duration of your active
+              account. You may request deletion at any time by contacting our support team.
+              <br /><br />
+              <strong>4. Your Rights</strong><br />
+              Under RA 10173, you have the right to: access your personal data, correct inaccuracies,
+              object to processing, and request erasure of your data. To exercise these rights,
+              contact us through the Help & Support section.
+              <br /><br />
+              <strong>5. Data Security</strong><br />
+              We implement appropriate technical and organizational measures to protect your data
+              against unauthorized access, disclosure, alteration, or destruction.
+            </Typography>
+          </Box>
+        </Collapse>
+      </Box>
 
       {/* ── Actions ── */}
       <Box sx={{ display: 'flex', gap: 2 }}>
