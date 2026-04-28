@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [verificationStatus, setVerificationStatus] = useState(null);
+  const [adminRemark, setAdminRemark] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [foregroundAlert, setForegroundAlert] = useState(null);
@@ -84,9 +85,11 @@ export const AuthProvider = ({ children }) => {
           const data = snapshot.val();
           if (data) {
             setVerificationStatus(data.idVerification?.status || 'pending_verification');
+            setAdminRemark(data.idVerification?.adminRemark || '');
             setIsDisabled(data.disabled === true);
           } else {
             setVerificationStatus(null);
+            setAdminRemark('');
             setIsDisabled(false);
           }
           setLoading(false);
@@ -124,7 +127,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const createdUser = userCred.user;
-      
+
       const { firstName = '', middleName = '', lastName = '' } = nameData || {};
       const fullNameParts = [firstName, middleName, lastName].filter(Boolean);
       const fullName = fullNameParts.join(' ');
@@ -259,14 +262,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Admin action: approve or reject a user's ID verification
-  const reviewUser = async (targetUid, decision) => {
+  // Admin action: approve, reject, or request resubmission for a user's ID verification.
+  // `remark` is an optional admin note shown to the parent on their waiting screen.
+  const reviewUser = async (targetUid, decision, remark = '') => {
     if (!user) return { success: false, error: 'Not logged in' };
     try {
       await update(ref(database, `users/parents/${targetUid}/idVerification`), {
         status: decision,
         reviewedAt: Date.now(),
         reviewedBy: user.uid,
+        adminRemark: remark.trim(),
       });
       return { success: true };
     } catch (error) {
@@ -276,7 +281,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, verificationStatus, isAdmin, isDisabled, foregroundAlert, signup, uploadVerificationId, storeFaceDescriptor, reviewUser, deleteAccount, changePassword, removeCurrentDeviceToken }}
+      value={{ user, loading, verificationStatus, adminRemark, isAdmin, isDisabled, foregroundAlert, signup, uploadVerificationId, storeFaceDescriptor, reviewUser, deleteAccount, changePassword, removeCurrentDeviceToken }}
     >
       {children}
     </AuthContext.Provider>

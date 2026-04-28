@@ -19,7 +19,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
 const PendingVerification = () => {
-    const { verificationStatus, user, uploadVerificationId } = useAuth();
+    const { verificationStatus, adminRemark, user, uploadVerificationId } = useAuth();
     const navigate = useNavigate();
 
     // Resubmit form state
@@ -141,11 +141,30 @@ const PendingVerification = () => {
                         <>Your government ID verification has been <strong style={{ color: '#f44336' }}>rejected</strong>.
                             This may be because the ID was unreadable, expired, or did not match the information provided.</>
                     ) : isResubmit ? (
-                        <>An admin reviewed your ID and found an issue — it may have been <strong style={{ color: '#2196f3' }}>blurry or unreadable</strong>. Please upload a clearer copy of your government-issued ID.</>
+                        <>An admin reviewed your ID and found an issue. Please upload a clearer copy of your government-issued ID.</>
                     ) : (
                         <>Your account is under review. An administrator will verify your identity shortly.</>
                     )}
                 </Typography>
+
+                {/* Admin remark callout — shown for rejected and resubmit_id */}
+                {(isRejected || isResubmit) && adminRemark && (
+                    <Box sx={{
+                        mt: 0.5, mb: 1, p: 2, borderRadius: 2, textAlign: 'left',
+                        bgcolor: isRejected ? 'rgba(244,67,54,0.07)' : 'rgba(33,150,243,0.07)',
+                        border: `1px solid ${isRejected ? 'rgba(244,67,54,0.25)' : 'rgba(33,150,243,0.25)'}`,
+                    }}>
+                        <Typography variant="caption" sx={{
+                            display: 'block', fontWeight: 700, mb: 0.5,
+                            color: isRejected ? '#f44336' : '#2196f3',
+                        }}>
+                            Admin note:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', fontStyle: 'italic', lineHeight: 1.6 }}>
+                            "{adminRemark}"
+                        </Typography>
+                    </Box>
+                )}
 
                 {/* Account info card */}
                 <Paper sx={{

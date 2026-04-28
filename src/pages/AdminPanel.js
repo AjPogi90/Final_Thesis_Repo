@@ -15,6 +15,7 @@ import {
     Tab,
     IconButton,
     Avatar,
+    TextField,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -24,6 +25,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import CloseIcon from '@mui/icons-material/Close';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -34,6 +36,14 @@ const statusColors = {
     rejected: { bg: 'rgba(244,67,54,0.12)', color: '#f44336', label: 'REJECTED' },
 };
 
+const REJECT_CHIPS = [
+    'ID is blurry or unreadable',
+    'ID appears expired',
+    'Name does not match registration',
+    'Wrong document type submitted',
+    'ID image is incomplete / cut off',
+];
+
 const AdminPanel = () => {
     const { reviewUser } = useAuth();
     const [users, setUsers] = useState([]);
@@ -42,6 +52,8 @@ const AdminPanel = () => {
     const [tabValue, setTabValue] = useState(0);
     const [previewUser, setPreviewUser] = useState(null);
     const [alert, setAlert] = useState(null);
+    const [remarkDialog, setRemarkDialog] = useState({ open: false, uid: null });
+    const [remarkText, setRemarkText] = useState('');
 
     // Listen to all parent users
     useEffect(() => {
@@ -68,9 +80,9 @@ const AdminPanel = () => {
         return () => unsub();
     }, []);
 
-    const handleReview = async (uid, decision) => {
+    const handleReview = async (uid, decision, remark = '') => {
         setActionLoading(uid);
-        const result = await reviewUser(uid, decision);
+        const result = await reviewUser(uid, decision, remark);
         setActionLoading(null);
         if (result.success) {
             setAlert({ severity: 'success', message: `User ${decision === 'approved' ? 'approved' : 'rejected'} successfully.` });
@@ -79,6 +91,17 @@ const AdminPanel = () => {
             setAlert({ severity: 'error', message: 'Failed to update user status.' });
         }
         setTimeout(() => setAlert(null), 4000);
+    };
+
+    const openRejectDialog = (uid) => {
+        setRemarkDialog({ open: true, uid });
+        setRemarkText('');
+    };
+
+    const handleRejectConfirm = async () => {
+        const uid = remarkDialog.uid;
+        setRemarkDialog({ open: false, uid: null });
+        await handleReview(uid, 'rejected', remarkText);
     };
 
     // Filter users by tab
@@ -274,7 +297,7 @@ const AdminPanel = () => {
                                                     size="small"
                                                     variant="contained"
                                                     startIcon={actionLoading === u.uid ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <CancelIcon />}
-                                                    onClick={() => handleReview(u.uid, 'rejected')}
+                                                    onClick={() => openRejectDialog(u.uid)}
                                                     disabled={actionLoading === u.uid}
                                                     sx={{
                                                         bgcolor: '#f44336',
@@ -383,7 +406,7 @@ const AdminPanel = () => {
                                 <Button
                                     variant="contained"
                                     startIcon={actionLoading === previewUser.uid ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <CancelIcon />}
-                                    onClick={() => handleReview(previewUser.uid, 'rejected')}
+                                    onClick={() => { setPreviewUser(null); openRejectDialog(previewUser.uid); }}
                                     disabled={actionLoading === previewUser.uid}
                                     sx={{ bgcolor: '#f44336', '&:hover': { bgcolor: '#c62828' }, textTransform: 'none' }}
                                 >
@@ -402,6 +425,50 @@ const AdminPanel = () => {
                         )}
                     </>
                 )}
+            </Dialog>
+
+            {/* ── Reject Remark Dialog ── */}
+            <Dialog open={remarkDialog.open} onClose={() => setRemarkDialog({ open: false, uid: null })} maxWidth="sm" fullWidth
+                PaperProps={{ sx: { bgcolor: '#0b0b0b', color: '#fff', border: '1px solid rgba(244,67,54,0.25)', borderRadius: 3 } }}>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box sx={{ width: 34, height: 34, borderRadius: '50%', bgcolor: 'rgba(244,67,54,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f44336' }}>
+                            <WarningAmberIcon fontSize="small" />
+                        </Box>
+                        <Typography variant="h6" sx={{ fontWeight: 700 }}>Reject Verification</Typography>
+                    </Box>
+                    <IconButton onClick={() => setRemarkDialog({ open: false, uid: null })} size="small" sx={{ color: 'rgba(255,255,255,0.5)' }}><CloseIcon fontSize="small" /></IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mb: 2 }}>
+                        Provide a reason for rejection. The parent will see this note.
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, display: 'block', mb: 1 }}>Quick reasons:</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                        {REJECT_CHIPS.map(c => (
+                            <Chip key={c} label={c} size="small" onClick={() => setRemarkText(p => p ? `${p} ${c}` : c)}
+                                sx={{ bgcolor: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid rgba(244,67,54,0.25)', cursor: 'pointer', fontWeight: 500, fontSize: '0.75rem', '&:hover': { bgcolor: 'rgba(244,67,54,0.18)' } }} />
+                        ))}
+                    </Box>
+                    <TextField fullWidth multiline minRows={3} maxRows={6}
+                        placeholder="Type a custom remark for the parent (optional)…"
+                        value={remarkText} onChange={e => setRemarkText(e.target.value)}
+                        inputProps={{ maxLength: 400 }}
+                        helperText={`${remarkText.length}/400`}
+                        sx={{
+                            '& .MuiOutlinedInput-root': { color: '#fff', bgcolor: 'rgba(255,255,255,0.03)', '& fieldset': { borderColor: 'rgba(244,67,54,0.3)' }, '&:hover fieldset': { borderColor: 'rgba(244,67,54,0.6)' }, '&.Mui-focused fieldset': { borderColor: '#f44336' } },
+                            '& .MuiFormHelperText-root': { color: 'rgba(255,255,255,0.3)', textAlign: 'right' },
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255,255,255,0.06)', gap: 1 }}>
+                    <Button onClick={() => setRemarkDialog({ open: false, uid: null })} variant="outlined" sx={{ color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.15)', textTransform: 'none' }}>Cancel</Button>
+                    <Button variant="contained" onClick={handleRejectConfirm} disabled={actionLoading === remarkDialog.uid}
+                        startIcon={actionLoading === remarkDialog.uid ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <CancelIcon />}
+                        sx={{ bgcolor: '#f44336', '&:hover': { bgcolor: '#c62828' }, textTransform: 'none', fontWeight: 600 }}>
+                        {actionLoading === remarkDialog.uid ? 'Saving…' : 'Confirm Rejection'}
+                    </Button>
+                </DialogActions>
             </Dialog>
         </Box>
     );
