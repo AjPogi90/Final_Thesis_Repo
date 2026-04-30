@@ -3,11 +3,11 @@ import {
   Box, Typography, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Alert, CircularProgress, Divider,
 } from '@mui/material';
-import SecurityIcon       from '@mui/icons-material/SecurityRounded';
-import LockIcon           from '@mui/icons-material/LockRounded';
-import LockOpenIcon       from '@mui/icons-material/LockOpenRounded';
-import PhoneAndroidIcon   from '@mui/icons-material/PhoneAndroidRounded';
-import VerifiedUserIcon   from '@mui/icons-material/VerifiedUserRounded';
+import SecurityIcon from '@mui/icons-material/SecurityRounded';
+import LockIcon from '@mui/icons-material/LockRounded';
+import LockOpenIcon from '@mui/icons-material/LockOpenRounded';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroidRounded';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUserRounded';
 
 /**
  * DeviceSettingsLockSettings
@@ -22,9 +22,9 @@ import VerifiedUserIcon   from '@mui/icons-material/VerifiedUserRounded';
 export default function DeviceSettingsLockSettings({
   parentUid, isLockEnabled, enableLock, disableLock,
 }) {
-  const [dialog,  setDialog]  = useState(null); // 'enable' | 'disable'
+  const [dialog, setDialog] = useState(null); // 'enable' | 'disable'
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState('');
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const closeDialog = () => {
@@ -78,14 +78,14 @@ export default function DeviceSettingsLockSettings({
 
       {/* ── Status Card ── */}
       <Box sx={{
-        border:       '1px solid',
-        borderColor:  isLockEnabled ? 'rgba(16,185,129,0.4)' : 'divider',
+        border: '1px solid',
+        borderColor: isLockEnabled ? 'rgba(16,185,129,0.4)' : 'divider',
         borderRadius: 3,
-        p:            3,
-        background:   isLockEnabled
+        p: 3,
+        background: isLockEnabled
           ? 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(5,150,105,0.05))'
           : 'transparent',
-        mb:           2,
+        mb: 2,
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {isLockEnabled
@@ -125,9 +125,9 @@ export default function DeviceSettingsLockSettings({
           display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 2,
         }}>
           {[
-            { icon: '🔒', label: 'Blocks access to Android Settings' },
-            { icon: '📱', label: 'Prevents app uninstall' },
-            { icon: '🛡️', label: 'Deters factory reset' },
+            { icon: '', label: 'Blocks access to Android Settings' },
+            { icon: '', label: 'Prevents app uninstall' },
+            { icon: '', label: 'Prevent factory reset' },
           ].map((item) => (
             <Box key={item.label} sx={{
               display: 'flex', alignItems: 'center', gap: 0.75,
@@ -153,12 +153,12 @@ export default function DeviceSettingsLockSettings({
             startIcon={<PhoneAndroidIcon />}
             onClick={() => { setDialog('enable'); setError(''); }}
             sx={{
-              background:   'linear-gradient(135deg, #10b981, #059669)',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
               borderRadius: 2,
-              px:           3,
+              px: 3,
               textTransform: 'none',
-              fontWeight:   600,
-              '&:hover':    { background: 'linear-gradient(135deg, #059669, #047857)' },
+              fontWeight: 600,
+              '&:hover': { background: 'linear-gradient(135deg, #059669, #047857)' },
             }}
           >
             Enable Device Settings Lock
@@ -226,7 +226,7 @@ function ConfirmDialog({
           {description}
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        {error   && <Alert severity="error"   sx={{ mt: 1 }}>{error}</Alert>}
+        {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
         {success && <Alert severity="success" sx={{ mt: 1 }}>{success}</Alert>}
       </DialogContent>
       <DialogActions sx={{ p: 2, gap: 1 }}>
