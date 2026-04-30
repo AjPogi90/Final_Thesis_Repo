@@ -38,6 +38,7 @@ const Register = () => {
   // ── Step 0 data ─────────────────────────────────────────────────────────────
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [idFile, setIdFile] = useState(null);
+  const [declared, setDeclared] = useState(false); // user confirmed it's a gov ID
 
   // ── Step 1 data ─────────────────────────────────────────────────────────────
   const [faceDescriptor, setFaceDescriptor] = useState(null); // Float32Array
@@ -64,7 +65,7 @@ const Register = () => {
     return age;
   };
 
-  const isStep0Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile;
+  const isStep0Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile && declared;
 
   // ── Step 0 → Step 1 ─────────────────────────────────────────────────────────
   const handleNext = () => {
@@ -72,6 +73,7 @@ const Register = () => {
     if (!dateOfBirth) return setError('Please enter your date of birth.');
     if (calculateAge(dateOfBirth) < 18) return setError('You must be at least 18 years old to register.');
     if (!idFile) return setError('Please upload a government-issued ID.');
+    if (!declared) return setError('Please confirm that your uploaded ID is a valid government-issued ID.');
     setActiveStep(1);
   };
 
@@ -242,6 +244,8 @@ const Register = () => {
                   setDateOfBirth={setDateOfBirth}
                   idFile={idFile}
                   setIdFile={setIdFile}
+                  declared={declared}
+                  setDeclared={setDeclared}
                 />
 
                 <Box

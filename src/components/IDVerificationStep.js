@@ -46,7 +46,7 @@ const inputSx = {
     transition: 'border-color 0.2s',
 };
 
-const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) => {
+const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile, declared, setDeclared }) => {
     const [dragActive, setDragActive] = useState(false);
     const [fileError, setFileError] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
@@ -186,7 +186,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
         if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
     };
 
-    const removeFile = () => { setIdFile(null); setFileError(''); };
+    const removeFile = () => { setIdFile(null); setFileError(''); if (setDeclared) setDeclared(false); };
 
     // ---- Preview ----
     const previewUrl = idFile && idFile.type.startsWith('image/') ? URL.createObjectURL(idFile) : null;
@@ -256,11 +256,37 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                         Upload Government-Issued ID *
                     </Typography>
                 </Box>
-                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.6)', display: 'block', mb: 0.5, fontWeight: 500 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.6)', display: 'block', mb: 1, fontWeight: 500 }}>
                     Please upload one side of the ID that clearly shows your Age or Birth Date.
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.5)', display: 'block', mb: 1.5 }}>
-                    Accepted: National ID, Driver's License, Passport, PhilSys ID · Max 5 MB · JPG, PNG, WebP, or PDF
+
+                {/* ── Accepted / Not Accepted visual list ── */}
+                <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5, flexWrap: 'wrap' }}>
+                    <Box sx={{
+                        flex: 1, minWidth: 140, p: 1.5, borderRadius: 1.5,
+                        bgcolor: 'rgba(76,175,80,0.07)', border: '1px solid rgba(76,175,80,0.25)',
+                    }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#2e7d32', display: 'block', mb: 0.5 }}>
+                            ✅ Accepted IDs
+                        </Typography>
+                        {['National ID (PhilSys)', "Driver's License", 'Passport', 'PRC ID', 'SSS / GSIS ID', 'Postal ID', 'Voter\'s ID'].map(id => (
+                            <Typography key={id} variant="caption" sx={{ display: 'block', color: 'rgba(0,0,0,0.65)', lineHeight: 1.7 }}>• {id}</Typography>
+                        ))}
+                    </Box>
+                    <Box sx={{
+                        flex: 1, minWidth: 140, p: 1.5, borderRadius: 1.5,
+                        bgcolor: 'rgba(244,67,54,0.06)', border: '1px solid rgba(244,67,54,0.2)',
+                    }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#c62828', display: 'block', mb: 0.5 }}>
+                            ❌ NOT Accepted
+                        </Typography>
+                        {['School / Student ID', 'Company / Employee ID', 'Barangay ID', 'Senior Citizen card (alone)', 'Any expired ID'].map(id => (
+                            <Typography key={id} variant="caption" sx={{ display: 'block', color: 'rgba(0,0,0,0.65)', lineHeight: 1.7 }}>• {id}</Typography>
+                        ))}
+                    </Box>
+                </Box>
+                <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.4)', display: 'block', mb: 1.5 }}>
+                    Max 5 MB · JPG, PNG, WebP, or PDF
                 </Typography>
 
                 {analyzing ? (
@@ -359,6 +385,38 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                     <Alert severity="error" sx={{ mt: 1.5, bgcolor: 'rgba(244,67,54,0.08)', color: '#f44336' }}>
                         {fileError}
                     </Alert>
+                )}
+
+                {/* ── Declaration checkbox (only shown once a file is uploaded) ── */}
+                {idFile && (
+                    <Box
+                        onClick={() => setDeclared && setDeclared(prev => !prev)}
+                        sx={{
+                            mt: 1.5, p: 1.5, borderRadius: 1.5, cursor: 'pointer',
+                            display: 'flex', alignItems: 'flex-start', gap: 1.5,
+                            bgcolor: declared ? 'rgba(76,175,80,0.07)' : 'rgba(238,121,26,0.06)',
+                            border: `1.5px solid ${declared ? 'rgba(76,175,80,0.35)' : 'rgba(238,121,26,0.3)'}`,
+                            transition: 'all 0.2s',
+                            userSelect: 'none',
+                        }}
+                    >
+                        <Box sx={{
+                            width: 20, height: 20, borderRadius: '4px', flexShrink: 0, mt: '1px',
+                            border: `2px solid ${declared ? '#4caf50' : '#EE791A'}`,
+                            bgcolor: declared ? '#4caf50' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'all 0.15s',
+                        }}>
+                            {declared && (
+                                <Box component="span" sx={{ color: '#fff', fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✓</Box>
+                            )}
+                        </Box>
+                        <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.75)', lineHeight: 1.6 }}>
+                            I confirm that the uploaded image is a <strong>valid, government-issued ID</strong> and{' '}
+                            <strong>not</strong> a school ID, company ID, or any other non-government identification.
+                            I understand that submitting a non-government ID may result in account rejection.
+                        </Typography>
+                    </Box>
                 )}
             </Box>
 
