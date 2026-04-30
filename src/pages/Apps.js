@@ -21,10 +21,38 @@ import SearchIcon from '@mui/icons-material/Search';
 import BlockIcon from '@mui/icons-material/Block';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useChildrenList, useChildData, updateBlockedApp } from '../hooks/useFirebase';
+import { useChildrenList, useChildData, updateBlockedApp, addBlockedSite, removeBlockedSite, useBlockedSites } from '../hooks/useFirebase';
 import ConfirmationModal from '../components/ConfirmationModal';
 import AppIcon from '../components/AppIcon';
 import { formatDistanceToNow } from 'date-fns';
+
+// ─── Package name → website domain(s) cross-block map ───────────────────────
+// When an app is blocked/unblocked, these domains are also blocked/unblocked
+// in the child's web filter blocklist automatically.
+const PACKAGE_TO_DOMAINS = {
+  'com.facebook.katana':         ['facebook.com', 'm.facebook.com'],
+  'com.facebook.lite':           ['facebook.com', 'm.facebook.com'],
+  'com.instagram.android':       ['instagram.com', 'www.instagram.com'],
+  'com.twitter.android':         ['twitter.com', 'x.com'],
+  'com.zhiliaoapp.musically':    ['tiktok.com', 'www.tiktok.com'],
+  'com.ss.android.ugc.trill':    ['tiktok.com', 'www.tiktok.com'],
+  'com.snapchat.android':        ['snapchat.com'],
+  'com.google.android.youtube':  ['youtube.com', 'www.youtube.com', 'm.youtube.com'],
+  'com.tumblr':                  ['tumblr.com'],
+  'com.reddit.frontpage':        ['reddit.com', 'www.reddit.com'],
+  'com.pinterest':               ['pinterest.com'],
+  'com.discord':                 ['discord.com'],
+  'com.telegram.messenger':      ['telegram.org', 'web.telegram.org'],
+  'org.telegram.messenger':      ['telegram.org', 'web.telegram.org'],
+  'com.viber.voip':              ['viber.com'],
+  'kik.android':                 ['kik.com'],
+  'com.whatsapp':                ['web.whatsapp.com', 'whatsapp.com'],
+  'com.netflix.mediaclient':     ['netflix.com'],
+  'com.spotify.music':           ['open.spotify.com', 'spotify.com'],
+  'com.roblox.client':           ['roblox.com', 'www.roblox.com'],
+  'com.mojang.minecraftpe':      ['minecraft.net'],
+  'com.vanced.android.youtube':  ['youtube.com', 'www.youtube.com'],
+};
 
 const Apps = () => {
     const { user } = useAuth();
@@ -38,6 +66,7 @@ const Apps = () => {
     const [showOnlyBlocked, setShowOnlyBlocked] = useState(false);
 
     const { data: childData, loading: loadingChild } = useChildData(selectedChildId);
+    const { sites: blockedSites } = useBlockedSites(selectedChildId);
 
     // Auto-select first child if available
     React.useEffect(() => {
@@ -82,6 +111,33 @@ const Apps = () => {
             if (result.success) {
                 setSuccessMessage(newBlockedState ? 'App blocked successfully' : 'App unblocked successfully');
                 setTimeout(() => setSuccessMessage(''), 3000);
+
+                // ── Cross-block: also block/unblock the app's website ──────────
+                const app = appsArray.find(
+                    (a) => (a.appId || appsArray.indexOf(a)) === appIndex
+                ) || appsArray[appIndex];
+                const pkg = app?.packageName;
+                const domains = pkg ? (PACKAGE_TO_DOMAINS[pkg] || []) : [];
+
+                if (domains.length > 0) {
+                    if (newBlockedState) {
+                        // Block each domain if not already in the list
+                        for (const domain of domains) {
+                            const alreadyBlocked = blockedSites.some((s) => s.url === domain);
+                            if (!alreadyBlocked) {
+                                await addBlockedSite(selectedChildId, domain);
+                            }
+                        }
+                    } else {
+                        // Unblock each domain that was auto-added
+                        for (const domain of domains) {
+                            const site = blockedSites.find((s) => s.url === domain);
+                            if (site) {
+                                await removeBlockedSite(selectedChildId, site.id);
+                            }
+                        }
+                    }
+                }
             }
         } catch (error) {
             console.error('Toggle error:', error);
