@@ -99,7 +99,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
         if (ratio < 0.75) {
             console.log('[IDVerification] REJECTED — aspect ratio too low (portrait/selfie)');
             return (
-                'The uploaded image looks like a portrait/selfie photo, not an ID card. ' +
+                'Invalid image.' +
                 'Please upload a scan or photo of your government-issued ID ' +
                 '(National ID, Passport, Driver\'s License, or PhilSys ID).'
             );
