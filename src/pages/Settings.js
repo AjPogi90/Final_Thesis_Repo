@@ -31,12 +31,15 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { getNotificationPermission, requestAndSaveToken } from '../utils/pushNotifications';
 import AppLockSettings from '../components/AppLockSettings';
 import { useAppLock } from '../hooks/useAppLock';
+import DeviceSettingsLockSettings from '../components/DeviceSettingsLockSettings';
+import { useDeviceSettingsLock } from '../hooks/useDeviceSettingsLock';
 
 const Settings = () => {
     const { colors } = useTheme();
     const { user, deleteAccount, changePassword, removeCurrentDeviceToken } = useAuth();
     const navigate = useNavigate();
     const { isLockEnabled, enableLock, disableLock, changePin } = useAppLock();
+    const { isLockEnabled: isDeviceLockEnabled, enableLock: enableDeviceLock, disableLock: disableDeviceLock } = useDeviceSettingsLock(user?.uid);
 
     // ── Notifications state ──
     const [pushEnabled, setPushEnabled] = useState(false);
@@ -253,6 +256,24 @@ const Settings = () => {
                         enableLock={enableLock}
                         disableLock={disableLock}
                         changePin={changePin}
+                    />
+                </Paper>
+
+                {/* Child Device Settings Lock Section */}
+                <Paper
+                    sx={{
+                        p: 3,
+                        mb: 3,
+                        borderRadius: 2,
+                        bgcolor: colors.cardBg,
+                        border: `1px solid ${colors.cardBorder}`,
+                    }}
+                >
+                    <DeviceSettingsLockSettings
+                        parentUid={user?.uid}
+                        isLockEnabled={isDeviceLockEnabled}
+                        enableLock={enableDeviceLock}
+                        disableLock={disableDeviceLock}
                     />
                 </Paper>
 
