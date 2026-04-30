@@ -99,7 +99,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
         if (ratio < 0.75) {
             console.log('[IDVerification] REJECTED — aspect ratio too low (portrait/selfie)');
             return (
-                'Invalid image.' +
+                'Invalid image detected.' +
                 'Please upload a scan or photo of your government-issued ID ' +
                 '(National ID, Passport, Driver\'s License, or PhilSys ID).'
             );
@@ -116,8 +116,8 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
             // Check 2: Must have a face
             if (!detection) {
                 return (
-                    'Error detected in the uploaded image. ' +
-                    'Please upload a valid government-issued ID that clearly shows your photo.'
+                    'We couldn’t verify the uploaded image.' +
+                    'Please upload a valid government-issued ID where your photo is clearly visible.'
                 );
             }
 
@@ -131,9 +131,9 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
             if (faceRatio > 0.20) {
                 console.log('[IDVerification] REJECTED — face area ratio too high (selfie/portrait)');
                 return (
-                    'The uploaded image appears to be a selfie or close-up portrait, not an ID card. ' +
-                    'In a valid government ID the face photo is a small inset on the card. ' +
-                    'Please upload a full scan or clear photo of your entire ID.'
+                    'The uploaded image is not recognized as a valid ID.' +
+                    'Ensure the entire ID card is visible, including all details. ' +
+                    'Please upload a clear photo or scan of your government-issued ID.'
                 );
             }
 
