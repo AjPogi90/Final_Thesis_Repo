@@ -4,6 +4,7 @@ import {
     Typography,
     Alert,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -12,6 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import BadgeIcon from '@mui/icons-material/Badge';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { loadModels } from '../utils/faceRecognition';
+import * as faceapi from 'face-api.js';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
@@ -46,12 +49,13 @@ const inputSx = {
 const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) => {
     const [dragActive, setDragActive] = useState(false);
     const [fileError, setFileError] = useState('');
+    const [analyzing, setAnalyzing] = useState(false);
     const fileInputRef = useRef(null);
 
     const age = dateOfBirth ? calculateAge(dateOfBirth) : null;
     const isAdult = age !== null && age >= 18;
 
-    // ---- File validation ----
+    // ---- Basic file validation (type + size) ----
     const validateFile = useCallback((file) => {
         if (!file) return 'No file selected.';
         if (!ACCEPTED_TYPES.includes(file.type)) return 'Please upload a JPG, PNG, WebP, or PDF file.';
@@ -59,15 +63,118 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
         return null;
     }, []);
 
-    const handleFile = useCallback((file) => {
+    /**
+     * For image uploads (not PDF), performs three checks:
+     *  1. Aspect ratio  — ID cards are landscape/square (ratio ≥ 0.75).
+     *  2. Face presence — a valid photo ID must contain at least one face.
+     *  3. Face area ratio — on a real ID the face photo is a small inset
+     *     (~10–20% of card area). A selfie fills most of the frame (> 20%).
+     *
+     * Fails CLOSED: any AI error → reject (safer than silently accepting).
+     */
+    const validateIdImage = useCallback(async (file) => {
+        // Step A — load the image element (same clean pattern as extractDescriptorFromFile)
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.src = objectUrl;
+
+        try {
+            await new Promise((res, rej) => {
+                img.onload = res;
+                img.onerror = () => rej(new Error('load_failed'));
+            });
+        } catch {
+            URL.revokeObjectURL(objectUrl);
+            return 'Could not read the uploaded image. Please try a different file.';
+        }
+        URL.revokeObjectURL(objectUrl);
+
+        const imgW = img.naturalWidth;
+        const imgH = img.naturalHeight;
+        const imgArea = imgW * imgH;
+
+        // Check 1: Aspect ratio
+        const ratio = imgW / imgH;
+        console.log('[IDVerification] Image dimensions:', imgW, 'x', imgH, '| ratio:', ratio.toFixed(3));
+        if (ratio < 0.75) {
+            console.log('[IDVerification] REJECTED — aspect ratio too low (portrait/selfie)');
+            return (
+                'The uploaded image looks like a portrait/selfie photo, not an ID card. ' +
+                'Please upload a scan or photo of your government-issued ID ' +
+                '(National ID, Passport, Driver\'s License, or PhilSys ID).'
+            );
+        }
+
+        // Checks 2 & 3 require face-api.js — fail CLOSED on any error
+        try {
+            await loadModels();
+
+            const detection = await faceapi
+                .detectSingleFace(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.35 }))
+                .withFaceLandmarks();
+
+            // Check 2: Must have a face
+            if (!detection) {
+                return (
+                    'Error detected in the uploaded image. ' +
+                    'Please upload a valid government-issued ID that clearly shows your photo.'
+                );
+            }
+
+            // Check 3: Face-to-image area ratio
+            // Real ID card: face photo ≈ 10–20% of card area.
+            // Selfie / portrait: face fills > 20% of the frame.
+            const { width, height } = detection.detection.box;
+            const faceRatio = (width * height) / imgArea;
+            console.log('[IDVerification] Face box:', width.toFixed(0), 'x', height.toFixed(0), '| faceRatio:', faceRatio.toFixed(3));
+
+            if (faceRatio > 0.20) {
+                console.log('[IDVerification] REJECTED — face area ratio too high (selfie/portrait)');
+                return (
+                    'The uploaded image appears to be a selfie or close-up portrait, not an ID card. ' +
+                    'In a valid government ID the face photo is a small inset on the card. ' +
+                    'Please upload a full scan or clear photo of your entire ID.'
+                );
+            }
+
+            // ✓ All checks passed
+            return null;
+
+        } catch {
+            // Fail CLOSED — if AI analysis fails we reject rather than silently accept.
+            return (
+                'We were unable to verify the uploaded image as a government-issued ID. ' +
+                'Please try again or upload a clearer photo of your ID.'
+            );
+        }
+    }, []);
+
+    const handleFile = useCallback(async (file) => {
         setFileError('');
-        const err = validateFile(file);
-        if (err) {
-            setFileError(err);
+        const basicErr = validateFile(file);
+        if (basicErr) {
+            setFileError(basicErr);
             return;
         }
+
+        // PDFs skip image analysis — accepted as-is (face matching step will handle it)
+        if (file.type === 'application/pdf') {
+            setIdFile(file);
+            return;
+        }
+
+        // Run AI-based ID image validation
+        setAnalyzing(true);
+        const imgErr = await validateIdImage(file);
+        setAnalyzing(false);
+
+        if (imgErr) {
+            setFileError(imgErr);
+            return;
+        }
+
         setIdFile(file);
-    }, [validateFile, setIdFile]);
+    }, [validateFile, validateIdImage, setIdFile]);
 
     // ---- Drag & drop handlers ----
     const onDragOver = (e) => { e.preventDefault(); e.stopPropagation(); setDragActive(true); };
@@ -156,7 +263,28 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile }) 
                     Accepted: National ID, Driver's License, Passport, PhilSys ID · Max 5 MB · JPG, PNG, WebP, or PDF
                 </Typography>
 
-                {!idFile ? (
+                {analyzing ? (
+                    // ── Analyzing state ──
+                    <Box sx={{
+                        border: '2px dashed rgba(238,121,26,0.4)',
+                        borderRadius: 2,
+                        p: 4,
+                        textAlign: 'center',
+                        bgcolor: 'rgba(238,121,26,0.04)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 1.5,
+                    }}>
+                        <CircularProgress size={36} sx={{ color: '#EE791A' }} />
+                        <Typography variant="body2" sx={{ color: '#EE791A', fontWeight: 600 }}>
+                            Analyzing ID…
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.5)' }}>
+                            Verifying that the uploaded image is a valid government-issued ID
+                        </Typography>
+                    </Box>
+                ) : !idFile ? (
                     <Box
                         onDragOver={onDragOver}
                         onDragLeave={onDragLeave}
