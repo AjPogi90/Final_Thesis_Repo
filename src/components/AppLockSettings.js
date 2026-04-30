@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   Box, Typography, Button, TextField, Dialog, DialogTitle,
   DialogContent, DialogActions, Switch, FormControlLabel,
-  Alert, CircularProgress, Divider,
+  Alert, CircularProgress, Divider, InputAdornment, IconButton,
 } from '@mui/material';
 import LockIcon        from '@mui/icons-material/LockRounded';
 import LockOpenIcon    from '@mui/icons-material/LockOpenRounded';
 import ShieldIcon      from '@mui/icons-material/ShieldRounded';
+import Visibility      from '@mui/icons-material/Visibility';
+import VisibilityOff   from '@mui/icons-material/VisibilityOff';
 
 /**
  * AppLockSettings
@@ -19,13 +21,16 @@ import ShieldIcon      from '@mui/icons-material/ShieldRounded';
  *  changePin     – async (old: string, new: string) => boolean
  */
 export default function AppLockSettings({ isLockEnabled, enableLock, disableLock, changePin }) {
-  const [dialog,   setDialog]   = useState(null); // 'enable' | 'disable' | 'change'
-  const [pin1,     setPin1]     = useState('');
-  const [pin2,     setPin2]     = useState('');
-  const [oldPin,   setOldPin]   = useState('');
-  const [error,    setError]    = useState('');
-  const [loading,  setLoading]  = useState(false);
-  const [success,  setSuccess]  = useState('');
+  const [dialog,    setDialog]    = useState(null); // 'enable' | 'disable' | 'change'
+  const [pin1,      setPin1]      = useState('');
+  const [pin2,      setPin2]      = useState('');
+  const [oldPin,    setOldPin]    = useState('');
+  const [error,     setError]     = useState('');
+  const [loading,   setLoading]   = useState(false);
+  const [success,   setSuccess]   = useState('');
+  const [showPin1,  setShowPin1]  = useState(false);
+  const [showPin2,  setShowPin2]  = useState(false);
+  const [showOld,   setShowOld]   = useState(false);
 
   const closeDialog = () => {
     setDialog(null);
@@ -34,10 +39,13 @@ export default function AppLockSettings({ isLockEnabled, enableLock, disableLock
     setOldPin('');
     setError('');
     setSuccess('');
+    setShowPin1(false);
+    setShowPin2(false);
+    setShowOld(false);
   };
 
   const validatePin = (p) => {
-    if (!/^\d{4,6}$/.test(p)) return 'PIN must be 4–6 digits.';
+    if (!/^\d{4}$/.test(p)) return 'PIN must be exactly 4 digits.';
     return null;
   };
 
@@ -166,7 +174,7 @@ export default function AppLockSettings({ isLockEnabled, enableLock, disableLock
       <PinDialog
         open={dialog === 'enable'}
         title="Set Up App Lock"
-        description="Choose a 4–6 digit PIN. You'll need to enter this every time you open the app."
+        description="Choose a 4-digit PIN. You'll need to enter this every time you open the app."
         onClose={closeDialog}
         onConfirm={handleEnable}
         loading={loading}
@@ -175,21 +183,39 @@ export default function AppLockSettings({ isLockEnabled, enableLock, disableLock
       >
         <TextField
           label="New PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showPin1 ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={pin1}
-          onChange={e => { setPin1(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setPin1(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
           sx={{ mb: 2 }}
           autoFocus
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPin1(v => !v)} edge="end" size="small">
+                  {showPin1 ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           label="Confirm PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showPin2 ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={pin2}
-          onChange={e => { setPin2(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setPin2(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPin2(v => !v)} edge="end" size="small">
+                  {showPin2 ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </PinDialog>
 
@@ -208,12 +234,21 @@ export default function AppLockSettings({ isLockEnabled, enableLock, disableLock
       >
         <TextField
           label="Current PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showOld ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={oldPin}
-          onChange={e => { setOldPin(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
           autoFocus
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowOld(v => !v)} edge="end" size="small">
+                  {showOld ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </PinDialog>
 
@@ -231,30 +266,57 @@ export default function AppLockSettings({ isLockEnabled, enableLock, disableLock
       >
         <TextField
           label="Current PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showOld ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={oldPin}
-          onChange={e => { setOldPin(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
           sx={{ mb: 2 }}
           autoFocus
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowOld(v => !v)} edge="end" size="small">
+                  {showOld ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           label="New PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showPin1 ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={pin1}
-          onChange={e => { setPin1(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setPin1(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
           sx={{ mb: 2 }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPin1(v => !v)} edge="end" size="small">
+                  {showPin1 ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           label="Confirm New PIN"
-          type="password"
-          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 6 }}
+          type={showPin2 ? 'text' : 'password'}
+          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4 }}
           value={pin2}
-          onChange={e => { setPin2(e.target.value.replace(/\D/g, '')); setError(''); }}
+          onChange={e => { setPin2(e.target.value.replace(/\D/g, '').slice(0, 4)); setError(''); }}
           fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPin2(v => !v)} edge="end" size="small">
+                  {showPin2 ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </PinDialog>
     </Box>

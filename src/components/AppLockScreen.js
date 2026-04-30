@@ -1,8 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Box, Typography, IconButton, Collapse } from '@mui/material';
+import {
+  Box, Typography, IconButton, Collapse,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Button, CircularProgress, Alert, InputAdornment,
+} from '@mui/material';
 import BackspaceIcon from '@mui/icons-material/BackspaceRounded';
-import LockIcon from '@mui/icons-material/LockRounded';
-import FingerprintIcon from '@mui/icons-material/FingerprintRounded';
+import LockIcon      from '@mui/icons-material/LockRounded';
+import Visibility    from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
+
+const STORAGE_KEYS = {
+  ENABLED:  'aegistnet_lock_enabled',
+  PIN_HASH: 'aegistnet_lock_pin_hash',
+  LOCKED:   'aegistnet_lock_locked',
+};
 
 const PIN_LENGTH = 4;
 
@@ -20,6 +33,15 @@ export default function AppLockScreen({ onUnlock }) {
   const [lockedOut,  setLockedOut]  = useState(false);
   const [countdown,  setCountdown]  = useState(0);
   const [errorMsg,   setErrorMsg]   = useState('');
+
+  // ── Forgot PIN dialog state ──────────────────────────────────────────────────
+  const [forgotOpen,    setForgotOpen]    = useState(false);
+  const [resetEmail,    setResetEmail]    = useState('');
+  const [resetPassword, setResetPassword] = useState('');
+  const [showResetPw,   setShowResetPw]   = useState(false);
+  const [resetLoading,  setResetLoading]  = useState(false);
+  const [resetError,    setResetError]    = useState('');
+  const [resetSuccess,  setResetSuccess]  = useState(false);
 
   // ── Lockout countdown timer ──────────────────────────────────────────────────
   useEffect(() => {
@@ -81,6 +103,45 @@ export default function AppLockScreen({ onUnlock }) {
     if (pin.length >= PIN_LENGTH) return;
     setPin(p => p + key);
   }, [pin, lockedOut]);
+
+  // ── Forgot PIN: re-authenticate with Firebase then wipe PIN ─────────────────
+  const handleForgotClose = () => {
+    setForgotOpen(false);
+    setResetEmail('');
+    setResetPassword('');
+    setResetError('');
+    setResetSuccess(false);
+    setShowResetPw(false);
+  };
+
+  const handleResetViLogin = async (e) => {
+    e.preventDefault();
+    setResetError('');
+    setResetLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, resetEmail, resetPassword);
+      // Credentials verified — clear the PIN lock
+      localStorage.removeItem(STORAGE_KEYS.ENABLED);
+      localStorage.removeItem(STORAGE_KEYS.PIN_HASH);
+      localStorage.removeItem(STORAGE_KEYS.LOCKED);
+      setResetSuccess(true);
+      // Brief pause so the user sees the success message, then reload
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (err) {
+      const code = err.code;
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        setResetError('Incorrect email or password. Please try again.');
+      } else if (code === 'auth/invalid-email') {
+        setResetError('Please enter a valid email address.');
+      } else if (code === 'auth/too-many-requests') {
+        setResetError('Too many attempts. Please wait a moment and try again.');
+      } else {
+        setResetError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   return (
     <Box
@@ -241,6 +302,131 @@ export default function AppLockScreen({ onUnlock }) {
       <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.25)', mt: 5 }}>
         🔒 AegisNet Parental Control — Protected
       </Typography>
+
+      {/* ── Forgot PIN link ── */}
+      <Box
+        component="button"
+        onClick={() => setForgotOpen(true)}
+        sx={{
+          mt: 2,
+          background: 'none',
+          border: 'none',
+          color: 'rgba(255,255,255,0.4)',
+          fontSize: '0.78rem',
+          cursor: 'pointer',
+          textDecoration: 'underline',
+          transition: 'color 0.2s',
+          '&:hover': { color: 'rgba(255,255,255,0.75)' },
+        }}
+      >
+        Forgot PIN?
+      </Box>
+
+      {/* ── Forgot PIN Dialog ── */}
+      <Dialog
+        open={forgotOpen}
+        onClose={!resetLoading ? handleForgotClose : undefined}
+        maxWidth="xs"
+        fullWidth
+        sx={{ zIndex: 10000 }}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            bgcolor: '#1e1e2e',
+            border: '1px solid rgba(99,102,241,0.3)',
+            color: '#fff',
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, color: '#fff' }}>
+          Reset PIN via Account Login
+        </DialogTitle>
+        <DialogContent>
+          {resetSuccess ? (
+            <Alert severity="success" sx={{ mt: 1 }}>
+              Identity verified! PIN cleared. Reloading the app…
+            </Alert>
+          ) : (
+            <>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mb: 3 }}>
+                Enter your AegisNet account email and password to verify your identity.
+                If correct, your PIN will be removed and you can set a new one in Settings.
+              </Typography>
+              <form onSubmit={handleResetViLogin} id="reset-pin-form">
+                <TextField
+                  label="Account Email"
+                  type="email"
+                  value={resetEmail}
+                  onChange={e => { setResetEmail(e.target.value); setResetError(''); }}
+                  fullWidth
+                  required
+                  disabled={resetLoading}
+                  autoFocus
+                  variant="filled"
+                  sx={{
+                    mb: 2,
+                    '& .MuiFilledInput-root': { bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 1, '&:before,&:after': { display: 'none' } },
+                    '& input': { color: '#fff' },
+                    '& label': { color: 'rgba(255,255,255,0.5)' },
+                  }}
+                />
+                <TextField
+                  label="Account Password"
+                  type={showResetPw ? 'text' : 'password'}
+                  value={resetPassword}
+                  onChange={e => { setResetPassword(e.target.value); setResetError(''); }}
+                  fullWidth
+                  required
+                  disabled={resetLoading}
+                  variant="filled"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowResetPw(v => !v)} edge="end" size="small" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                          {showResetPw ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiFilledInput-root': { bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 1, '&:before,&:after': { display: 'none' } },
+                    '& input': { color: '#fff' },
+                    '& label': { color: 'rgba(255,255,255,0.5)' },
+                  }}
+                />
+              </form>
+              {resetError && <Alert severity="error" sx={{ mt: 2 }}>{resetError}</Alert>}
+            </>
+          )}
+        </DialogContent>
+        {!resetSuccess && (
+          <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+            <Button
+              onClick={handleForgotClose}
+              disabled={resetLoading}
+              sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'none' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="reset-pin-form"
+              variant="contained"
+              disabled={resetLoading || !resetEmail || !resetPassword}
+              startIcon={resetLoading && <CircularProgress size={16} sx={{ color: '#fff' }} />}
+              sx={{
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                textTransform: 'none',
+                fontWeight: 600,
+                borderRadius: 2,
+                '&:hover': { background: 'linear-gradient(135deg, #5254cc, #7c3aed)' },
+              }}
+            >
+              {resetLoading ? 'Verifying…' : 'Verify & Reset PIN'}
+            </Button>
+          </DialogActions>
+        )}
+      </Dialog>
 
       <style>{`
         @keyframes pulse0 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
