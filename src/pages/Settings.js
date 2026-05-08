@@ -28,6 +28,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { getNotificationPermission, requestAndSaveToken } from '../utils/pushNotifications';
 import AppLockSettings from '../components/AppLockSettings';
 import { useAppLock } from '../hooks/useAppLock';
@@ -40,6 +42,39 @@ const Settings = () => {
     const navigate = useNavigate();
     const { isLockEnabled, enableLock, disableLock, changePin } = useAppLock();
     const { isLockEnabled: isDeviceLockEnabled, enableLock: enableDeviceLock, disableLock: disableDeviceLock } = useDeviceSettingsLock(user?.uid);
+
+    // ── PWA Install state ──
+    const [installPrompt, setInstallPrompt] = useState(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+    const [installSuccess, setInstallSuccess] = useState(false);
+
+    React.useEffect(() => {
+        // Check if already running as installed PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            setIsInstalled(true);
+        }
+        const handler = (e) => {
+            e.preventDefault();
+            setInstallPrompt(e);
+        };
+        window.addEventListener('beforeinstallprompt', handler);
+        window.addEventListener('appinstalled', () => {
+            setIsInstalled(true);
+            setInstallPrompt(null);
+            setInstallSuccess(true);
+        });
+        return () => window.removeEventListener('beforeinstallprompt', handler);
+    }, []);
+
+    const handleInstallApp = async () => {
+        if (!installPrompt) return;
+        installPrompt.prompt();
+        const { outcome } = await installPrompt.userChoice;
+        if (outcome === 'accepted') {
+            setInstallPrompt(null);
+            setInstallSuccess(true);
+        }
+    };
 
     // ── Notifications state ──
     const [pushEnabled, setPushEnabled] = useState(false);
@@ -276,6 +311,109 @@ const Settings = () => {
                         disableLock={disableDeviceLock}
                     />
                 </Paper>
+
+                {/* Install App Section */}
+                {!isInstalled && (
+                    <Paper
+                        sx={{
+                            p: 3,
+                            mb: 3,
+                            borderRadius: 2,
+                            bgcolor: colors.cardBg,
+                            border: `1px solid ${colors.cardBorder}`,
+                            background: installPrompt
+                                ? `linear-gradient(135deg, ${colors.cardBg} 60%, rgba(238,121,26,0.07) 100%)`
+                                : colors.cardBg,
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>
+                            Install App
+                        </Typography>
+                        <Divider sx={{ mb: 2, borderColor: colors.divider }} />
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <GetAppIcon sx={{ fontSize: 32, color: colors.primary }} />
+                                <Box>
+                                    <Typography variant="subtitle1" sx={{ fontWeight: 600, color: colors.text }}>
+                                        Install AegisNet on Your Device
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                        {installPrompt
+                                            ? 'Add AegisNet to your home screen for quick, app-like access — no browser needed.'
+                                            : 'Open this page in Chrome on your Android phone to install the app.'}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                            {installPrompt ? (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<GetAppIcon />}
+                                    onClick={handleInstallApp}
+                                    sx={{
+                                        bgcolor: colors.primary,
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        px: 3,
+                                        borderRadius: 2,
+                                        boxShadow: `0 4px 14px rgba(238,121,26,0.35)`,
+                                        '&:hover': { bgcolor: '#c05905' },
+                                    }}
+                                >
+                                    Install App
+                                </Button>
+                            ) : (
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: colors.textSecondary,
+                                        fontStyle: 'italic',
+                                        fontSize: '0.8rem',
+                                    }}
+                                >
+                                    Install prompt not available on this browser
+                                </Typography>
+                            )}
+                        </Box>
+                        {installSuccess && (
+                            <Alert
+                                icon={<CheckCircleOutlineIcon />}
+                                severity="success"
+                                sx={{ mt: 2, borderRadius: 2 }}
+                            >
+                                AegisNet has been installed successfully!
+                            </Alert>
+                        )}
+                    </Paper>
+                )}
+
+                {isInstalled && (
+                    <Paper
+                        sx={{
+                            p: 3,
+                            mb: 3,
+                            borderRadius: 2,
+                            bgcolor: colors.cardBg,
+                            border: `1px solid ${colors.cardBorder}`,
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>
+                            Install App
+                        </Typography>
+                        <Divider sx={{ mb: 2, borderColor: colors.divider }} />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <CheckCircleOutlineIcon sx={{ fontSize: 32, color: '#22c55e' }} />
+                            <Box>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: colors.text }}>
+                                    App Already Installed
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                                    AegisNet is installed on this device and running in app mode.
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Paper>
+                )}
 
                 {/* Notifications Section */}
                 <Paper
