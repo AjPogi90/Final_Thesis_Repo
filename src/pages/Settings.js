@@ -5,7 +5,6 @@ import {
     Typography,
     Paper,
     Switch,
-    FormControlLabel,
     Divider,
     Button,
     Dialog,
@@ -44,7 +43,9 @@ const Settings = () => {
     const { isLockEnabled: isDeviceLockEnabled, enableLock: enableDeviceLock, disableLock: disableDeviceLock } = useDeviceSettingsLock(user?.uid);
 
     // ── PWA Install state ──
-    const [installPrompt, setInstallPrompt] = useState(null);
+    const [installPrompt, setInstallPrompt] = useState(
+        () => window.deferredInstallPrompt || null
+    );
     const [isInstalled, setIsInstalled] = useState(false);
     const [installSuccess, setInstallSuccess] = useState(false);
 
@@ -53,17 +54,21 @@ const Settings = () => {
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
             setIsInstalled(true);
         }
-        const handler = (e) => {
-            e.preventDefault();
-            setInstallPrompt(e);
+
+        // In case the prompt fires while we're on this page
+        const onPromptReady = () => {
+            setInstallPrompt(window.deferredInstallPrompt);
         };
-        window.addEventListener('beforeinstallprompt', handler);
+        window.addEventListener('installpromptready', onPromptReady);
+
         window.addEventListener('appinstalled', () => {
             setIsInstalled(true);
             setInstallPrompt(null);
+            window.deferredInstallPrompt = null;
             setInstallSuccess(true);
         });
-        return () => window.removeEventListener('beforeinstallprompt', handler);
+
+        return () => window.removeEventListener('installpromptready', onPromptReady);
     }, []);
 
     const handleInstallApp = async () => {
@@ -72,6 +77,7 @@ const Settings = () => {
         const { outcome } = await installPrompt.userChoice;
         if (outcome === 'accepted') {
             setInstallPrompt(null);
+            window.deferredInstallPrompt = null;
             setInstallSuccess(true);
         }
     };
@@ -339,42 +345,33 @@ const Settings = () => {
                                         Install AegisNet on Your Device
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                                        {installPrompt
-                                            ? 'Add AegisNet to your home screen for quick, app-like access — no browser needed.'
-                                            : 'Open this page in Chrome on your Android phone to install the app.'}
+                                        Add AegisNet to your home screen for quick, app-like access — no browser needed.
                                     </Typography>
                                 </Box>
                             </Box>
-                            {installPrompt ? (
-                                <Button
-                                    variant="contained"
-                                    startIcon={<GetAppIcon />}
-                                    onClick={handleInstallApp}
-                                    sx={{
-                                        bgcolor: colors.primary,
-                                        textTransform: 'none',
-                                        fontWeight: 600,
-                                        px: 3,
-                                        borderRadius: 2,
-                                        boxShadow: `0 4px 14px rgba(238,121,26,0.35)`,
-                                        '&:hover': { bgcolor: '#c05905' },
-                                    }}
-                                >
-                                    Install App
-                                </Button>
-                            ) : (
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        color: colors.textSecondary,
-                                        fontStyle: 'italic',
-                                        fontSize: '0.8rem',
-                                    }}
-                                >
-                                    Install prompt not available on this browser
-                                </Typography>
-                            )}
+                            <Button
+                                variant="contained"
+                                startIcon={<GetAppIcon />}
+                                onClick={handleInstallApp}
+                                disabled={!installPrompt}
+                                sx={{
+                                    bgcolor: colors.primary,
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    px: 3,
+                                    borderRadius: 2,
+                                    boxShadow: installPrompt ? `0 4px 14px rgba(238,121,26,0.35)` : 'none',
+                                    '&:hover': { bgcolor: '#c05905' },
+                                    '&.Mui-disabled': {
+                                        bgcolor: 'rgba(238,121,26,0.3)',
+                                        color: '#fff',
+                                    },
+                                }}
+                            >
+                                Install App
+                            </Button>
                         </Box>
+
                         {installSuccess && (
                             <Alert
                                 icon={<CheckCircleOutlineIcon />}

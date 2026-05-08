@@ -14,9 +14,15 @@
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
+    },
+    {
+      "src": "ParentLogo2.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#1a1a2e",
