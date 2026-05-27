@@ -52,9 +52,9 @@ const FILTER_LEVELS = [
     {
         value: 1,
         label: 'Strict',
-        ageRange: 'Ages 7–11',
+        ageRange: 'Ages 3–11',
         description: 'Blocks suggestive, semi-nude & explicit content',
-        detail: 'All three model classes are blocked for all genders. Any skin-revealing or sexualised image is intercepted.',
+        detail: 'All active model classes are blocked for all genders. Bikinis, thirst-trap content, underwear, nudity, and sexual activity are all intercepted.',
         color: '#ef4444',
         chipBg: 'rgba(239,68,68,0.12)',
     },
