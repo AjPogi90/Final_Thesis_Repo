@@ -280,7 +280,7 @@ const IDVerificationStep = ({ dateOfBirth, setDateOfBirth, idFile, setIdFile, de
                         <Typography variant="caption" sx={{ fontWeight: 700, color: '#c62828', display: 'block', mb: 0.5 }}>
                             ❌ NOT Accepted
                         </Typography>
-                        {['School / Student ID', 'Company / Employee ID', 'Barangay ID', 'Senior Citizen card (alone)', 'Any expired ID'].map(id => (
+                        {['School / Student ID', 'Company / Employee ID', 'Barangay ID', 'Senior Citizen card', 'Any expired ID'].map(id => (
                             <Typography key={id} variant="caption" sx={{ display: 'block', color: 'rgba(0,0,0,0.65)', lineHeight: 1.7 }}>• {id}</Typography>
                         ))}
                     </Box>
