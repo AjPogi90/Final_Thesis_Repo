@@ -8,6 +8,8 @@ import {
   StepLabel,
   Alert,
   CircularProgress,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { sendEmailVerification } from 'firebase/auth';
@@ -17,7 +19,7 @@ import IDVerificationStep from '../../components/IDVerificationStep';
 import FaceVerificationStep from '../../components/FaceVerificationStep';
 import AccountDetailsForm from './AccountDetailsForm';
 import RegistrationSuccess from './RegistrationSuccess';
-const STEPS = ['Upload ID', 'Verify Face', 'Create Account'];
+const STEPS = ['Data Privacy', 'Upload ID', 'Verify Face', 'Create Account'];
 
 /**
  * Register/index.js — Main orchestrator (3-step wizard)
@@ -35,12 +37,15 @@ const Register = () => {
   // ── Wizard state ────────────────────────────────────────────────────────────
   const [activeStep, setActiveStep] = useState(0);
 
-  // ── Step 0 data ─────────────────────────────────────────────────────────────
+  // ── Step 0: Data Privacy ─────────────────────────────────────────────────────
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+
+  // ── Step 1 data (ID Upload) ──────────────────────────────────────────────────
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [idFile, setIdFile] = useState(null);
   const [declared, setDeclared] = useState(false); // user confirmed it's a gov ID
 
-  // ── Step 1 data ─────────────────────────────────────────────────────────────
+  // ── Step 2 data (Face Verification) ─────────────────────────────────────────
   const [faceDescriptor, setFaceDescriptor] = useState(null); // Float32Array
   const [faceMatchScore, setFaceMatchScore] = useState(null);
   const [selfieBase64, setSelfieBase64] = useState(null);
@@ -65,16 +70,22 @@ const Register = () => {
     return age;
   };
 
-  const isStep0Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile && declared;
+  const isStep1Valid = dateOfBirth && calculateAge(dateOfBirth) >= 18 && idFile && declared;
 
-  // ── Step 0 → Step 1 ─────────────────────────────────────────────────────────
+  // ── Step 0 → Step 1 (Privacy → ID Upload) ───────────────────────────────────
+  const handlePrivacyNext = () => {
+    if (!privacyAccepted) return;
+    setActiveStep(1);
+  };
+
+  // ── Step 1 → Step 2 (ID Upload → Face Verification) ─────────────────────────
   const handleNext = () => {
     setError('');
     if (!dateOfBirth) return setError('Please enter your date of birth.');
     if (calculateAge(dateOfBirth) < 18) return setError('You must be at least 18 years old to register.');
     if (!idFile) return setError('Please upload a government-issued ID.');
     if (!declared) return setError('Please confirm that your uploaded ID is a valid government-issued ID.');
-    setActiveStep(1);
+    setActiveStep(2);
   };
 
   // ── Called by FaceVerificationStep on success ────────────────────────────────
@@ -82,10 +93,10 @@ const Register = () => {
     setFaceDescriptor(descriptor);
     setFaceMatchScore(matchScore);
     setSelfieBase64(selfieImgBase64);
-    setActiveStep(2);
+    setActiveStep(3);
   };
 
-  // ── Step 1 → Step 0 (back) ──────────────────────────────────────────────────
+  // ── Back navigation ──────────────────────────────────────────────────────────
   const handleBack = () => {
     setError('');
     setActiveStep((s) => Math.max(0, s - 1));
@@ -236,8 +247,132 @@ const Register = () => {
           />
         ) : (
           <>
-            {/* ── STEP 0: Identity + ID Upload ── */}
+            {/* ── STEP 0: Data Privacy Consent ── */}
             {activeStep === 0 && (
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'rgba(0,0,0,0.5)', mb: 2, textAlign: 'center' }}
+                >
+                  Before proceeding, please read and accept our Data Privacy Notice.
+                </Typography>
+
+                <Box
+                  sx={{
+                    mb: 2, p: 1.5, borderRadius: 1.5,
+                    border: '1px solid',
+                    borderColor: privacyAccepted ? 'rgba(238,121,26,0.4)' : 'rgba(0,0,0,0.1)',
+                    bgcolor: privacyAccepted ? 'rgba(238,121,26,0.04)' : 'rgba(0,0,0,0.02)',
+                    transition: 'border-color 0.2s, background-color 0.2s',
+                  }}
+                >
+                  {/* Full privacy text — always visible */}
+                  <Box
+                    sx={{
+                      mb: 1.5, p: 1.5, borderRadius: 1,
+                      bgcolor: 'rgba(0,0,0,0.03)',
+                      border: '1px solid rgba(0,0,0,0.07)',
+                      maxHeight: 240, overflowY: 'auto',
+                    }}
+                  >
+                    <Typography variant="caption" component="div" sx={{ color: 'rgba(0,0,0,0.65)', lineHeight: 1.7 }}>
+                      <strong>DATA PRIVACY NOTICE — AegisNet Parental Control System</strong>
+                      <br /><br />
+                      In compliance with the <strong>Philippine Data Privacy Act of 2012 (Republic Act No. 10173)</strong> and
+                      its Implementing Rules and Regulations, AegisNet informs you of the following:
+                      <br /><br />
+                      <strong>1. Data Collected</strong><br />
+                      We collect your: full name, email address, date of birth, government-issued ID image,
+                      and facial biometric data (face descriptor vectors and selfie image) for identity
+                      verification purposes only.
+                      <br /><br />
+                      <strong>2. Purpose of Processing</strong><br />
+                      Your data is collected to verify your identity as a parent/guardian, prevent fraudulent
+                      account creation, and secure access to the parental control dashboard. Biometric data
+                      is not used for any commercial purpose.
+                      <br /><br />
+                      <strong>3. Data Retention</strong><br />
+                      Your personal and biometric data will be retained for the duration of your active
+                      account. You may request deletion at any time by contacting our support team.
+                      <br /><br />
+                      <strong>4. Your Rights</strong><br />
+                      Under RA 10173, you have the right to: access your personal data, correct inaccuracies,
+                      object to processing, and request erasure of your data. To exercise these rights,
+                      contact us through the Help &amp; Support section.
+                      <br /><br />
+                      <strong>5. Data Security</strong><br />
+                      We implement appropriate technical and organizational measures to protect your data
+                      against unauthorized access, disclosure, alteration, or destruction.
+                    </Typography>
+                  </Box>
+
+                  {/* Consent checkbox */}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="privacy-consent-checkbox"
+                        checked={privacyAccepted}
+                        onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                        size="small"
+                        sx={{
+                          color: 'rgba(0,0,0,0.4)',
+                          '&.Mui-checked': { color: '#EE791A' },
+                          pt: 0, alignSelf: 'flex-start', mt: 0.2,
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography variant="caption" sx={{ color: 'rgba(0,0,0,0.7)', lineHeight: 1.5 }}>
+                        I have read and agree to the{' '}
+                        <strong>Data Privacy Notice</strong>
+                        {' '}and consent to the collection and processing of my personal and biometric data in
+                        accordance with the{' '}
+                        <strong>Philippine Data Privacy Act of 2012 (RA 10173)</strong>.
+                      </Typography>
+                    }
+                    alignItems="flex-start"
+                    sx={{ mr: 0, mt: 0.5 }}
+                  />
+                </Box>
+
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={handlePrivacyNext}
+                  disabled={!privacyAccepted}
+                  aria-label="Accept privacy notice and continue"
+                  sx={{
+                    mt: 1, width: '100%', py: 1.4, px: 3,
+                    border: 'none', borderRadius: 1,
+                    cursor: privacyAccepted ? 'pointer' : 'not-allowed',
+                    backgroundColor: privacyAccepted ? '#EE791A' : 'rgba(0,0,0,0.06)',
+                    color: privacyAccepted ? '#fff' : 'rgba(0,0,0,0.25)',
+                    fontWeight: 600, fontSize: '0.95rem', fontFamily: 'inherit',
+                    transition: 'background-color 0.2s ease',
+                    '&:hover': privacyAccepted ? { backgroundColor: '#c05905' } : {},
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1,
+                  }}
+                >
+                  I Agree — Continue to Registration →
+                </Box>
+
+                <Box mt={2} textAlign="center">
+                  <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)' }}>
+                    Already have an account?{' '}
+                    <Link
+                      component="button" type="button" variant="body2"
+                      onClick={() => navigate('/')}
+                      sx={{ color: '#EE791A' }}
+                    >
+                      Sign in
+                    </Link>
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+
+            {/* ── STEP 1: Identity + ID Upload ── */}
+            {activeStep === 1 && (
               <Box>
                 <IDVerificationStep
                   dateOfBirth={dateOfBirth}
@@ -252,30 +387,21 @@ const Register = () => {
                   component="button"
                   type="button"
                   onClick={handleNext}
-                  disabled={!isStep0Valid}
+                  disabled={!isStep1Valid}
                   aria-label="Continue to selfie verification"
                   sx={{
-                    mt: 3,
-                    width: '100%',
-                    py: 1.4,
-                    px: 3,
-                    border: 'none',
-                    borderRadius: 1,
-                    cursor: isStep0Valid ? 'pointer' : 'not-allowed',
-                    backgroundColor: isStep0Valid ? '#EE791A' : 'rgba(0,0,0,0.06)',
-                    color: isStep0Valid ? '#fff' : 'rgba(0,0,0,0.25)',
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    fontFamily: 'inherit',
+                    mt: 3, width: '100%', py: 1.4, px: 3,
+                    border: 'none', borderRadius: 1,
+                    cursor: isStep1Valid ? 'pointer' : 'not-allowed',
+                    backgroundColor: isStep1Valid ? '#EE791A' : 'rgba(0,0,0,0.06)',
+                    color: isStep1Valid ? '#fff' : 'rgba(0,0,0,0.25)',
+                    fontWeight: 600, fontSize: '0.95rem', fontFamily: 'inherit',
                     transition: 'background-color 0.2s ease',
-                    '&:hover': isStep0Valid ? { backgroundColor: '#c05905' } : {},
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1,
+                    '&:hover': isStep1Valid ? { backgroundColor: '#c05905' } : {},
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1,
                   }}
                 >
-                  {loading && activeStep === 0 ? (
+                  {loading && activeStep === 1 ? (
                     <CircularProgress size={20} sx={{ color: '#fff' }} />
                   ) : (
                     'Continue to Selfie Verification →'
@@ -286,9 +412,7 @@ const Register = () => {
                   <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)' }}>
                     Already have an account?{' '}
                     <Link
-                      component="button"
-                      type="button"
-                      variant="body2"
+                      component="button" type="button" variant="body2"
                       onClick={() => navigate('/')}
                       sx={{ color: '#EE791A' }}
                     >
@@ -299,31 +423,23 @@ const Register = () => {
               </Box>
             )}
 
-            {/* ── STEP 1: Face Verification ── */}
-            {activeStep === 1 && (
+            {/* ── STEP 2: Face Verification ── */}
+            {activeStep === 2 && (
               <Box>
                 <FaceVerificationStep
                   idFile={idFile}
                   onVerified={handleFaceVerified}
                 />
-
-                {/* Back to Step 0 */}
                 <Box
                   component="button"
                   type="button"
                   onClick={handleBack}
                   sx={{
-                    mt: 2,
-                    width: '100%',
-                    py: 1,
-                    border: 'none',
-                    borderRadius: 1,
-                    bgcolor: 'transparent',
-                    color: 'rgba(0,0,0,0.45)',
-                    fontSize: '0.85rem',
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                    fontWeight: 500,
+                    mt: 2, width: '100%', py: 1,
+                    border: 'none', borderRadius: 1,
+                    bgcolor: 'transparent', color: 'rgba(0,0,0,0.45)',
+                    fontSize: '0.85rem', fontFamily: 'inherit',
+                    cursor: 'pointer', fontWeight: 500,
                     '&:hover': { color: '#EE791A' },
                   }}
                 >
@@ -332,8 +448,8 @@ const Register = () => {
               </Box>
             )}
 
-            {/* ── STEP 2: Account Details ── */}
-            {activeStep === 2 && (
+            {/* ── STEP 3: Account Details ── */}
+            {activeStep === 3 && (
               <AccountDetailsForm
                 onBack={handleBack}
                 onSubmit={handleFormSubmit}
