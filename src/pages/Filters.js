@@ -52,7 +52,7 @@ const FILTER_LEVELS = [
     {
         value: 1,
         label: 'Strict',
-        ageRange: 'Ages 3–11',
+        ageRange: 'Ages 3–5',
         description: 'Blocks suggestive, semi-nude & explicit content',
         detail: 'All active model classes are blocked for all genders. Bikinis, thirst-trap content, underwear, nudity, and sexual activity are all intercepted.',
         color: '#ef4444',
@@ -61,7 +61,7 @@ const FILTER_LEVELS = [
     {
         value: 2,
         label: 'Moderate',
-        ageRange: 'Ages 12–14',
+        ageRange: 'Ages 6–11',
         description: 'Blocks bikinis/briefs & explicit content',
         detail: 'Boys: swimwear + nudity blocked. Girls: men\'s underwear + nudity blocked. Swimsuits on girls are allowed.',
         color: '#f59e0b',
@@ -70,7 +70,7 @@ const FILTER_LEVELS = [
     {
         value: 3,
         label: 'Tolerant',
-        ageRange: 'Ages 15–17',
+        ageRange: 'Ages 12–17',
         description: 'Blocks explicit nudity only',
         detail: 'Only fully explicit nudity (class 1) is blocked for all genders. Swimwear and underwear are allowed.',
         color: '#22c55e',
@@ -82,8 +82,8 @@ const FILTER_LEVELS = [
 function suggestLevelFromAge(ageStr) {
     const age = parseInt(ageStr, 10);
     if (isNaN(age)) return 2;
-    if (age <= 11) return 1;
-    if (age <= 14) return 2;
+    if (age <= 5) return 1;
+    if (age <= 11) return 2;
     return 3;
 }
 
