@@ -40,9 +40,8 @@ import MemoryIcon from '@mui/icons-material/Memory';
 /* ─────────────────────────────────────────
    CONFIG — update APK_URL when you host the file
 ───────────────────────────────────────── */
-const APK_URL = 'https://drive.google.com/file/d/1KUmOJn08q9IUODlsfxrWBjf0YR9E2_Sx/view?usp=sharing'; // e.g. https://storage.googleapis.com/aegisnet.../KidSafe_release_v1.2.apk
+const APK_URL = 'https://drive.google.com/uc?export=download&id=1KUmOJn08q9IUODlsfxrWBjf0YR9E2_Sx';
 const APK_VERSION = '1.2';
-const APK_SIZE = '5.6 MB';
 
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -248,7 +247,7 @@ const DownloadPage = () => {
                       '&:hover': { bgcolor: '#D4651E', boxShadow: '0 14px 44px rgba(238,121,26,0.45)' },
                     }}
                   >
-                    Download APK ({APK_SIZE})
+                    Download APK
                   </Button>
 
                   <Tooltip title={copied ? 'Copied!' : 'Copy download link'} placement="top">
@@ -429,9 +428,7 @@ const DownloadPage = () => {
                       >
                         Download KidSafe v{APK_VERSION}
                       </Button>
-                      <Typography sx={{ mt: 1.5, fontSize: '0.78rem', color: '#9CA3AF', fontFamily: '"Inter", sans-serif' }}>
-                        File size: {APK_SIZE} · MD5 verified
-                      </Typography>
+
                     </Box>
                   ),
                 },
