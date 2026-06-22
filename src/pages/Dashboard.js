@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Grid,
@@ -17,6 +17,9 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SecurityIcon from '@mui/icons-material/Security';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import WarningIcon from '@mui/icons-material/Warning';
+import DownloadIcon from '@mui/icons-material/Download';
+import CloseIcon from '@mui/icons-material/Close';
+import AndroidIcon from '@mui/icons-material/Android';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useChildrenList } from '../hooks/useFirebase';
@@ -28,6 +31,15 @@ const Dashboard = () => {
   const { colors } = useTheme();
   const { children, loading, error } = useChildrenList(user?.email);
   const navigate = useNavigate();
+
+  // Track if the child-app download banner has been dismissed
+  const [bannerDismissed, setBannerDismissed] = useState(
+    () => localStorage.getItem('kidsafe_dl_banner_dismissed') === 'true'
+  );
+  const dismissBanner = () => {
+    localStorage.setItem('kidsafe_dl_banner_dismissed', 'true');
+    setBannerDismissed(true);
+  };
 
   const safeChildren = children || [];
   const total = safeChildren.length;
@@ -77,7 +89,75 @@ const Dashboard = () => {
         </Box>
 
                 {/* Push Notification Permission Banner */}
-                <NotificationPermission />
+        <NotificationPermission />
+
+        {/* ── Child App Download Banner (shown when no devices connected yet, not dismissed) ── */}
+        {!bannerDismissed && total === 0 && !loading && (
+          <Box
+            sx={{
+              mb: 3,
+              borderRadius: 3,
+              overflow: 'hidden',
+              background: 'linear-gradient(135deg, #FFF7ED 0%, #FFF3E0 100%)',
+              border: '1px solid rgba(238,121,26,0.25)',
+              boxShadow: '0 4px 24px rgba(238,121,26,0.1)',
+              position: 'relative',
+            }}
+          >
+            {/* Glow orb */}
+            <Box sx={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(238,121,26,0.12), transparent 70%)', pointerEvents: 'none' }} />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2, p: { xs: 2.5, md: 3 }, position: 'relative', zIndex: 1 }}>
+              {/* Icon */}
+              <Box
+                sx={{
+                  width: 52, height: 52, borderRadius: 2.5, flexShrink: 0,
+                  background: 'linear-gradient(135deg, #EE791A, #D4651E)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 6px 20px rgba(238,121,26,0.3)',
+                }}
+              >
+                <AndroidIcon sx={{ color: '#fff', fontSize: 28 }} />
+              </Box>
+
+              {/* Text */}
+              <Box sx={{ flex: 1, minWidth: 200 }}>
+                <Typography sx={{ fontWeight: 700, color: '#92400e', fontSize: '0.97rem', mb: 0.3 }}>
+                  📱 Install the KidSafe Child App
+                </Typography>
+                <Typography sx={{ color: '#a16207', fontSize: '0.84rem', lineHeight: 1.55 }}>
+                  Your dashboard is ready — now install the child app on your child's Android device to start monitoring.
+                </Typography>
+              </Box>
+
+              {/* CTA + Dismiss */}
+              <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexShrink: 0 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<DownloadIcon />}
+                  onClick={() => navigate('/download')}
+                  id="dashboard-download-child-app-btn"
+                  sx={{
+                    bgcolor: '#EE791A', color: '#fff', textTransform: 'none',
+                    fontWeight: 700, borderRadius: 1.5, px: 2.5,
+                    boxShadow: '0 4px 14px rgba(238,121,26,0.3)',
+                    '&:hover': { bgcolor: '#D4651E', boxShadow: '0 6px 20px rgba(238,121,26,0.4)' },
+                  }}
+                >
+                  Get Child App
+                </Button>
+                <Box
+                  onClick={dismissBanner}
+                  title="Dismiss"
+                  sx={{ cursor: 'pointer', color: '#a16207', opacity: 0.6, '&:hover': { opacity: 1 }, display: 'flex', alignItems: 'center' }}
+                >
+                  <CloseIcon sx={{ fontSize: 20 }} />
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        )}
 
         {error && (
           <Alert severity="error" sx={{ mb: 3, bgcolor: 'rgba(255,0,0,0.08)', color: colors.text }}>

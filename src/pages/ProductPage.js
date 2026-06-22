@@ -747,7 +747,8 @@ const ProductPage = () => {
                                 variant="contained"
                                 size="large"
                                 startIcon={<AndroidIcon />}
-                                onClick={() => navigate('/register')}
+                                onClick={() => navigate('/download')}
+                                id="product-download-btn"
                                 sx={{
                                     bgcolor: '#EE791A', color: '#fff',
                                     px: 5, py: 1.6, borderRadius: 2,

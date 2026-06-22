@@ -107,9 +107,8 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                         <Button
                                             variant="contained"
                                             startIcon={<AndroidIcon />}
-                                            href="https://play.google.com/store"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                            onClick={() => window.open('/download', '_blank')}
+                                            id="modal-download-child-app-btn"
                                             sx={{
                                                 mb: 2,
                                                 bgcolor: colors.primary,
@@ -119,7 +118,7 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                                                 }
                                             }}
                                         >
-                                            Open Play Store
+                                            Download Child App
                                         </Button>
 
                                         <Box
@@ -224,9 +223,8 @@ const AddChildDeviceModal = ({ open, onClose }) => {
                 </Button>
                 <Button
                     variant="contained"
-                    href="https://play.google.com/store"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={() => window.open('/download', '_blank')}
+                    id="modal-footer-download-btn"
                     startIcon={<AndroidIcon />}
                     size="large"
                     sx={{

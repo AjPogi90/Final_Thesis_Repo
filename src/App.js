@@ -19,6 +19,7 @@ import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import LearnPage from './pages/LearnPage';
 import SupportPage from './pages/SupportPage';
+import DownloadPage from './pages/DownloadPage';
 import PendingVerification from './pages/PendingVerification';
 import DisabledAccount from './pages/DisabledAccount';
 import Sidebar from './components/Sidebar';
@@ -84,6 +85,7 @@ function App() {
             <Route path="/product" element={<ProductPage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/support" element={<SupportPage />} />
+            <Route path="/download" element={<DownloadPage />} />
 
             <Route path="/register" element={<Register />} />
             <Route path="/pending-verification" element={<PendingVerification />} />
