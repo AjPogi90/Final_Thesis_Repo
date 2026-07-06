@@ -40,7 +40,7 @@ import MemoryIcon from '@mui/icons-material/Memory';
 /* ─────────────────────────────────────────
    CONFIG — update APK_URL when you host the file
 ───────────────────────────────────────── */
-const APK_URL = 'https://drive.google.com/uc?export=download&id=1KUmOJn08q9IUODlsfxrWBjf0YR9E2_Sx';
+const APK_URL = 'https://drive.google.com/file/d/1Iaks1zt9V0kKhS39KHNWsCf_rHRodoAl/view?usp=sharing';
 const APK_VERSION = '1.2';
 
 const GLOBAL_CSS = `
