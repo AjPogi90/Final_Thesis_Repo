@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Container,
     Typography,
@@ -126,7 +126,14 @@ const Filters = () => {
     }, [children, selectedChildId]);
 
     const filters = childData?.contentFilters || { nudity: false };
-    const nudityActive = filters.nudity || false;
+    // nudityEnabled  = parent's intent (turns ON immediately on toggle)
+    // nudityRunning  = child confirmed the service is actually running
+    // nudityPending  = parent enabled but child hasn't allowed yet → show loading
+    // nudityActive   = what the card/chip/border reacts to (true only when actually running)
+    const nudityEnabled = filters.nudity === true;
+    const nudityRunning = filters.nudityActive === true;
+    const nudityPending = nudityEnabled && !nudityRunning;
+    const nudityActive  = nudityRunning;
 
     // Resolve filter level: stored value → age suggestion → default 2
     const storedLevel = filters.filterLevel;
@@ -141,7 +148,13 @@ const Filters = () => {
     const handleFilterToggle = async (filterKey, newValue) => {
         if (!selectedChildId) return;
         setSaveLoading(true);
+
+        // When enabling the nudity filter, null-out nudityActive so we start
+        // fresh in "pending" state instead of carrying a stale false/true value.
         const updatedFilters = { ...filters, [filterKey]: newValue };
+        if (filterKey === 'nudity' && newValue === true) {
+            updatedFilters.nudityActive = null; // Firebase treats null as delete
+        }
 
         if (applyToAll && children) {
             let successCount = 0;
@@ -158,6 +171,23 @@ const Filters = () => {
         setTimeout(() => setSuccessMessage(''), 3000);
         setSaveLoading(false);
     };
+
+    // Auto-reset parent's nudity toggle ONLY when the child transitions from
+    // allowing → denying (nudityActive: true → false). This avoids the bug
+    // where a stale false value from a previous denial immediately cancels a
+    // fresh parent enable.
+    const prevNudityActiveRef = useRef(filters.nudityActive);
+    useEffect(() => {
+        const prev = prevNudityActiveRef.current;
+        prevNudityActiveRef.current = filters.nudityActive;
+
+        // Only react to a deliberate revocation (true → false transition)
+        if (prev === true && filters.nudityActive === false &&
+            filters.nudity === true && selectedChildId) {
+            updateContentFilters(selectedChildId, { ...filters, nudity: false });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filters.nudityActive, filters.nudity, selectedChildId]);
 
     const handleLevelChange = async (newLevel) => {
         if (!selectedChildId) return;
@@ -365,7 +395,11 @@ const Filters = () => {
                                             p: 3,
                                             borderRadius: 2,
                                             border: 2,
-                                            borderColor: nudityActive ? colors.success : colors.cardBorder,
+                                            borderColor: nudityActive
+                                                ? colors.success
+                                                : nudityPending
+                                                ? colors.primary
+                                                : colors.cardBorder,
                                             bgcolor: colors.cardBg,
                                             transition: 'all 0.3s',
                                             '&:hover': { boxShadow: '0 4px 12px rgba(238,121,26,0.2)' },
@@ -391,6 +425,19 @@ const Filters = () => {
                                                             }}
                                                         />
                                                     )}
+                                                    {nudityPending && (
+                                                        <Chip
+                                                            label="Awaiting child…"
+                                                            size="small"
+                                                            icon={<CircularProgress size={10} sx={{ color: `${colors.primary} !important`, ml: '6px !important' }} />}
+                                                            sx={{
+                                                                fontWeight: 600,
+                                                                bgcolor: `${colors.primary}22`,
+                                                                color: colors.primary,
+                                                                border: `1px solid ${colors.primary}`,
+                                                            }}
+                                                        />
+                                                    )}
                                                     <Tooltip title="Uses on-device AI to detect and block inappropriate images in real-time." arrow>
                                                         <IconButton size="small" sx={{ color: colors.textSecondary }}>
                                                             <InfoOutlinedIcon fontSize="small" />
@@ -402,12 +449,37 @@ const Filters = () => {
                                                 </Typography>
                                             </Box>
 
-                                            <Switch
-                                                checked={nudityActive}
-                                                onChange={(e) => handleFilterToggle('nudity', e.target.checked)}
-                                                disabled={saveLoading}
-                                                sx={switchSx}
-                                            />
+                                            {/* Toggle with inline spinner while awaiting child response */}
+                                            <Tooltip
+                                                title={nudityPending ? 'Waiting for child to allow screen monitoring…' : ''}
+                                                arrow
+                                            >
+                                                <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                                                    <Switch
+                                                        checked={nudityEnabled}
+                                                        onChange={(e) => handleFilterToggle('nudity', e.target.checked)}
+                                                        disabled={saveLoading || nudityPending}
+                                                        sx={{
+                                                            ...switchSx,
+                                                            opacity: nudityPending ? 0.6 : 1,
+                                                            transition: 'opacity 0.3s',
+                                                        }}
+                                                    />
+                                                    {nudityPending && (
+                                                        <CircularProgress
+                                                            size={14}
+                                                            sx={{
+                                                                color: colors.primary,
+                                                                position: 'absolute',
+                                                                top: '50%',
+                                                                right: -20,
+                                                                transform: 'translateY(-50%)',
+                                                                pointerEvents: 'none',
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Tooltip>
                                         </Box>
 
                                         {/* Level selector — only when filter is ON */}
